@@ -8,16 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		BF3BF4D926F7051C000FC40D /* Scripts in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64E26F64DCC00D396FD /* Scripts */; };
-		BF6D6C0B2738A8E70045589D /* exposelib.m in Sources */ = {isa = PBXBuildFile; fileRef = BF6D6C0A2738A8E70045589D /* exposelib.m */; };
 		BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF63C26F61F0300D396FD /* AppDelegate.m */; };
 		BF8CF63F26F61F0400D396FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF63E26F61F0400D396FD /* Assets.xcassets */; };
 		BF8CF64226F61F0400D396FD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64026F61F0400D396FD /* MainMenu.xib */; };
 		BF8CF64526F61F0400D396FD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF64426F61F0400D396FD /* main.m */; };
+		BFD784AC2888B1B200371155 /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784A92888B1B200371155 /* app.m */; };
+		BFD784AD2888B1B200371155 /* helperLib.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784AA2888B1B200371155 /* helperLib.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BF6D6C092738A8E70045589D /* exposelib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = exposelib.h; sourceTree = "<group>"; };
-		BF6D6C0A2738A8E70045589D /* exposelib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = exposelib.m; sourceTree = "<group>"; };
 		BF8CF63826F61F0300D396FD /* screenhook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = screenhook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF8CF63B26F61F0300D396FD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BF8CF63C26F61F0300D396FD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -27,6 +26,10 @@
 		BF8CF64426F61F0400D396FD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BF8CF64626F61F0400D396FD /* screenhook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = screenhook.entitlements; sourceTree = "<group>"; };
 		BF8CF64E26F64DCC00D396FD /* Scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Scripts; sourceTree = "<group>"; };
+		BFD784A82888B1B200371155 /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app.h; path = src/app.h; sourceTree = "<group>"; };
+		BFD784A92888B1B200371155 /* app.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = app.m; path = src/app.m; sourceTree = "<group>"; };
+		BFD784AA2888B1B200371155 /* helperLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = helperLib.m; path = src/helperLib.m; sourceTree = "<group>"; };
+		BFD784AB2888B1B200371155 /* helperLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = helperLib.h; path = src/helperLib.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,8 +65,10 @@
 				BF8CF64E26F64DCC00D396FD /* Scripts */,
 				BF8CF63B26F61F0300D396FD /* AppDelegate.h */,
 				BF8CF63C26F61F0300D396FD /* AppDelegate.m */,
-				BF6D6C092738A8E70045589D /* exposelib.h */,
-				BF6D6C0A2738A8E70045589D /* exposelib.m */,
+				BFD784A82888B1B200371155 /* app.h */,
+				BFD784A92888B1B200371155 /* app.m */,
+				BFD784AB2888B1B200371155 /* helperLib.h */,
+				BFD784AA2888B1B200371155 /* helperLib.m */,
 				BF8CF63E26F61F0400D396FD /* Assets.xcassets */,
 				BF8CF64026F61F0400D396FD /* MainMenu.xib */,
 				BF8CF64326F61F0400D396FD /* Info.plist */,
@@ -146,8 +151,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF8CF64526F61F0400D396FD /* main.m in Sources */,
-				BF6D6C0B2738A8E70045589D /* exposelib.m in Sources */,
+				BFD784AC2888B1B200371155 /* app.m in Sources */,
 				BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */,
+				BFD784AD2888B1B200371155 /* helperLib.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
