@@ -79,9 +79,9 @@
 			isa = PBXGroup;
 			children = (
 				BF8CF64E26F64DCC00D396FD /* Scripts */,
+				BF39DF9C2915010200BCB772 /* src */,
 				BF8CF63B26F61F0300D396FD /* AppDelegate.h */,
 				BF8CF63C26F61F0300D396FD /* AppDelegate.m */,
-				BF39DF9C2915010200BCB772 /* src */,
 				BF8CF63E26F61F0400D396FD /* Assets.xcassets */,
 				BF8CF64026F61F0400D396FD /* MainMenu.xib */,
 				BF8CF64326F61F0400D396FD /* Info.plist */,
