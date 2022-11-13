@@ -9,8 +9,9 @@
 #import "AppDelegate.h"
 #import "src/helperLib.h"
 #import "src/app.h"
-//#include <ApplicationServices/ApplicationServices.h>
-CG_EXTERN void CoreDockSendNotification(CFStringRef, void *); // add CoreDock fn's
+#import "src/globals.h"
+
+void CoreDockSendNotification(CFStringRef, void *); // add CoreDock fn's
 
 const int T_TO_RUN = 1; //(cleandesktop) t to runOnce --seconds before trying to run the function (eg: if called 3 times in 1 seconds, still runs once)
 
@@ -47,6 +48,17 @@ void cornerClick(void) {
     [app initVars];
     [helperLib listenClicks];
     [helperLib listenScreens];
+    setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
+        NSString *path = [NSString stringWithFormat:@"%@/%@/afterBTTLaunched.scpt", NSHomeDirectory(), @"Desktop/important/SystemFiles"];
+        NSTask *task = [[NSTask alloc] init];// BTT trigger_named  has ~ 7sec delay (on this script only)
+        NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
+        NSArray *arguments = [NSArray arrayWithObjects: @"-c" , commandToRun, nil];
+        [task setLaunchPath:@"/bin/sh"];
+        [task setArguments:arguments];
+        [task launch];
+        // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
+        [helperLib runScript:@"tell application \"DockAltTab\" to activate"];
+    }, 15*1000);
 }
 - (void) bindClick:(CGEventRef)e :(BOOL)clickToClose {
     NSPoint pos = [NSEvent mouseLocation];
@@ -77,5 +89,6 @@ void cornerClick(void) {
     extScreenHeight =  [extScreen frame].size.height;
     extOffsetX = [extScreen frame].origin.x;
     extOffsetY = [extScreen frame].origin.y;
+    NSLog(@"screens - 1 (%f,%f) 2 (%f,%f) offset (%f,%f)", primaryScreenWidth, primaryScreenHeight, extScreenWidth, extScreenWidth, extendedOffsetX, extendedOffsetY);
 }
 @end
