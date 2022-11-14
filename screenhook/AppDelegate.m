@@ -71,7 +71,7 @@ void cornerClick(void) {
             if (self->runningApps[@"Alfred"]) [helperLib runScript:@"do shell script \"osascript -e 'tell application \\\"Alfred 5\\\" to search' &> /dev/null & echo $!\""];
             else [helperLib runScript:@"tell application \"System Events\" to keystroke \" \" using {command down}"];
 //            NSLog(@"%@",[[[NSWorkspace sharedWorkspace] frontmostApplication] localizedName]);
-        }, runningApps[@"Alfred"] ? 100 : 200);
+        }, runningApps[@"Alfred"] ? 100 : 200); // system events is slower than app telling Alfred
     }
 }
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype {
