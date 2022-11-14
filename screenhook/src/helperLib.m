@@ -14,14 +14,20 @@ NSDictionary* appAliases = @{
     @"PyCharm CE": @"PyCharm"
 };
 
-//prepare click handling
-static CGEventRef handleClick( CGEventRef clickHandler,
-                              CGEventTapProxy proxy ,
-                              CGEventType type ,
-                              CGEventRef event ,
-                              void * refcon ) {
-    [[helperLib getApp] bindClick:event : NO];
-    return event;
+////prepare click handling
+CGEventTapCallBack handleMouseDown(CGEventTapProxy proxy ,
+                                  CGEventType type ,
+                                  CGEventRef event ,
+                                  void * refcon ) {
+    [[helperLib getApp] mousedown:event : type];
+    return (CGEventTapCallBack) nil;
+}
+CGEventTapCallBack handleMouseUp(CGEventTapProxy proxy ,
+                                  CGEventType type ,
+                                  CGEventRef event ,
+                                  void * refcon ) {
+    [[helperLib getApp] mouseup:event : type];
+    return (CGEventTapCallBack) nil;
 }
 //listening to monitors attach / detach
 void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo) {
@@ -48,11 +54,14 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     }
     return [[NSString alloc] initWithData:oResponseData encoding:NSUTF8StringEncoding];
 }
-+ (void) runScript: (NSString*) scriptTxt {
++ (NSString*) runScript: (NSString*) scriptTxt {
     NSDictionary *error = nil;
     NSAppleScript *script = [[NSAppleScript alloc] initWithSource: scriptTxt];
-    [script executeAndReturnError:&error];
-    if (error) NSLog(@"run error: %@", error);
+    if (error) {
+        NSLog(@"run error: %@", error);
+        return @"";
+    }
+    return [[script executeAndReturnError:&error] stringValue];
 }
 + (void) runAppleScript: (NSString*) scptPath {
     NSString *compiledScriptPath = [[NSBundle mainBundle] pathForResource:scptPath ofType:@"scpt" inDirectory:@"Scripts"];
@@ -275,17 +284,17 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 
 //event listening
 + (void) listenScreens {CGDisplayRegisterReconfigurationCallback((CGDisplayReconfigurationCallBack) proc, (void*) nil);}
-+ (void) listenClicks {
-    CGEventMask emask;
++ (void) listenMouseDown {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseDown) | CGEventMaskBit(kCGEventRightMouseDown) : handleMouseDown];}
++ (void) listenMouseUp {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseUp) | CGEventMaskBit(kCGEventRightMouseUp) : handleMouseUp];}
++ (void) listenMask : (CGEventMask) emask : (CGEventTapCallBack) handler {
     CFMachPortRef myEventTap;
     CFRunLoopSourceRef eventTapRLSrc;
-    emask = CGEventMaskBit(kCGEventLeftMouseDown);
     myEventTap = CGEventTapCreate (
         kCGSessionEventTap, // Catch all events for current user session
         kCGTailAppendEventTap, // Append to end of EventTap list
         kCGEventTapOptionListenOnly, // We only listen, we don't modify
         emask,
-        (CGEventTapCallBack) handleClick,
+        handler,
         nil // We need no extra data in the callback
     );
     eventTapRLSrc = CFMachPortCreateRunLoopSource( //runloop source

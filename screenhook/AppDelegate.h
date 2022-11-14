@@ -31,10 +31,13 @@
     //app stuff
     NSTimer*               timer;
     BOOL                   wasShowingContextMenu;
+    
+    NSDictionary*         runningApps;
 
     //UI
 }
 //- (float) timeDiff;
-- (void) bindClick: (CGEventRef) e : (BOOL) clickToClose;
+- (void) mousedown: (CGEventRef) e : (CGEventType) etype;
+- (void) mouseup: (CGEventRef) e : (CGEventType) etype;
 - (void) bindScreens;
 @end

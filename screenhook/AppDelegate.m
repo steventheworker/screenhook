@@ -38,6 +38,7 @@ float extScreenWidth = 0;
 float extScreenHeight = 0;
 float extOffsetX = 0;
 float extOffsetY = 0;
+NSDictionary* mouseDownCache;
 
 void cornerClick(void) {
     [helperLib runAppleScript:@"cornerClick"];
@@ -46,9 +47,7 @@ void cornerClick(void) {
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     [app initVars];
-    [helperLib listenClicks];
-    [helperLib listenScreens];
-    setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
+    if ([[helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] isEqual:@"null"]) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
         NSString *path = [NSString stringWithFormat:@"%@/%@/afterBTTLaunched.scpt", NSHomeDirectory(), @"Desktop/important/SystemFiles"];
         NSTask *task = [[NSTask alloc] init];// BTT trigger_named  has ~ 7sec delay (on this script only)
         NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
@@ -56,11 +55,28 @@ void cornerClick(void) {
         [task setLaunchPath:@"/bin/sh"];
         [task setArguments:arguments];
         [task launch];
-        // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
-        [helperLib runScript:@"tell application \"DockAltTab\" to activate"];
+        [helperLib runScript:@"tell application \"DockAltTab\" to activate"]; // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
     }, 15*1000);
 }
-- (void) bindClick:(CGEventRef)e :(BOOL)clickToClose {
+- (void) mouseup: (CGEventRef) e : (CGEventType) etype {
+    BOOL rightBtn = (etype == kCGEventRightMouseUp);
+    if (rightBtn) return;
+    NSPoint pos = [NSEvent mouseLocation];
+    CGPoint carbonPoint = [helperLib carbonPointFrom:pos];
+    AXUIElementRef el = [helperLib elementAtPoint:carbonPoint];
+    NSDictionary* info = [helperLib axInfo:el]; //axTitle, axIsApplicationRunning, axPID, axIsAPplicationRunning
+    if ([info[@"role"] isEqual:@"AXDockItem"]) {
+        if ([info[@"title"] isEqual:@"TaskSwitcher"]) return;
+        if ([info[@"title"] isEqual:@"Spotlight Search"] && [mouseDownCache[@"info"][@"title"] isEqual:@"Spotlight Search"] && ![mouseDownCache[@"isSpotlightOpen"] intValue]) return setTimeout(^{
+            if (self->runningApps[@"Alfred"]) [helperLib runScript:@"do shell script \"osascript -e 'tell application \\\"Alfred 5\\\" to search' &> /dev/null & echo $!\""];
+            else [helperLib runScript:@"tell application \"System Events\" to keystroke \" \" using {command down}"];
+//            NSLog(@"%@",[[[NSWorkspace sharedWorkspace] frontmostApplication] localizedName]);
+        }, runningApps[@"Alfred"] ? 100 : 200);
+    }
+}
+- (void) mousedown: (CGEventRef) e : (CGEventType) etype {
+    BOOL rightBtn = (etype == kCGEventRightMouseDown);
+    if (rightBtn) return;
     NSPoint pos = [NSEvent mouseLocation];
     if (primaryScreenWidth - pos.x <= 30 && primaryScreenHeight - pos.y <= 20) cornerClick();
     if (pos.x > primaryScreenWidth || pos.x < 0) { //on extended monitor
@@ -75,9 +91,12 @@ void cornerClick(void) {
     }
     NSLog(@"%f %f", pos.x, pos.y);
     CGPoint carbonPoint = [helperLib carbonPointFrom:pos];
-    AXUIElementRef elementUnderCursor = [helperLib elementAtPoint:carbonPoint];
-    NSDictionary* info = [helperLib axInfo:elementUnderCursor]; //axTitle, axIsApplicationRunning, axPID, axIsAPplicationRunning
-    if ([info[@"title"] isEqual:@"TaskSwitcher"] && [info[@"role"] isEqual:@"AXDockItem"]) return;
+    AXUIElementRef el = [helperLib elementAtPoint:carbonPoint];
+    NSDictionary* info = [helperLib axInfo:el]; //axTitle, axIsApplicationRunning, axPID, axIsAPplicationRunning
+    mouseDownCache = @{
+        @"info": info,
+        @"isSpotlightOpen": @([info[@"title"] isEqual:@"Spotlight Search"] && [info[@"role"] isEqual:@"AXDockItem"] ? [app isSpotlightOpen: runningApps[@"Alfred"]] : NO)
+    };
     [helperLib runAppleScript:@"screenhookClick"];
 }
 - (void) bindScreens { //get screen info

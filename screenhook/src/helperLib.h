@@ -25,14 +25,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (AXUIElementRef) elementAtPoint: (CGPoint) carbonPoint;
 + (NSDictionary*) axInfo: (AXUIElementRef) el;
 + (void) listenScreens;
-+ (void) listenClicks;
++ (void) listenMouseDown;
++ (void) listenMouseUp;
++ (void) listenMask: (CGEventMask) emask : (CGEventTapCallBack) handler;
 + (AppDelegate *) getApp;
 + (NSString*) get: (NSString*) url; // http(s) "GET"
 + (void) killDock;
 + (void) dockSetting: (CFStringRef) pref : (BOOL) val;
 + (NSString*) twoSigFigs: (float) val;
 + (BOOL) dockautohide;
-+ (void) runScript: (NSString*) scriptTxt;
++ (NSString*) runScript: (NSString*) scriptTxt;
 + (void) runAppleScript: (NSString*) scptPath;
 @end
 NS_ASSUME_NONNULL_END

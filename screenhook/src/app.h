@@ -13,6 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) initVars;
 + (void) focusDock;
 + (float) maxDelay;
-
++ (BOOL) isSpotlightOpen : (BOOL) isAlfred;
 @end
 NS_ASSUME_NONNULL_END

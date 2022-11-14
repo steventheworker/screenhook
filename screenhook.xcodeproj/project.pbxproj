@@ -307,11 +307,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = L33QBJT48B;
 				INFOPLIST_FILE = screenhook/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ScreenHook;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = steventheworker.screenhook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.steventheworker.screenhook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -328,11 +330,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = L33QBJT48B;
 				INFOPLIST_FILE = screenhook/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ScreenHook;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = steventheworker.screenhook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.steventheworker.screenhook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
