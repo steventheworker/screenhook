@@ -89,7 +89,7 @@ void cornerClick(void) {
         }
         if (pos.x - _extOffsetX >= extScreenWidth - 30 && pos.y >= extScreenHeight - 20) cornerClick();
     }
-    NSLog(@"%f %f", pos.x, pos.y);
+//    NSLog(@"%f %f", pos.x, pos.y);
     CGPoint carbonPoint = [helperLib carbonPointFrom:pos];
     AXUIElementRef el = [helperLib elementAtPoint:carbonPoint];
     NSDictionary* info = [helperLib axInfo:el]; //axTitle, axIsApplicationRunning, axPID, axIsAPplicationRunning
