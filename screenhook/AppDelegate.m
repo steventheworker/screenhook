@@ -23,7 +23,7 @@ const int T_TO_RUN = 1; //(cleandesktop) t to runOnce --seconds before trying to
 bool waitingForTimer = NO;
 void runOnceThenLater(void) {
     waitingForTimer = YES;
-//    [helperLib runAppleScript:@"cleandesktop"]; //todo: cleandesktop (reverse columns after, if icon1 pos.x === 0 (top left))
+    [helperLib runAppleScript:@"cleandesktop"]; //todo: cleandesktop (reverse columns after, if icon1 pos.x === 0 (top left))
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * T_TO_RUN), dispatch_get_main_queue(), ^() {waitingForTimer = NO;}); //setTimeout
 }
 void attemptRun(void) {
@@ -59,6 +59,9 @@ void cornerClick(void) {
     }, 15*1000);
 }
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype {
+//    if (!mouseDownCache) NSLog(@"settime"); // handle mouseup ran --before mousedown finished (todo: fix this with async applescript)
+    if (!mouseDownCache) return setTimeout(^{[self mouseup:e : etype];}, 84);
+    
     BOOL rightBtn = (etype == kCGEventRightMouseUp);
     if (rightBtn) return;
     NSPoint pos = [NSEvent mouseLocation];
@@ -75,6 +78,7 @@ void cornerClick(void) {
     }
 }
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype {
+    mouseDownCache = nil;
     BOOL rightBtn = (etype == kCGEventRightMouseDown);
     if (rightBtn) return;
     NSPoint pos = [NSEvent mouseLocation];
