@@ -47,7 +47,7 @@ void cornerClick(void) {
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     [app initVars];
-    if (self->runningApps[@"BTT"] && [helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
+    setTimeout(^{if (self->runningApps[@"BTT"] && [helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
         NSString *path = [NSString stringWithFormat:@"%@/%@/afterBTTLaunched.scpt", NSHomeDirectory(), @"Desktop/important/SystemFiles"];
         NSTask *task = [[NSTask alloc] init];// BTT trigger_named  has ~ 7sec delay (on this script only)
         NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
@@ -55,8 +55,8 @@ void cornerClick(void) {
         [task setLaunchPath:@"/bin/sh"];
         [task setArguments:arguments];
         [task launch];
-        [helperLib runScript:@"tell application \"DockAltTab\" to activate"]; // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
-    }, 15*1000);
+//        [helperLib runScript:@"tell application \"DockAltTab\" to activate"]; // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
+    }, 7.5*1000);}, 7.5*1000);
 }
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype {
 //    if (!mouseDownCache) NSLog(@"settime"); // handle mouseup ran --before mousedown finished (todo: fix this with async applescript)
