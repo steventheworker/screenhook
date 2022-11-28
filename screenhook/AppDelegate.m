@@ -114,7 +114,7 @@ void launchDockAltTab(void) { // DockAltTab.app file is an alias pointing to a D
     };
     [helperLib runAppleScript:@"screenhookClick"];
 }
-- (void) bindScreens { //get screen info
+- (void) measureScreens { //get screen info
     NSScreen* primScreen = [helperLib getScreen:0];
     primaryScreenWidth = NSMaxX([primScreen frame]);
     primaryScreenHeight = NSMaxY([primScreen frame]);
@@ -124,5 +124,9 @@ void launchDockAltTab(void) { // DockAltTab.app file is an alias pointing to a D
     extOffsetX = [extScreen frame].origin.x;
     extOffsetY = [extScreen frame].origin.y;
     NSLog(@"screens - 1 (%f,%f) 2 (%f,%f) offset (%f,%f)", primaryScreenWidth, primaryScreenHeight, extScreenWidth, extScreenWidth, extendedOffsetX, extendedOffsetY);
+}
+- (void) bindScreens {
+    attemptRun();
+    [self measureScreens];
 }
 @end

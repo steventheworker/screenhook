@@ -40,4 +40,5 @@
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype;
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype;
 - (void) bindScreens;
+- (void) measureScreens;
 @end

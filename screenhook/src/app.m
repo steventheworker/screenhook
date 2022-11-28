@@ -41,7 +41,7 @@ void askForAccessibility(void) {
     [helperLib listenMouseDown]; // ask for input monitoring first
     [helperLib listenMouseUp]; // ask for input monitoring first
     askForAccessibility();
-    [del bindScreens]; // get all screen values onLaunch
+    [del measureScreens]; // get all screen values onLaunch
     
     // permission-free events
     [helperLib listenScreens];
