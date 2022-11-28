@@ -7,6 +7,7 @@ originally made to make up for features BTT lacks like:
 ["steviaOS"](https://github.com/steventheworker/applescripts) features:
 - firefox cmd+shift+T to reopen tabs AND windows
 - make sure afterBTTLaunched.applescript ran, launch DockAltTab after
+- "Spotlight Search.app" will only work with screenhook
 
 planned features:
 - awareness of spaces
