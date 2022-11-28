@@ -44,6 +44,17 @@ void cornerClick(void) {
     [helperLib runAppleScript:@"cornerClick"];
     NSLog(@"cl");
 }
+
+void launchDockAltTab(void) { // DockAltTab.app file is an alias pointing to a DerivedData debug build
+    NSWorkspaceOpenConfiguration *config = [NSWorkspaceOpenConfiguration configuration];
+//    config.createsNewApplicationInstance = TRUE; // can be used to launch a new instance of vlc / blender!!!
+    NSURL* aliasUrl = [NSURL fileURLWithPath: @"/Applications/MyApps/DockAltTab.app"];
+    NSURLBookmarkResolutionOptions options = 0;
+    options |= /* DISABLES CODE */ (1) ? NSURLBookmarkResolutionWithoutUI : 0;
+    options |= /* DISABLES CODE */ (1) ? NSURLBookmarkResolutionWithoutMounting : 0;
+    NSURL* _url = [NSURL URLByResolvingAliasFileAtURL: aliasUrl options: options error: nil];
+    [[NSWorkspace sharedWorkspace] openApplicationAtURL:[NSURL URLWithString:  [_url absoluteString]] configuration:config completionHandler:^(NSRunningApplication * _Nullable app, NSError * _Nullable error) {}];
+}
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     [app initVars];
@@ -55,7 +66,7 @@ void cornerClick(void) {
         [task setLaunchPath:@"/bin/sh"];
         [task setArguments:arguments];
         [task launch];
-//        [helperLib runScript:@"tell application \"DockAltTab\" to activate"]; // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
+        launchDockAltTab(); // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
     }, 7.5*1000);}, 7.5*1000);
 }
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype {
