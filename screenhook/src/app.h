@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 @interface app : NSObject
 + (BOOL) contextMenuExists: (CGPoint)carbonPoint : (NSDictionary*)info;
-+ (void) initVars;
++ (void) init;
 + (void) focusDock;
 + (float) maxDelay;
 + (BOOL) isSpotlightOpen : (BOOL) isAlfred;

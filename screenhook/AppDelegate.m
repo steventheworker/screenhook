@@ -57,7 +57,8 @@ void launchDockAltTab(void) { // DockAltTab.app file is an alias pointing to a D
 }
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    [app initVars];
+    [app init];
+    if (extScreenWidth) attemptRun(); // run cleandesktop if 2+ monitors
     setTimeout(^{if (self->runningApps[@"BTT"] && [helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
         NSString *path = [NSString stringWithFormat:@"%@/%@/afterBTTLaunched.scpt", NSHomeDirectory(), @"Desktop/important/SystemFiles"];
         NSTask *task = [[NSTask alloc] init];// BTT trigger_named  has ~ 7sec delay (on this script only)

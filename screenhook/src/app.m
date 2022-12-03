@@ -33,7 +33,7 @@ void askForAccessibility(void) {
 
 @implementation app
 //initialize app variables (onLaunch)
-+ (void) initVars {
++ (void) init {
     NSLog(@"%@", @"running app :)\n-------------------------------------------------------------------");
     // permissions
     AppDelegate* del = [helperLib getApp];
