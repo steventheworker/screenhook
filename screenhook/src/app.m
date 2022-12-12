@@ -48,7 +48,6 @@ void askForAccessibility(void) {
     
     // functional variables
     del->dockPos = [helperLib getDockPosition];
-    del->dockPID = [helperLib getPID:@"com.apple.dock"]; //todo: refresh dockPID every x or so?
     del->runningApps = @{
         @"Alfred": @([helperLib getPID:@"com.runningwithcrayons.Alfred"]),
         @"AltTab": @([helperLib getPID:@"com.steventheworker.alt-tab-macos"]),
@@ -56,6 +55,7 @@ void askForAccessibility(void) {
         @"BTT": @([helperLib getPID:@"com.hegenberg.BetterTouchTool"]),
         @"Firefox": @([helperLib getPID:@"org.mozilla.firefox"]),
 //        @"Finder": @([helperLib getPID:@"com.apple.finder"]),
+        @"dock": @([helperLib getPID:@"com.apple.dock"])
     };
 }
 

@@ -8,10 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
-    //permissions
-    @public AXUIElementRef          _systemWideAccessibilityObject;
-    
-    //system state (non-live / eg. periodically updated)
+    @public AXUIElementRef   _systemWideAccessibilityObject;
     @public float           primaryScreenHeight;
     @public float           primaryScreenWidth;
     @public float           extendedOffsetX;
@@ -22,21 +19,11 @@
     @public CGFloat         dockWidth;
     @public CGFloat         dockHeight;
     @public NSString*       dockPos;
-    pid_t                  dockPID;
-    pid_t                  finderPID;
-    pid_t                  AltTabPID;
-    BOOL                   unsupportedAltTab;
-    BOOL                   autohide;
-
-    //app stuff
-    NSTimer*               timer;
-    BOOL                   wasShowingContextMenu;
-    
+    BOOL                   dockautohide;
     NSDictionary*         runningApps;
 
     //UI
 }
-//- (float) timeDiff;
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype;
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype;
 - (void) bindScreens;
