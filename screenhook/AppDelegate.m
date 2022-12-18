@@ -55,21 +55,48 @@ void launchDockAltTab(void) { // DockAltTab.app file is an alias pointing to a D
     NSURL* _url = [NSURL URLByResolvingAliasFileAtURL: aliasUrl options: options error: nil];
     [[NSWorkspace sharedWorkspace] openApplicationAtURL:[NSURL URLWithString:  [_url absoluteString]] configuration:config completionHandler:^(NSRunningApplication * _Nullable app, NSError * _Nullable error) {}];
 }
+void steviaOSInit(BOOL initedWithBTT) {
+    launchDockAltTab();  // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
+    AppDelegate* del = [helperLib getApp];
+    [[del->BTTState cell] setTitle: initedWithBTT ? @"init steviaOS w/ BTT \"Automation & Named & Other triggers\" ✅" : @"ran afterBTTLaunched.applescript w/ screenhook ❌"];
+    [del preferences: nil];
+    setTimeout(^{[del closePreferences];}, 666);
+}
 @implementation AppDelegate
+/*
+   Lifecycle
+*/
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     [app init];
     if (extScreenWidth) attemptRun(); // run cleandesktop if 2+ monitors
-    setTimeout(^{if (self->runningApps[@"BTT"] && [helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
-        NSString *path = [NSString stringWithFormat:@"%@/%@/afterBTTLaunched.scpt", NSHomeDirectory(), @"Desktop/important/SystemFiles"];
-        NSTask *task = [[NSTask alloc] init];// BTT trigger_named  has ~ 7sec delay (on this script only)
-        NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
-        NSArray *arguments = [NSArray arrayWithObjects: @"-c" , commandToRun, nil];
-        [task setLaunchPath:@"/bin/sh"];
-        [task setArguments:arguments];
-        [task launch];
-        launchDockAltTab(); // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
+    setTimeout(^{if (self->runningApps[@"BTT"]) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
+        if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) {
+            NSString *path = [NSString stringWithFormat:@"%@/%@/afterBTTLaunched.scpt", NSHomeDirectory(), @"Desktop/important/SystemFiles"];
+            NSTask *task = [[NSTask alloc] init];// BTT trigger_named  has ~ 7sec delay (on this script only)
+            NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
+            NSArray *arguments = [NSArray arrayWithObjects: @"-c" , commandToRun, nil];
+            [task setLaunchPath:@"/bin/sh"];
+            [task setArguments:arguments];
+            [task launch];
+            setTimeout(^{
+                if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] != nil) steviaOSInit(NO);
+                else [[self->BTTState cell] setTitle:@"afterBTTLaunched.applescript DNE / error running @ ~/Desktop/important/SystemFiles"];
+            }, 333); // wait for afterBTTLaunched vars to load
+        } else steviaOSInit(YES);
+        [helperLib runScript:@"tell application \"System Events\" to tell process \"AltTab\" to if count of windows > 0 then click button 2 of window 1"]; //close AltTab if prefs open on login, which happens when you use the login items (recommended), rather than the "Start at login" checkbox (in AltTab prefs)
     }, 7.5*1000);}, 7.5*1000);
 }
+- (void) awakeFromNib {
+    statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength];
+    [[statusItem button] setImage: [NSImage imageNamed:@"MenuIcon"]];
+    [statusItem setMenu: iconMenu];
+    [statusItem setVisible: YES];
+}
+
+
+/*
+   Event handlers
+*/
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype {
 //    if (!mouseDownCache) NSLog(@"settime"); // handle mouseup ran --before mousedown finished (todo: fix this with async applescript)
     if (!mouseDownCache) return setTimeout(^{[self mouseup:e : etype];}, 84);
@@ -130,4 +157,19 @@ void launchDockAltTab(void) { // DockAltTab.app file is an alias pointing to a D
     attemptRun();
     [self measureScreens];
 }
+
+
+/*
+    Menu Bindings / UI handlers
+*/
+- (IBAction) preferences:(id)sender {
+    [NSApp activateIgnoringOtherApps:YES];
+    [_window makeKeyAndOrderFront:nil];
+}
+
+
+/*
+    helpers
+ */
+- (void) closePreferences {[_window close];}
 @end

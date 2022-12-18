@@ -41,19 +41,6 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     return [NSString stringWithFormat:@"%.02f", val];
 }
 //misc
-+ (NSString *) get: (NSString *) url {
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setHTTPMethod:@"GET"];
-    [request setURL:[NSURL URLWithString:url]];
-    NSError *error = nil;
-    NSHTTPURLResponse *responseCode = nil;
-    NSData *oResponseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&responseCode error:&error]; //todo: fix warning
-    if ([responseCode statusCode] != 200) {
-        NSLog(@"Error getting %@, HTTP status code %li", url, [responseCode statusCode]);
-        return nil;
-    }
-    return [[NSString alloc] initWithData:oResponseData encoding:NSUTF8StringEncoding];
-}
 + (NSString*) runScript: (NSString*) scriptTxt {
     NSDictionary *error = nil;
     NSAppleScript *script = [[NSAppleScript alloc] initWithSource: scriptTxt];

@@ -23,9 +23,24 @@
     NSDictionary*         runningApps;
 
     //UI
+    NSStatusItem *statusItem;
+    __weak IBOutlet NSMenu *iconMenu;
+    __weak IBOutlet NSView *MainMenu;
+    __weak IBOutlet NSTextField *BTTState;
 }
+/*
+   Event handlers
+*/
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype;
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype;
 - (void) bindScreens;
 - (void) measureScreens;
+/*
+    Menu Bindings / UI handlers
+*/
+- (IBAction) preferences:(id)sender;
+/*
+    helpers
+*/
+- (void) closePreferences;
 @end

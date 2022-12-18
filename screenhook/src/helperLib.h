@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) listenMouseUp;
 + (void) listenMask: (CGEventMask) emask : (CGEventTapCallBack) handler;
 + (AppDelegate *) getApp;
-+ (NSString*) get: (NSString*) url; // http(s) "GET"
 + (void) killDock;
 + (void) dockSetting: (CFStringRef) pref : (BOOL) val;
 + (NSString*) twoSigFigs: (float) val;

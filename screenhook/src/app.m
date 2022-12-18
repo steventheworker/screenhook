@@ -57,6 +57,9 @@ void askForAccessibility(void) {
 //        @"Finder": @([helperLib getPID:@"com.apple.finder"]),
         @"dock": @([helperLib getPID:@"com.apple.dock"])
     };
+    
+    // init UI
+    if (del->runningApps[@"BTT"]) [[del->BTTState cell] setTitle:@"Checking if afterBTTLaunched..."];
 }
 
 /* UI */
@@ -83,7 +86,7 @@ void askForAccessibility(void) {
     [helperLib runScript: scriptTxt];
 }
 + (float) maxDelay {return DELAY_MAX;}
-+ (NSString*) getCurrentVersion {return [helperLib get: (NSString*) versionLink];}
++ (NSString*) getCurrentVersion {return @"" /*[helperLib fetch: (NSString*) versionLink] */ ;}
 + (BOOL) isSpotlightOpen : (BOOL) isAlfred {
     return ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to count of windows", isAlfred ? @"Alfred" : @"Spotlight"]] isEqual:@"0"];
 }
