@@ -71,20 +71,14 @@ void steviaOSInit(BOOL initedWithBTT) {
     if (extScreenWidth) attemptRun(); // run cleandesktop if 2+ monitors
     setTimeout(^{if (self->runningApps[@"BTT"]) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
         if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) {
-            NSString *path = [NSString stringWithFormat:@"%@/%@/afterBTTLaunched.scpt", NSHomeDirectory(), @"Desktop/important/SystemFiles"];
-            NSTask *task = [[NSTask alloc] init];// BTT trigger_named  has ~ 7sec delay (on this script only)
-            NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
-            NSArray *arguments = [NSArray arrayWithObjects: @"-c" , commandToRun, nil];
-            [task setLaunchPath:@"/bin/sh"];
-            [task setArguments:arguments];
-            [task launch];
+            [helperLib runScript:@"tell application \"BetterTouchTool\" to trigger_named \"restartBTT\""];
             setTimeout(^{
                 if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] != nil) steviaOSInit(NO);
                 else [[self->BTTState cell] setTitle:@"afterBTTLaunched.applescript DNE / error running @ ~/Desktop/important/SystemFiles"];
-            }, 333); // wait for afterBTTLaunched vars to load
+            }, 2000); // wait for afterBTTLaunched vars to load
         } else steviaOSInit(YES);
         [helperLib runScript:@"tell application \"System Events\" to tell process \"AltTab\" to if count of windows > 0 then click button 2 of window 1"]; //close AltTab if prefs open on login, which happens when you use the login items (recommended), rather than the "Start at login" checkbox (in AltTab prefs)
-    }, 7.5*1000);}, 7.5*1000);
+    }, 6.67*1000);}, 6.67*1000);
 }
 - (void) awakeFromNib {
     statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength];
