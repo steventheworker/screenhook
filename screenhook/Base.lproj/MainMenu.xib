@@ -718,6 +718,12 @@
                         <action selector="preferences:" target="Voe-Tx-rLC" id="Tly-ng-xGB"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Quit screenhook" id="KAs-Zz-qxh">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="quit:" target="Voe-Tx-rLC" id="RRz-Ni-AG2"/>
+                    </connections>
+                </menuItem>
             </items>
             <point key="canvasLocation" x="-414" y="354.5"/>
         </menu>
