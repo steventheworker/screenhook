@@ -12,11 +12,12 @@
 		BF39DF9F2915013200BCB772 /* globals.m in Sources */ = {isa = PBXBuildFile; fileRef = BF39DF9E2915013200BCB772 /* globals.m */; };
 		BF3BF4D926F7051C000FC40D /* Scripts in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64E26F64DCC00D396FD /* Scripts */; };
 		BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF63C26F61F0300D396FD /* AppDelegate.m */; };
-		BF8CF63F26F61F0400D396FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF63E26F61F0400D396FD /* Assets.xcassets */; };
 		BF8CF64226F61F0400D396FD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64026F61F0400D396FD /* MainMenu.xib */; };
 		BF8CF64526F61F0400D396FD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF64426F61F0400D396FD /* main.m */; };
+		BFC80D16295309F700F9BC67 /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BFC80D15295309F700F9BC67 /* MenuIcon.png */; };
 		BFD784AC2888B1B200371155 /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784A92888B1B200371155 /* app.m */; };
 		BFD784AD2888B1B200371155 /* helperLib.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784AA2888B1B200371155 /* helperLib.m */; };
+		BFEEDD9E295307A60004F56C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFEEDD9D295307A60004F56C /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,16 +28,17 @@
 		BF8CF63826F61F0300D396FD /* screenhook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = screenhook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF8CF63B26F61F0300D396FD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BF8CF63C26F61F0300D396FD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		BF8CF63E26F61F0400D396FD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BF8CF64126F61F0400D396FD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		BF8CF64326F61F0400D396FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF8CF64426F61F0400D396FD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BF8CF64626F61F0400D396FD /* screenhook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = screenhook.entitlements; sourceTree = "<group>"; };
 		BF8CF64E26F64DCC00D396FD /* Scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Scripts; sourceTree = "<group>"; };
+		BFC80D15295309F700F9BC67 /* MenuIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuIcon.png; sourceTree = "<group>"; };
 		BFD784A82888B1B200371155 /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app.h; path = ../src/app.h; sourceTree = "<group>"; };
 		BFD784A92888B1B200371155 /* app.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = app.m; path = ../src/app.m; sourceTree = "<group>"; };
 		BFD784AA2888B1B200371155 /* helperLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = helperLib.m; path = ../src/helperLib.m; sourceTree = "<group>"; };
 		BFD784AB2888B1B200371155 /* helperLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = helperLib.h; path = ../src/helperLib.h; sourceTree = "<group>"; };
+		BFEEDD9D295307A60004F56C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,10 +90,11 @@
 				BF39DF9C2915010200BCB772 /* src */,
 				BF8CF63B26F61F0300D396FD /* AppDelegate.h */,
 				BF8CF63C26F61F0300D396FD /* AppDelegate.m */,
-				BF8CF63E26F61F0400D396FD /* Assets.xcassets */,
+				BFEEDD9D295307A60004F56C /* Assets.xcassets */,
 				BF8CF64026F61F0400D396FD /* MainMenu.xib */,
 				BF8CF64326F61F0400D396FD /* Info.plist */,
 				BF8CF64426F61F0400D396FD /* main.m */,
+				BFC80D15295309F700F9BC67 /* MenuIcon.png */,
 				BF8CF64626F61F0400D396FD /* screenhook.entitlements */,
 			);
 			path = screenhook;
@@ -158,9 +161,10 @@
 			files = (
 				BF29E762293498D10045C816 /* .gitignore in Resources */,
 				BF3BF4D926F7051C000FC40D /* Scripts in Resources */,
-				BF8CF63F26F61F0400D396FD /* Assets.xcassets in Resources */,
 				BF29E760293498CA0045C816 /* README.md in Resources */,
+				BFC80D16295309F700F9BC67 /* MenuIcon.png in Resources */,
 				BF8CF64226F61F0400D396FD /* MainMenu.xib in Resources */,
+				BFEEDD9E295307A60004F56C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
