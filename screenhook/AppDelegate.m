@@ -68,25 +68,22 @@ void steviaOSInit(BOOL initedWithBTT) {
 */
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     void (^ __block pollForVars) (int i) = ^(int i) {
-        void(^ __block __weak weakPollForVars) (int i);
-        weakPollForVars = pollForVars = ^(int i) {
-            setTimeout(^{
-                if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] != nil) steviaOSInit(NO);
-                else if (i < 5) weakPollForVars(i + 1);
-                else [[self->BTTState cell] setTitle:@"restartBTT failed, steviaOSInit failed"];
-                [[self->BTTState cell] setTitle: [NSString stringWithFormat:@"%@ - ran pollForVars %d times", [[self->BTTState cell] title], i]];
-            }, 1000);
-        };
+        setTimeout(^{
+            if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] != nil) steviaOSInit(NO);
+            else if (i < 5) pollForVars(i + 1);
+            else [[self->BTTState cell] setTitle:@"restartBTT failed, steviaOSInit failed"];
+            [[self->BTTState cell] setTitle: [NSString stringWithFormat:@"%@ - ran pollForVars %d times", [[self->BTTState cell] title], i]];
+        }, 1000);
     };
     [app init];
     if (extScreenWidth) attemptRun(); // run cleandesktop if 2+ monitors
     setTimeout(^{if (self->runningApps[@"BTT"]) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
         if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) {
             [helperLib runScript:@"tell application \"BetterTouchTool\" to trigger_named \"restartBTT\""];
-            pollForVars(0); // see if afterBTTLaunched ran
+            [[self->BTTState cell] setTitle: @"restarted... polling..."];pollForVars(0); // see if afterBTTLaunched ran
         } else steviaOSInit(YES);
         [helperLib runScript:@"tell application \"System Events\" to tell process \"AltTab\" to if count of windows > 0 then click button 2 of window 1"]; //close AltTab if prefs open on login, which happens when you use the login items (recommended), rather than the "Start at login" checkbox (in AltTab prefs)
-    }, 6.67*1000);}, 6.67*1000);
+    }, 6.67*1000);[[self->BTTState cell] setTitle: @"..."];}, 6.67*1000);
 }
 - (void) awakeFromNib {
     statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength];
