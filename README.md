@@ -2,7 +2,7 @@
 originally made to make up for features BTT lacks like:
 - running applescript when monitor is attached/detached
 - running applescript when you click on a corner
-- running applescript for any click (without modifiers keys held) 
+- running applescript for any click (without modifiers keys held)
 
 ["steviaOS"](https://github.com/steventheworker/applescripts) features:
 - firefox cmd+shift+T to reopen tabs AND windows
@@ -14,3 +14,5 @@ planned features:
 - applescript definitions - to share space awareness
 - change middle mouse button behavior
 
+other:
+- sets KeyCastr overlay position to {0, 820} (currently hardcoded for m1 air's dimensions (bottom left))

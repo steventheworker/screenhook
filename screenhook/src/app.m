@@ -55,7 +55,8 @@ void askForAccessibility(void) {
         @"BTT": @([helperLib getPID:@"com.hegenberg.BetterTouchTool"]),
         @"Firefox": @([helperLib getPID:@"org.mozilla.firefox"]),
 //        @"Finder": @([helperLib getPID:@"com.apple.finder"]),
-        @"dock": @([helperLib getPID:@"com.apple.dock"])
+        @"dock": @([helperLib getPID:@"com.apple.dock"]),
+        @"KeyCastr": @([helperLib getPID:@"io.github.keycastr"])
     };
     
     // init UI

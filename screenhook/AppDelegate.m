@@ -61,6 +61,12 @@ void steviaOSInit(BOOL initedWithBTT) {
     [[del->BTTState cell] setTitle: initedWithBTT ? @"BTT initialized steviaOS ✅" : @"screenhook initialized steviaOS as a fallback ❌"];
     [del preferences: nil];
     setTimeout(^{[del closePreferences];}, 666);
+    
+    //toggle quickshade (turns on every login)
+    if ([helperLib getPID:@"jp.questbeat.Shade"]) {
+        [helperLib runScript: @"tell application \"System Events\" to                 tell process \"QuickShade\" to                     click menu bar item 1 of menu bar 2"];
+        [helperLib runScript: @"tell application \"System Events\" to                 tell process \"QuickShade\" to                     perform action \"AXPress\" of menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2"];
+    }
 }
 @implementation AppDelegate
 /*
@@ -77,13 +83,21 @@ void steviaOSInit(BOOL initedWithBTT) {
     };
     [app init];
     if (extScreenWidth) attemptRun(); // run cleandesktop if 2+ monitors
-    setTimeout(^{if (self->runningApps[@"BTT"]) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
-        if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) {
-            [helperLib runScript:@"tell application \"BetterTouchTool\" to trigger_named \"restartBTT\""];
-            [[self->BTTState cell] setTitle: @"restarted... polling..."];pollForVars(0); // see if afterBTTLaunched ran
-        } else steviaOSInit(YES);
-        [helperLib runScript:@"tell application \"System Events\" to tell process \"AltTab\" to if count of windows > 0 then click button 2 of window 1"]; //close AltTab if prefs open on login, which happens when you use the login items (recommended), rather than the "Start at login" checkbox (in AltTab prefs)
-    }, 6.67*1000);[[self->BTTState cell] setTitle: @"..."];}, 6.67*1000);
+    
+    //wait until apps launch
+    setTimeout(^{
+        if (self->runningApps[@"KeyCastr"]) [helperLib runScript:@"tell application \"System Events\" to tell process \"KeyCastr\" to set position of window 1 to {0, 820}"];
+
+        if (self->runningApps[@"BTT"]) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
+            if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) {
+                [helperLib runScript:@"tell application \"BetterTouchTool\" to trigger_named \"restartBTT\""];
+                [[self->BTTState cell] setTitle: @"restarted... polling..."];
+                pollForVars(0); // see if afterBTTLaunched ran
+            } else steviaOSInit(YES);
+            [helperLib runScript:@"tell application \"System Events\" to tell process \"AltTab\" to if count of windows > 0 then click button 2 of window 1"]; //close AltTab if prefs open on login, which happens when you use the login items (recommended), rather than the "Start at login" checkbox (in AltTab prefs)
+        }, 6.67*1000);
+        [[self->BTTState cell] setTitle: @"..."];
+    }, 6.67*1000);
 }
 - (void) awakeFromNib {
     statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength];
