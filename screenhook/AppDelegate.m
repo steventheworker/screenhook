@@ -11,10 +11,6 @@
 #import "src/app.h"
 #import "src/globals.h"
 
-void CoreDockSendNotification(CFStringRef, void *); // add CoreDock fn's
-
-const int T_TO_RUN = 1; //(cleandesktop) t to runOnce --seconds before trying to run the function (eg: if called 3 times in 1 seconds, still runs once)
-
 @interface AppDelegate ()
 @property (strong) IBOutlet NSWindow *window;
 @end
@@ -24,7 +20,8 @@ bool waitingForTimer = NO;
 void runOnceThenLater(void) {
     waitingForTimer = YES;
     [helperLib runAppleScript:@"cleandesktop"]; //todo: cleandesktop (reverse columns after, if icon1 pos.x === 0 (top left))
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * T_TO_RUN), dispatch_get_main_queue(), ^() {waitingForTimer = NO;}); //setTimeout
+    setTimeout(^{waitingForTimer = NO;}, 1000); //(cleandesktop) t to runOnce --ms before trying to run the function (eg: if called 3 times in 1 seconds, still runs once)
+
 }
 void attemptRun(void) {
     if (waitingForTimer) return;
