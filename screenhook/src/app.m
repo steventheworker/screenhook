@@ -7,6 +7,7 @@
 
 #import "app.h"
 #import "helperLib.h"
+#import "timer.h"
 
 //config
 void askForAccessibility(void) {
@@ -50,6 +51,8 @@ void askForAccessibility(void) {
         @"dock": @([helperLib getPID:@"com.apple.dock"]),
         @"KeyCastr": @([helperLib getPID:@"io.github.keycastr"])
     };
+    
+    [[timer alloc] init]; // start timer
     
     // init UI
     if (del->runningApps[@"BTT"]) [[del->BTTState cell] setTitle:@"Checking if afterBTTLaunched..."];

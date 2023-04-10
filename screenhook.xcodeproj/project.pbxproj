@@ -17,6 +17,7 @@
 		BFC80D16295309F700F9BC67 /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BFC80D15295309F700F9BC67 /* MenuIcon.png */; };
 		BFD784AC2888B1B200371155 /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784A92888B1B200371155 /* app.m */; };
 		BFD784AD2888B1B200371155 /* helperLib.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784AA2888B1B200371155 /* helperLib.m */; };
+		BFECF8FA29E3BA74004600B6 /* timer.m in Sources */ = {isa = PBXBuildFile; fileRef = BFECF8F929E3BA74004600B6 /* timer.m */; };
 		BFEEDD9E295307A60004F56C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFEEDD9D295307A60004F56C /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +39,8 @@
 		BFD784A92888B1B200371155 /* app.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = app.m; path = ../src/app.m; sourceTree = "<group>"; };
 		BFD784AA2888B1B200371155 /* helperLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = helperLib.m; path = ../src/helperLib.m; sourceTree = "<group>"; };
 		BFD784AB2888B1B200371155 /* helperLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = helperLib.h; path = ../src/helperLib.h; sourceTree = "<group>"; };
+		BFECF8F829E3BA74004600B6 /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		BFECF8F929E3BA74004600B6 /* timer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = timer.m; sourceTree = "<group>"; };
 		BFEEDD9D295307A60004F56C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -61,6 +64,8 @@
 				BFD784AA2888B1B200371155 /* helperLib.m */,
 				BF39DF9D2915013200BCB772 /* globals.h */,
 				BF39DF9E2915013200BCB772 /* globals.m */,
+				BFECF8F829E3BA74004600B6 /* timer.h */,
+				BFECF8F929E3BA74004600B6 /* timer.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -178,6 +183,7 @@
 				BF8CF64526F61F0400D396FD /* main.m in Sources */,
 				BF39DF9F2915013200BCB772 /* globals.m in Sources */,
 				BFD784AC2888B1B200371155 /* app.m in Sources */,
+				BFECF8FA29E3BA74004600B6 /* timer.m in Sources */,
 				BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */,
 				BFD784AD2888B1B200371155 /* helperLib.m in Sources */,
 			);
