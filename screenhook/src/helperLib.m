@@ -117,6 +117,19 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 }
 
 //windows
++ (NSMutableArray*) getWindowsForOwnerOnScreen: (NSString *)owner {
+    if (!owner || [@"" isEqual:owner]) return nil;
+    CFArrayRef windowList = CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements, kCGNullWindowID);
+    NSMutableArray *ownerWindowList = [NSMutableArray new];
+    long int windowCount = CFArrayGetCount(windowList);
+    for (int i = 0; i < windowCount; i++) {
+        NSDictionary *win = CFArrayGetValueAtIndex(windowList, i);
+        if (![owner isEqualTo:[win objectForKey:@"kCGWindowOwnerName"]]) continue;
+        [ownerWindowList addObject:win];
+    }
+    CFRelease(windowList);
+    return ownerWindowList;
+}
 + (NSMutableArray*) getWindowsForOwner: (NSString *)owner {
     if (!owner || [@"" isEqual:owner]) return nil;
     CFArrayRef windowList = CGWindowListCopyWindowInfo(kCGWindowListOptionAll | kCGWindowListExcludeDesktopElements, kCGNullWindowID);

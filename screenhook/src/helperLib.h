@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSRunningApplication*) runningAppFromAxTitle: (NSString*) tar;
 + (int) numWindowsMinimized: (NSString *)owner;
 + (NSMutableArray*) getWindowsForOwner: (NSString *)owner;
++ (NSMutableArray*) getWindowsForOwnerOnScreen: (NSString *)owner;
 + (NSMutableArray*) getWindowsForOwnerPID: (pid_t) PID;
 + (NSMutableArray*) getRealFinderWindows;
 + (NSApplication *) sharedApplication;
