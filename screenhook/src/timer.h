@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 }
 - (void) initializer;
++ (void) mousedown: (CGEventRef) e : (CGEventType) etype;
++ (void) mouseup: (CGEventRef) e : (CGEventType) etype;
++ (void) ffSidebarUpdate: (NSString*) ff;
 @end
 
 NS_ASSUME_NONNULL_END

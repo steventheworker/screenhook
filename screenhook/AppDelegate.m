@@ -10,6 +10,7 @@
 #import "src/helperLib.h"
 #import "src/app.h"
 #import "src/globals.h"
+#import "src/timer.h"
 
 @interface AppDelegate ()
 @property (strong) IBOutlet NSWindow *window;
@@ -108,6 +109,7 @@ void steviaOSInit(BOOL initedWithBTT) {
    Event handlers
 */
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype {
+    [timer mouseup: e : etype];
 //    if (!mouseDownCache) NSLog(@"settime"); // handle mouseup ran --before mousedown finished (todo: fix this with async applescript)
     if (!mouseDownCache) return setTimeout(^{[self mouseup:e : etype];}, 84);
     
@@ -125,8 +127,10 @@ void steviaOSInit(BOOL initedWithBTT) {
 //            NSLog(@"%@",[[[NSWorkspace sharedWorkspace] frontmostApplication] localizedName]);
         }, runningApps[@"Alfred"] ? 100 : 200); // system events is slower than app telling Alfred
     }
+    
 }
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype {
+    [timer mousedown: e : etype];
     mouseDownCache = nil;
     BOOL rightBtn = (etype == kCGEventRightMouseDown);
     if (rightBtn) return;
