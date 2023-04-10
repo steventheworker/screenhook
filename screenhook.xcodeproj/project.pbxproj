@@ -68,9 +68,9 @@
 		BF8CF62F26F61F0300D396FD = {
 			isa = PBXGroup;
 			children = (
+				BF8CF63A26F61F0300D396FD /* screenhook */,
 				BF29E761293498D10045C816 /* .gitignore */,
 				BF29E75F293498CA0045C816 /* README.md */,
-				BF8CF63A26F61F0300D396FD /* screenhook */,
 				BF8CF63926F61F0300D396FD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -91,9 +91,9 @@
 				BF8CF63B26F61F0300D396FD /* AppDelegate.h */,
 				BF8CF63C26F61F0300D396FD /* AppDelegate.m */,
 				BFEEDD9D295307A60004F56C /* Assets.xcassets */,
-				BF8CF64026F61F0400D396FD /* MainMenu.xib */,
 				BF8CF64326F61F0400D396FD /* Info.plist */,
 				BF8CF64426F61F0400D396FD /* main.m */,
+				BF8CF64026F61F0400D396FD /* MainMenu.xib */,
 				BFC80D15295309F700F9BC67 /* MenuIcon.png */,
 				BF8CF64626F61F0400D396FD /* screenhook.entitlements */,
 			);
