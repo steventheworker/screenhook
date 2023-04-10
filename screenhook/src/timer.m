@@ -56,7 +56,7 @@ BOOL ffSidebarClosed; //updates on mouseup
 + (void) mouseup: (CGEventRef) e : (CGEventType) etype {
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if (([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) && !cachedWinDict)
-        setTimeout(^{[timer ffSidebarUpdate: [cur localizedName]];}, 70);
+        setTimeout(^{[timer ffSidebarUpdate: [cur localizedName]];}, 333);
 }
 + (void) ffSidebarUpdate: (NSString*) ff {
     NSString* response = [helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", ff]];
