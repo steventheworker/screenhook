@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) mousedown: (CGEventRef) e : (CGEventType) etype;
 + (void) mouseup: (CGEventRef) e : (CGEventType) etype;
 + (void) ffSidebarUpdate: (NSString*) ff;
++ (void) trackFrontApp: (NSNotification*) notification;
 @end
 
 NS_ASSUME_NONNULL_END

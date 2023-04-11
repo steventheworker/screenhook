@@ -43,8 +43,8 @@ BOOL ffSidebarClosed; //updates on mouseup
             if (forceToggle || (carbonPoint.x - [bounds[@"X"] floatValue] <= 7 && carbonPoint.x >= [bounds[@"X"] floatValue])) {
                 //toggle sidebar
                 if (!cachedWinDict) {
-                    [timer ffSidebarUpdate: [cur localizedName]];
-                    if (!ffSidebarClosed) return;
+//                    [timer ffSidebarUpdate: [cur localizedName]];
+//                    if (!ffSidebarClosed) return;
                     cachedWinDict = winDict;
                 } else cachedWinDict = nil;
                 [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
@@ -55,11 +55,17 @@ BOOL ffSidebarClosed; //updates on mouseup
 + (void) mousedown: (CGEventRef) e : (CGEventType) etype {}
 + (void) mouseup: (CGEventRef) e : (CGEventType) etype {
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
-    if (([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) && !cachedWinDict)
-        setTimeout(^{[timer ffSidebarUpdate: [cur localizedName]];}, 333);
+//    if (([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) && !cachedWinDict)
+//        setTimeout(^{[timer ffSidebarUpdate: [cur localizedName]];}, 333);
 }
 + (void) ffSidebarUpdate: (NSString*) ff {
     NSString* response = [helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", ff]];
     ffSidebarClosed = ![response isEqual: @"true"];
+}
++ (void) trackFrontApp: (NSNotification*) notification {
+    NSRunningApplication* frontmost = [[NSWorkspace sharedWorkspace] frontmostApplication];
+    if ([[frontmost localizedName] isEqual:@"Firefox"] || [[frontmost localizedName] isEqual:@"Firefox Developer Edition"]) {
+        [self ffSidebarUpdate: [frontmost localizedName]];
+    }
 }
 @end

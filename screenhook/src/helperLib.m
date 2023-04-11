@@ -6,6 +6,8 @@
 //
 
 #import "helperLib.h"
+#import "globals.h"
+#import "timer.h"
 
 NSDictionary* appAliases = @{
     @"Visual Studio Code": @"Code",
@@ -309,5 +311,19 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         kCFRunLoopDefaultMode
     );
     CFRelease(eventTapRLSrc);
+}
++ (void) trackFrontApp: (NSNotification*) notification {
+    setTimeout(^{ //wait for next app to fully activate
+        [timer trackFrontApp: notification];
+    }, 1000*.07);
+}
++ (void) listenRunningAppsChanged {
+    //listeners
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSApplicationDidBecomeActiveNotification object:NSApp];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSApplicationDidResignActiveNotification object:NSApp];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSApplicationDidHideNotification object:NSApp];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:@"com.apple.HIToolbox.menuBarShownNotification" object:nil];
 }
 @end

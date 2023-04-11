@@ -53,6 +53,7 @@ void askForAccessibility(void) {
     };
     
     [[timer alloc] init]; // start timer
+    [helperLib listenRunningAppsChanged];
     
     // init UI
     if (del->runningApps[@"BTT"]) [[del->BTTState cell] setTitle:@"Checking if afterBTTLaunched..."];

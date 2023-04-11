@@ -36,5 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL) dockautohide;
 + (NSString*) runScript: (NSString*) scriptTxt;
 + (void) runAppleScript: (NSString*) scptPath;
++ (void) trackFrontApp: (NSNotification*) notification;
++ (void) listenRunningAppsChanged;
 @end
 NS_ASSUME_NONNULL_END
