@@ -15,7 +15,7 @@ const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
 const int SIDEBARMINWIDTH = 203; // actually 188 px
 
 //vars
-NSDictionary* cachedWinDict; //nonnull when sidebar forced openk
+NSDictionary* cachedWinDict; //nonnull when sidebar forced open
 BOOL ffSidebarClosed; //updates on mouseup
 
 @implementation timer
