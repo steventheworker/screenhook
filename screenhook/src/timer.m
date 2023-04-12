@@ -12,7 +12,7 @@
 
 //config
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
-const int SIDEBARMINWIDTH = 203; // comfortable size=188px ... + 15px for leeway (user resize)
+const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
 
 //vars
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
