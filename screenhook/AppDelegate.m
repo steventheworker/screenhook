@@ -109,7 +109,7 @@ void steviaOSInit(BOOL initedWithBTT) {
    Event handlers
 */
 - (void) mouseup: (CGEventRef) e : (CGEventType) etype {
-    [timer mouseup: e : etype];
+//    [timer mouseup: e : etype];
 //    if (!mouseDownCache) NSLog(@"settime"); // handle mouseup ran --before mousedown finished (todo: fix this with async applescript)
     if (!mouseDownCache) return setTimeout(^{[self mouseup:e : etype];}, 84);
     
@@ -130,7 +130,7 @@ void steviaOSInit(BOOL initedWithBTT) {
     
 }
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype {
-    [timer mousedown: e : etype];
+//    [timer mousedown: e : etype];
     mouseDownCache = nil;
     BOOL rightBtn = (etype == kCGEventRightMouseDown);
     if (rightBtn) return;

@@ -1,8 +1,8 @@
 //
 //  AppDelegate.h
-//  DockAltTab
+//  screenhook
 //
-//  Created by Steven G on 9/18/21.
+//  Created by Steven G on x/x/22.
 //
 
 #import <Cocoa/Cocoa.h>

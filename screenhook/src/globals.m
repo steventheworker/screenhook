@@ -1,8 +1,8 @@
 //
 //  globals.m    -    globals.c  (error https://stackoverflow.com/questions/25999754/error-message-could-not-build-module-foundation (bryan 's answer))
-//  DockAltTab
+//  screenhook
 //
-//  Created by Steven G on 10/21/22.
+//  Created by Steven G on x/x/22.
 //
 
 #include "globals.h"

@@ -30,6 +30,7 @@ BOOL ffSidebarClosed; //updates on mouseup
     CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
     AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
     NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]]; //axTitle, axIsApplicationRunning, axPID, axIsAPplicationRunning
+    if (cachedWinDict && !([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"])) cachedWinDict = nil;
     if (([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) && ffSidebarClosed) { //sidebar peak
         BOOL forceToggle = NO;
         if (cachedWinDict) { // only hide sidebar when > SIDEBARMINWIDTH or < window offset
@@ -40,13 +41,17 @@ BOOL ffSidebarClosed; //updates on mouseup
         NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
         for (NSDictionary* winDict in wins) {
             NSDictionary* bounds = winDict[@"kCGWindowBounds"];
-            if (forceToggle || (carbonPoint.x - [bounds[@"X"] floatValue] <= 7 && carbonPoint.x >= [bounds[@"X"] floatValue])) {
+            BOOL withinBounds = (carbonPoint.x - [bounds[@"X"] floatValue] <= 7 && carbonPoint.x >= [bounds[@"X"] floatValue]);
+            if ((forceToggle && !ffSidebarClosed) || withinBounds) {
                 //toggle sidebar
                 if (!cachedWinDict) {
 //                    [timer ffSidebarUpdate: [cur localizedName]];
 //                    if (!ffSidebarClosed) return;
                     cachedWinDict = winDict;
                 } else cachedWinDict = nil;
+                [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
+            } else if (!withinBounds && cachedWinDict) {
+                cachedWinDict = nil;
                 [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
             }
         }
@@ -57,6 +62,11 @@ BOOL ffSidebarClosed; //updates on mouseup
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
 //    if (([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) && !cachedWinDict)
 //        setTimeout(^{[timer ffSidebarUpdate: [cur localizedName]];}, 333);
+}
++ (void) updateFFSidebarShowing: (BOOL) val {
+    if (cachedWinDict) {
+        cachedWinDict = nil;
+    } else ffSidebarClosed = !val;
 }
 + (void) ffSidebarUpdate: (NSString*) ff {
     NSString* response = [helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", ff]];

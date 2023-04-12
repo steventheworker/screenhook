@@ -1,8 +1,8 @@
 //
 //  globals.h
-//  DockAltTab
+//  screenhook
 //
-//  Created by Steven G on 10/21/22.
+//  Created by Steven G on x/x/22.
 //
 
 #ifndef globals_h

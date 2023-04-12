@@ -1,8 +1,8 @@
 //
 //  helperLib.m
-//  DockAltTab
+//  screenhook
 //
-//  Created by Steven G on 5/9/22.
+//  Created by Steven G on x/x/22.
 //
 
 #import "helperLib.h"
