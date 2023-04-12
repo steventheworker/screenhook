@@ -40,6 +40,7 @@ BOOL ffSidebarClosed; //updates on mouseup
         }
         NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
         for (NSDictionary* winDict in wins) {
+            if ([winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"]) continue;
             NSDictionary* bounds = winDict[@"kCGWindowBounds"];
             BOOL withinBounds = (carbonPoint.x - [bounds[@"X"] floatValue] <= 7 && carbonPoint.x >= [bounds[@"X"] floatValue]);
             if ((forceToggle && !ffSidebarClosed) || withinBounds) {
@@ -54,6 +55,7 @@ BOOL ffSidebarClosed; //updates on mouseup
                 cachedWinDict = nil;
                 [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
             }
+            break; // only do to frontmost window (window 1), otherwise multiple toggling
         }
     }
 }
