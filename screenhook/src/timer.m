@@ -12,7 +12,7 @@
 
 //config
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
-const int SIDEBARMINWIDTH = 203; // actually 188 px
+const int SIDEBARMINWIDTH = 203; // comfortable size=188px ... + 15px for leeway (user resize)
 
 //vars
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
