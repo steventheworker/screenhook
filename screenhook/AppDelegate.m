@@ -62,8 +62,8 @@ void steviaOSInit(BOOL initedWithBTT) {
     
     //toggle quickshade (turns on every login)
     if ([helperLib getPID:@"jp.questbeat.Shade"]) {
-        [helperLib runScript: @"tell application \"System Events\" to                 tell process \"QuickShade\" to                     click menu bar item 1 of menu bar 2"];
-        [helperLib runScript: @"tell application \"System Events\" to                 tell process \"QuickShade\" to                     perform action \"AXPress\" of menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2"];
+        [helperLib runScript: @"tell application \"System Events\" to tell process \"QuickShade\" to if (value of attribute \"AXMenuItemMarkChar\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2) is equal to \"✓\") then click menu bar item 1 of menu bar 2"];
+        [helperLib runScript: @"tell application \"System Events\" to tell process \"QuickShade\" to if (value of attribute \"AXMenuItemMarkChar\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2) is equal to \"✓\") then perform action \"AXPress\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2)"];
     }
 }
 @implementation AppDelegate
