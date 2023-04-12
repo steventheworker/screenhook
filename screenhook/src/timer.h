@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,9 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 }
 - (void) initializer;
-//+ (void) mousedown: (CGEventRef) e : (CGEventType) etype;
-//+ (void) mouseup: (CGEventRef) e : (CGEventType) etype;
-+ (void) ffSidebarUpdate: (NSString*) ff;
++ (void) mousedown: (CGEventRef) e : (CGEventType) etype;
++ (void) mouseup: (CGEventRef) e : (CGEventType) etype;
 + (void) trackFrontApp: (NSNotification*) notification;
 + (void) updateFFSidebarShowing: (BOOL) val;
 @end
