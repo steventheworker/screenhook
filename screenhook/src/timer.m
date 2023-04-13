@@ -42,15 +42,15 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     AXUIElementRef windowRef = (AXUIElementRef) CFArrayGetValueAtIndex( windowList, 0); // get just the first window for now
     CFTypeRef role;
     AXUIElementCopyAttributeValue(windowRef, kAXRoleAttribute, (CFTypeRef *)&role);
-    CFTypeRef position;
-    CGPoint currentPos;
-    AXUIElementCopyAttributeValue(windowRef, kAXPositionAttribute, (CFTypeRef *) &currentPos);
-    AXValueGetValue(position, kAXValueCGPointType, &currentPos);
+    CFTypeRef positionRef;
+//    CGPoint currentPos;
+//    AXUIElementCopyAttributeValue(windowRef, kAXPositionAttribute, (CFTypeRef *) &currentPos);
+//    AXValueGetValue(positionRef, kAXValueCGPointType, &currentPos); // causes crash half the time (bad access)
     CGPoint newPt;
     newPt.x = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
     newPt.y = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
-    position = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
-    AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, position);
+    positionRef = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
+    AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, positionRef);
 }
 void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     updateFFBounds(carbonPoint);
