@@ -5,7 +5,6 @@
 //  Created by Steven G on 4/4/23.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "timer.h"
 #import "helperLib.h"
 #import "globals.h"
