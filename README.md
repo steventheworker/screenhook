@@ -5,7 +5,10 @@ originally made to make up for features BTT lacks like:
 - running applescript for any click (without modifiers keys held)
 
 ["steviaOS"](https://github.com/steventheworker/applescripts) features:
-- firefox cmd+shift+T to reopen tabs AND windows
+- firefox
+    - cmd+shift+T to reopen tabs AND windows
+    - left-edge of window = sidebar peak
+    - top-edge of window = more consistent window dragging (compensate for userChrome.css w/ auto-reveal location bar (prevent drag))
 - make sure afterBTTLaunched.applescript ran, launch DockAltTab after
 - "Spotlight Search.app" will only work with screenhook
 
