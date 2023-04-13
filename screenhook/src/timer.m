@@ -30,6 +30,7 @@ void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint)
         @"info": info,
         @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
     };
+    [[helperLib getApp]->timer timer5x];
 }
 void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     float dX = carbonPoint.x - [FFDragInfo[@"x"] floatValue];
@@ -55,14 +56,11 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
 void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     updateFFBounds(carbonPoint);
     FFDragInfo = nil;
+    [[helperLib getApp]->timer timer1x];
 }
 
 @implementation timer
-+ (void) initialize {[[[timer alloc] init] initializer];}
-- (void) initializer {
-    timerRef = [NSTimer scheduledTimerWithTimeInterval: TICK_DELAY target:self selector: NSSelectorFromString(@"timerTick:") userInfo: nil repeats: YES];
-    NSLog(@"timer successfully started");
-}
++ (void) initialize {[[[timer alloc] init] timer1x];}
 - (void) timerTick: (NSTimer * _Nonnull) t {
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
     NSPoint mouseLocation = [NSEvent mouseLocation];
@@ -139,5 +137,15 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
 + (void) trackFrontApp: (NSNotification*) notification {
     NSRunningApplication* frontmost = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if ([[frontmost localizedName] isEqual:@"Firefox"] || [[frontmost localizedName] isEqual:@"Firefox Developer Edition"]) ffSidebarUpdate([frontmost localizedName]);
+}
+- (void) timer1x {
+    [timerRef invalidate];
+    timerRef = [NSTimer scheduledTimerWithTimeInterval: TICK_DELAY target:self selector: NSSelectorFromString(@"timerTick:") userInfo: nil repeats: YES];
+    NSLog(@"timer 1x successfully started");
+}
+- (void) timer5x {
+    [timerRef invalidate];
+    timerRef = [NSTimer scheduledTimerWithTimeInterval: .07 target:self selector: NSSelectorFromString(@"timerTick:") userInfo: nil repeats: YES];
+    NSLog(@"timer 2x successfully started");
 }
 @end

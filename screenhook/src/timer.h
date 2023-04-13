@@ -14,11 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
     @public NSTimer* timerRef;
 
 }
-- (void) initializer;
 + (void) mousedown: (CGEventRef) e : (CGEventType) etype;
 + (void) mouseup: (CGEventRef) e : (CGEventType) etype;
 + (void) trackFrontApp: (NSNotification*) notification;
 + (void) updateFFSidebarShowing: (BOOL) val;
+- (void) timer1x;
+- (void) timer5x;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -52,7 +52,7 @@ void askForAccessibility(void) {
         @"KeyCastr": @([helperLib getPID:@"io.github.keycastr"])
     };
     
-    [[timer alloc] init]; // start timer
+    del->timer = [[timer alloc] init]; // start timer
     [helperLib listenRunningAppsChanged];
     
     // init UI

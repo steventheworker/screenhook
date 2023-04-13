@@ -6,6 +6,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "timer.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
     @public AXUIElementRef   _systemWideAccessibilityObject;
@@ -21,6 +22,7 @@
     @public NSString*       dockPos;
     BOOL                   dockautohide;
     NSDictionary*         runningApps;
+    timer*               timer;
 
     //UI
     NSStatusItem *statusItem;
