@@ -19,7 +19,6 @@
         [self setScriptErrorString:@"Parameter Error: A Parameter is expected for the verb 'updateFFSidebarShowing' (You have to specify if the sidebar is showing! (hint: boolean))."];
     }
     [timer updateFFSidebarShowing: val];
-    NSLog(@"%d", val);
     return nil;
 }
 @end
