@@ -23,18 +23,18 @@ void ffSidebarUpdate(NSString* ff) {
     ffSidebarClosed = ![response isEqual: @"true"];
 }
 
-NSDictionary* dragInfo;
+NSDictionary* FFDragInfo;
 void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint) {
-    dragInfo = @{
+    FFDragInfo = @{
         @"winDict": winDict,
         @"info": info,
         @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
     };
 }
 void updateFFBounds(CGPoint carbonPoint) { //update window bounds
-    float dX = carbonPoint.x - [dragInfo[@"x"] floatValue];
-    float dY = carbonPoint.y - [dragInfo[@"y"] floatValue];
-    pid_t pid = [[dragInfo[@"winDict"] objectForKey: (id)kCGWindowOwnerPID] intValue];
+    float dX = carbonPoint.x - [FFDragInfo[@"x"] floatValue];
+    float dY = carbonPoint.y - [FFDragInfo[@"y"] floatValue];
+    pid_t pid = [[FFDragInfo[@"winDict"] objectForKey: (id)kCGWindowOwnerPID] intValue];
     AXUIElementRef appRef = AXUIElementCreateApplication(pid); // Get AXUIElement using PID//
     CFArrayRef windowList;
     AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute, (CFTypeRef *)&windowList);
@@ -47,14 +47,14 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     AXUIElementCopyAttributeValue(windowRef, kAXPositionAttribute, (CFTypeRef *) &currentPos);
     AXValueGetValue(position, kAXValueCGPointType, &currentPos);
     CGPoint newPt;
-    newPt.x = [dragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
-    newPt.y = [dragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
+    newPt.x = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
+    newPt.y = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
     position = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
     AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, position);
 }
 void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     updateFFBounds(carbonPoint);
-    dragInfo = nil;
+    FFDragInfo = nil;
 }
 
 @implementation timer
@@ -69,6 +69,11 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
     AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
     NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]]; //axTitle, axIsApplicationRunning, axPID, axIsAPplicationRunning
+    
+    // updateFFBounds
+    if (FFDragInfo) updateFFBounds(carbonPoint);
+    
+    // sidebar peak
     if (cachedWinDict && !([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"])) cachedWinDict = nil;
     if (([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) && ffSidebarClosed) { //sidebar peak
         BOOL forceToggle = NO;
@@ -119,7 +124,7 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
     NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
     
-    if (dragInfo) endFFDrag(info, carbonPoint);
+    if (FFDragInfo) endFFDrag(info, carbonPoint);
         
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if ([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) {
