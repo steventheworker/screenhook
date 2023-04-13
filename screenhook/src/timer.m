@@ -12,6 +12,7 @@
 //config
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
 const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
+const int RESIZER = 3; // cursor changes to resize icon <=3 pixels into a window
 
 //vars
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
@@ -20,6 +21,40 @@ BOOL ffSidebarClosed; //updates on mouseup
 void ffSidebarUpdate(NSString* ff) {
     NSString* response = [helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", ff]];
     ffSidebarClosed = ![response isEqual: @"true"];
+}
+
+NSDictionary* dragInfo;
+void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint) {
+    dragInfo = @{
+        @"winDict": winDict,
+        @"info": info,
+        @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
+    };
+}
+void updateFFBounds(CGPoint carbonPoint) { //update window bounds
+    float dX = carbonPoint.x - [dragInfo[@"x"] floatValue];
+    float dY = carbonPoint.y - [dragInfo[@"y"] floatValue];
+    pid_t pid = [[dragInfo[@"winDict"] objectForKey: (id)kCGWindowOwnerPID] intValue];
+    AXUIElementRef appRef = AXUIElementCreateApplication(pid); // Get AXUIElement using PID//
+    CFArrayRef windowList;
+    AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute, (CFTypeRef *)&windowList);
+    if ((!windowList) || CFArrayGetCount(windowList) < 1) return; // originally: "continue;" (in CGwindow for loop)
+    AXUIElementRef windowRef = (AXUIElementRef) CFArrayGetValueAtIndex( windowList, 0); // get just the first window for now
+    CFTypeRef role;
+    AXUIElementCopyAttributeValue(windowRef, kAXRoleAttribute, (CFTypeRef *)&role);
+    CFTypeRef position;
+    CGPoint currentPos;
+    AXUIElementCopyAttributeValue(windowRef, kAXPositionAttribute, (CFTypeRef *) &currentPos);
+    AXValueGetValue(position, kAXValueCGPointType, &currentPos);
+    CGPoint newPt;
+    newPt.x = [dragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
+    newPt.y = [dragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
+    position = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
+    AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, position);
+}
+void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
+    updateFFBounds(carbonPoint);
+    dragInfo = nil;
 }
 
 @implementation timer
@@ -64,13 +99,31 @@ void ffSidebarUpdate(NSString* ff) {
 + (void) mousedown: (CGEventRef) e : (CGEventType) etype {
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if ([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) {
-    
+        NSPoint mouseLocation = [NSEvent mouseLocation];
+        CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
+        AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
+        NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
+        
+        NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
+        for (NSDictionary* winDict in wins) {
+            NSDictionary* bounds = winDict[@"kCGWindowBounds"];
+            if (carbonPoint.x >= [bounds[@"X"] floatValue] + RESIZER && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
+            if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZER && carbonPoint.y <= [bounds[@"Y"] floatValue] + 10)
+                startFFDrag(winDict, info, carbonPoint);
+        }
     }
 }
 + (void) mouseup: (CGEventRef) e : (CGEventType) etype {
+    NSPoint mouseLocation = [NSEvent mouseLocation];
+    CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
+    AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
+    NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
+    
+    if (dragInfo) endFFDrag(info, carbonPoint);
+        
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if ([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) {
-    
+        
     }
 }
 + (void) updateFFSidebarShowing: (BOOL) val {
