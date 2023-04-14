@@ -13,6 +13,7 @@
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
 const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
 const int RESIZER = 3; // cursor changes to resize icon <=3 pixels into a window
+const int RESIZEAREAHEIGHT = 12; // 100% width x 12px height = startFFDrag
 
 //vars
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
@@ -39,19 +40,15 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     AXUIElementRef appRef = AXUIElementCreateApplication(pid); // Get AXUIElement using PID//
     CFArrayRef windowList;
     AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute, (CFTypeRef *)&windowList);
-    if ((!windowList) || CFArrayGetCount(windowList) < 1) return; // originally: "continue;" (in CGwindow for loop)
-    AXUIElementRef windowRef = (AXUIElementRef) CFArrayGetValueAtIndex( windowList, 0); // get just the first window for now
-    CFTypeRef role;
-    AXUIElementCopyAttributeValue(windowRef, kAXRoleAttribute, (CFTypeRef *)&role);
-    CFTypeRef positionRef;
-//    CGPoint currentPos;
-//    AXUIElementCopyAttributeValue(windowRef, kAXPositionAttribute, (CFTypeRef *) &currentPos);
-//    AXValueGetValue(positionRef, kAXValueCGPointType, &currentPos); // causes crash half the time (bad access)
+    long unsigned int winCount = CFArrayGetCount(windowList);
+    if ((!windowList) || winCount < 1) return; // originally: "continue;" (in CGwindow for loop)
+    AXUIElementRef tarWin = nil;
+    AXUIElementCopyAttributeValue(appRef, kAXFocusedWindowAttribute, (void*) &tarWin);
     CGPoint newPt;
     newPt.x = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
     newPt.y = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
-    positionRef = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
-    AXUIElementSetAttributeValue(windowRef, kAXPositionAttribute, positionRef);
+    CFTypeRef positionRef = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
+    AXUIElementSetAttributeValue(tarWin, kAXPositionAttribute, positionRef);
 }
 void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     updateFFBounds(carbonPoint);
@@ -110,8 +107,9 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
         NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
         for (NSDictionary* winDict in wins) {
             NSDictionary* bounds = winDict[@"kCGWindowBounds"];
+            if (![winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"])
             if (carbonPoint.x >= [bounds[@"X"] floatValue] + RESIZER && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
-            if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZER && carbonPoint.y <= [bounds[@"Y"] floatValue] + 10)
+            if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZER && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
                 startFFDrag(winDict, info, carbonPoint);
         }
     }
