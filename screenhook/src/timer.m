@@ -13,7 +13,7 @@
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
 const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
 const int RESIZER = 3; // cursor changes to resize icon <=3 pixels into a window
-const int RESIZEAREAHEIGHT = 12; // 100% width x 12px height = startFFDrag
+const int RESIZEAREAHEIGHT = 15; // 100% width x 15px height = startFFDrag
 
 //vars
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
@@ -37,17 +37,27 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     float dX = carbonPoint.x - [FFDragInfo[@"x"] floatValue];
     float dY = carbonPoint.y - [FFDragInfo[@"y"] floatValue];
     pid_t pid = [[FFDragInfo[@"winDict"] objectForKey: (id)kCGWindowOwnerPID] intValue];
-    AXUIElementRef appRef = AXUIElementCreateApplication(pid); // Get AXUIElement using PID//
+    AXUIElementRef appRef = AXUIElementCreateApplication(pid); // Get AXUIElement using PID
     CFArrayRef windowList;
     AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute, (CFTypeRef *)&windowList);
     long unsigned int winCount = CFArrayGetCount(windowList);
     if ((!windowList) || winCount < 1) return; // originally: "continue;" (in CGwindow for loop)
     AXUIElementRef tarWin = nil;
     AXUIElementCopyAttributeValue(appRef, kAXFocusedWindowAttribute, (void*) &tarWin);
+    CFTypeRef positionRef;
+    AXUIElementCopyAttributeValue(tarWin, kAXPositionAttribute, (void*) &positionRef);
+    CGPoint curPt;
+    AXValueGetValue(positionRef, kAXValueCGPointType, &curPt);
     CGPoint newPt;
     newPt.x = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
     newPt.y = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
-    CFTypeRef positionRef = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
+    if (fabs(curPt.x - newPt.x) > fabs(dX) + 1 || fabs(curPt.y - newPt.y) > fabs(dY) + 1) {
+        //rectangle may have snapped
+        FFDragInfo = nil;
+        [[helperLib getApp]->timer timer1x];
+        return;
+    }
+    positionRef = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
     AXUIElementSetAttributeValue(tarWin, kAXPositionAttribute, positionRef);
 }
 void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
@@ -143,7 +153,7 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
 }
 - (void) timer5x {
     [timerRef invalidate];
-    timerRef = [NSTimer scheduledTimerWithTimeInterval: .07 target:self selector: NSSelectorFromString(@"timerTick:") userInfo: nil repeats: YES];
+    timerRef = [NSTimer scheduledTimerWithTimeInterval: 0 target:self selector: NSSelectorFromString(@"timerTick:") userInfo: nil repeats: YES];
     NSLog(@"timer 2x successfully started");
 }
 @end
