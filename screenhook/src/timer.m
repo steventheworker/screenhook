@@ -48,10 +48,19 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     AXUIElementCopyAttributeValue(tarWin, kAXPositionAttribute, (void*) &positionRef);
     CGPoint curPt;
     AXValueGetValue(positionRef, kAXValueCGPointType, &curPt);
+    
+    CFTypeRef sizeRef;
+    AXUIElementCopyAttributeValue(tarWin, kAXSizeAttribute, (void*) &sizeRef);
+    CGSize curSize;
+    AXValueGetValue(sizeRef, kAXValueCGSizeType, &curSize);
+    
     CGPoint newPt;
     newPt.x = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
     newPt.y = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
-    if (fabs(curPt.x - newPt.x) > fabs(dX) + 1 || fabs(curPt.y - newPt.y) > fabs(dY) + 1) {
+    float dW = curSize.width - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Width"] floatValue];
+    float dH = curSize.height - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
+    int fuzz = 1;
+    if (fabs(dW) + fabs(dH) > fuzz) {
         //rectangle may have snapped
         FFDragInfo = nil;
         [[helperLib getApp]->timer timer1x];
