@@ -25,6 +25,7 @@ void ffSidebarUpdate(NSString* ff) {
 }
 
 NSDictionary* FFDragInfo;
+int coordinatesChangedDuringDragCounter = 0;
 void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint) {
     FFDragInfo = @{
         @"winDict": winDict,
@@ -32,6 +33,7 @@ void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint)
         @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
     };
     [[helperLib getApp]->timer timer5x];
+    coordinatesChangedDuringDragCounter = 0;
 }
 void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     float dX = carbonPoint.x - [FFDragInfo[@"x"] floatValue];
@@ -40,6 +42,10 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     AXUIElementRef appRef = AXUIElementCreateApplication(pid); // Get AXUIElement using PID
     CFArrayRef windowList;
     AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute, (CFTypeRef *)&windowList);
+    if (!windowList) {
+        NSLog(@"!winlist = %d", pid);
+        return;
+    }
     long unsigned int winCount = CFArrayGetCount(windowList);
     if ((!windowList) || winCount < 1) return; // originally: "continue;" (in CGwindow for loop)
     AXUIElementRef tarWin = nil;
@@ -61,10 +67,28 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     float dH = curSize.height - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
     int fuzz = 1;
     if (fabs(dW) + fabs(dH) > fuzz) {
-        //rectangle may have snapped
-        FFDragInfo = nil;
-        [[helperLib getApp]->timer timer1x];
-        return;
+        coordinatesChangedDuringDragCounter++;
+        if (coordinatesChangedDuringDragCounter == 1) {
+            //window unsnapped
+            FFDragInfo = @{
+                @"winDict": @{
+                    @"kCGWindowBounds": @{
+                        @"Width": @(curSize.width),
+                        @"Height": @(curSize.height),
+                        @"X": @(curPt.x),
+                        @"Y": @(curPt.y)
+                    },
+                    @"kCGWindowOwnerPID": @(pid)
+                },
+                @"info": FFDragInfo[@"info"],
+                @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
+            };
+        } else {
+            //rectangle may have snapped
+            FFDragInfo = nil;
+            [[helperLib getApp]->timer timer1x];
+            return;
+        }
     }
     positionRef = (CFTypeRef) (AXValueCreate(kAXValueCGPointType, (const void *) &newPt));
     AXUIElementSetAttributeValue(tarWin, kAXPositionAttribute, positionRef);
