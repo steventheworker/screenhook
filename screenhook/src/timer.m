@@ -37,7 +37,7 @@ void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint)
     [[helperLib getApp]->timer timer5x];
     coordinatesChangedDuringDragCounter = 0;
 }
-void updateFFBounds(CGPoint carbonPoint) { //update window bounds
+void updateFFBounds(CGPoint carbonPoint, BOOL mouseup) { //update window bounds
     float dX = carbonPoint.x - [FFDragInfo[@"x"] floatValue];
     float dY = carbonPoint.y - [FFDragInfo[@"y"] floatValue];
     if (fabs(dX) + fabs(dY)) coordinatesChangedDuringDragCounter++;
@@ -72,11 +72,19 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     float dH = curSize.height - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
     BOOL didSizeChange = fabs(dW) + fabs(dH) > 1;
     BOOL didBoundsChangeTooMuch = fabs((curPt.x + roundf(dX)) - roundf(newPt.x)) > 1 || fabs((curPt.y + roundf(dY)) - roundf(newPt.y)) > 1;
-    NSLog(@"%f==%f %f==%f", curPt.x + roundf(dX), roundf(newPt.x), curPt.y + roundf(dY), roundf(newPt.y));
     if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) { //window snapped, endFFDrag()
-        FFDragInfo = nil;
-        [[helperLib getApp]->timer timer1x];
-        return;
+        BOOL menushowing = YES;
+        int MENUBARHEIGHT = 25;
+        int FFMAXBOTTOM = 28; // maximum y for firefox windows
+        int screenHeight = 900;
+        if ((curPt.y >= screenHeight - FFMAXBOTTOM)) {}
+        else if (mouseup) {
+            FFDragInfo = nil;
+            [[helperLib getApp]->timer timer1x];
+            return;
+        }
+        if ((menushowing && curPt.y == MENUBARHEIGHT) || (!menushowing && curPt.y == 0)) {
+        }
     }
     FFDragInfo = @{
         @"winDict": @{
@@ -104,7 +112,7 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     AXUIElementSetAttributeValue(tarWin, kAXPositionAttribute, positionRef);
 }
 void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
-    updateFFBounds(carbonPoint);
+    updateFFBounds(carbonPoint, YES);
     FFDragInfo = nil;
     [[helperLib getApp]->timer timer1x];
 }
@@ -119,7 +127,7 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]]; //axTitle, axIsApplicationRunning, axPID, axIsAPplicationRunning
     
     // updateFFBounds
-    if (FFDragInfo) updateFFBounds(carbonPoint);
+    if (FFDragInfo) updateFFBounds(carbonPoint, NO);
     
     // sidebar peak
     if (cachedWinDict && !([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"])) cachedWinDict = nil;
