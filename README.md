@@ -118,12 +118,12 @@ using screenhook (for **<u>Firefox</u> vertical tabs**) without BTT:
 
 &nbsp;
 
-Change the "shell_path" to the path (of the .scpt),
+Fix the path in "shell_command" to point at the .scpt
 
-or, if you replace "YOUR_USERNAME" in the example string, it will look on the Desktop
+or, if it's on the desktop, just replace "YOUR_USERNAME" in the example string
 
 &nbsp;
 
 </details>
 
-... then enable in [Karabiner-Elements](https://karabiner-elements.pqrs.org/) in order to bind Command+S to [firefox-sidebar-toggle.scpt / firefox-dev-sidebar-toggle.scpt](https://github.com/steventheworker/applescripts/blob/main/firefox-dev-sidebar-toggle.applescript)
+... then enable in [Karabiner-Elements](https://karabiner-elements.pqrs.org/) in order to bind Command+S to [firefox-sidebar-toggle.scpt / firefox-dev-sidebar-toggle.scpt](https://github.com/steventheworker/applescripts/blob/main/firefox-dev-sidebar-toggle.applescript) (save as .scpt w/ Script Editor)
