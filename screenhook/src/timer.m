@@ -74,8 +74,7 @@ void updateFFBounds(CGPoint carbonPoint, BOOL mouseup) { //update window bounds
     BOOL didSizeChange = fabs(dW) + fabs(dH) > 1;
     BOOL didBoundsChangeTooMuch = fabs((curPt.x + roundf(dX)) - roundf(newPt.x)) > 1 || fabs((curPt.y + roundf(dY)) - roundf(newPt.y)) > 1;
     if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) { //window snapped, endFFDrag()
-        int screenHeight = 900;
-        if ((curPt.y >= screenHeight - FFMAXBOTTOM)) {}
+        if ((curPt.y >= [helperLib getApp]->primaryScreenHeight - FFMAXBOTTOM)) {} //todo: replace primaryScreenHeight w/ screenAtPoint(carbonPoint).height
         else if (mouseup) {
             FFDragInfo = nil;
             [[helperLib getApp]->timer timer1x];
