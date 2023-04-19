@@ -24,14 +24,16 @@ void ffSidebarUpdate(NSString* ff) {
     ffSidebarClosed = ![response isEqual: @"true"];
 }
 
+NSDictionary* FFInitialDrag;
 NSDictionary* FFDragInfo;
 int coordinatesChangedDuringDragCounter = 0;
 void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint) {
-    FFDragInfo = @{
+    FFInitialDrag = @{
         @"winDict": winDict,
         @"info": info,
         @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
     };
+    FFDragInfo = FFInitialDrag;
     [[helperLib getApp]->timer timer5x];
     coordinatesChangedDuringDragCounter = 0;
 }
@@ -60,29 +62,33 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     CGSize curSize;
     AXValueGetValue(sizeRef, kAXValueCGSizeType, &curSize);
     
+    float dX0 = carbonPoint.x - [FFInitialDrag[@"x"] floatValue];
+    float dY0 = carbonPoint.y - [FFInitialDrag[@"y"] floatValue];
     CGPoint newPt;
-    newPt.x = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX;
-    newPt.y = [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY;
-    float dW = curSize.width - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Width"] floatValue];
-    float dH = curSize.height - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
-    int fuzz = 1;
-    if (fabs(dW) + fabs(dH) > fuzz) {
-        coordinatesChangedDuringDragCounter++;
-        if (coordinatesChangedDuringDragCounter == 1) {
-            //window unsnapped
-            FFDragInfo = @{
-                @"winDict": @{
-                    @"kCGWindowBounds": @{
-                        @"Width": @(curSize.width),
-                        @"Height": @(curSize.height),
-                        @"X": @(curPt.x),
-                        @"Y": @(curPt.y)
-                    },
-                    @"kCGWindowOwnerPID": @(pid)
-                },
-                @"info": FFDragInfo[@"info"],
-                @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
-            };
+    newPt.x = [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue] + dX0;
+    newPt.y = [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY0;
+    float dW = curSize.width - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Width"] floatValue];
+    float dH = curSize.height - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
+    int sizeFuzz = 1; int boundsFuzz = 300; // (px)  --if bounds dX+dY > x pixels, then bounds changed enough to be considered a snap
+    BOOL didSizeChange = fabs(dW) + fabs(dH) > sizeFuzz;
+    BOOL didBoundsChangeTooMuch = boundsFuzz <= fabs(curPt.x - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue]) + fabs(curPt.y - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue]);
+    if (fabs(dX) + fabs(dY)) coordinatesChangedDuringDragCounter++;
+    FFDragInfo = @{
+        @"winDict": @{
+            @"kCGWindowBounds": @{
+                @"Width": @(curSize.width),
+                @"Height": @(curSize.height),
+                @"X": @(curPt.x),
+                @"Y": @(curPt.y)
+            },
+            @"kCGWindowOwnerPID": @(pid)
+        },
+        @"info": FFDragInfo[@"info"],
+        @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
+    };
+    if (didSizeChange) {
+        if (coordinatesChangedDuringDragCounter <= 5) {
+            FFInitialDrag = FFDragInfo;
         } else {
             //rectangle may have snapped
             FFDragInfo = nil;
