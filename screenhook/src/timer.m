@@ -40,6 +40,7 @@ void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint)
 void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     float dX = carbonPoint.x - [FFDragInfo[@"x"] floatValue];
     float dY = carbonPoint.y - [FFDragInfo[@"y"] floatValue];
+    if (fabs(dX) + fabs(dY)) coordinatesChangedDuringDragCounter++;
     pid_t pid = [[FFDragInfo[@"winDict"] objectForKey: (id)kCGWindowOwnerPID] intValue];
     AXUIElementRef appRef = AXUIElementCreateApplication(pid); // Get AXUIElement using PID
     CFArrayRef windowList;
@@ -69,10 +70,14 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
     newPt.y = [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue] + dY0;
     float dW = curSize.width - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Width"] floatValue];
     float dH = curSize.height - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
-    int sizeFuzz = 1; int boundsFuzz = 300; // (px)  --if bounds dX+dY > x pixels, then bounds changed enough to be considered a snap
-    BOOL didSizeChange = fabs(dW) + fabs(dH) > sizeFuzz;
-    BOOL didBoundsChangeTooMuch = boundsFuzz <= fabs(curPt.x - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"X"] floatValue]) + fabs(curPt.y - [FFDragInfo[@"winDict"][@"kCGWindowBounds"][@"Y"] floatValue]);
-    if (fabs(dX) + fabs(dY)) coordinatesChangedDuringDragCounter++;
+    BOOL didSizeChange = fabs(dW) + fabs(dH) > 1;
+    BOOL didBoundsChangeTooMuch = fabs((curPt.x + roundf(dX)) - roundf(newPt.x)) > 1 || fabs((curPt.y + roundf(dY)) - roundf(newPt.y)) > 1;
+    NSLog(@"%f==%f %f==%f", curPt.x + roundf(dX), roundf(newPt.x), curPt.y + roundf(dY), roundf(newPt.y));
+    if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) { //window snapped, endFFDrag()
+        FFDragInfo = nil;
+        [[helperLib getApp]->timer timer1x];
+        return;
+    }
     FFDragInfo = @{
         @"winDict": @{
             @"kCGWindowBounds": @{
@@ -87,10 +92,9 @@ void updateFFBounds(CGPoint carbonPoint) { //update window bounds
         @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
     };
     if (didSizeChange) {
-        if (coordinatesChangedDuringDragCounter <= 5) {
+        if (coordinatesChangedDuringDragCounter <= 5) { //desnap window
             FFInitialDrag = FFDragInfo;
-        } else {
-            //rectangle may have snapped
+        } else { //window snapped, endFFDrag()
             FFDragInfo = nil;
             [[helperLib getApp]->timer timer1x];
             return;
