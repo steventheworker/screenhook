@@ -17,6 +17,8 @@
     @public float           extendedOffsetYBottom;
     @public float           extScreenWidth;
     @public float           extScreenHeight;
+    @public float           extOffsetX;
+    @public float           extOffsetY;
     @public CGFloat         dockWidth;
     @public CGFloat         dockHeight;
     @public NSString*       dockPos;

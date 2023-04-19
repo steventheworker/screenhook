@@ -14,6 +14,7 @@ const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
 const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
 const int RESIZER = 3; // cursor changes to resize icon <=3 pixels into a window
 const int RESIZEAREAHEIGHT = 15; // 100% width x 15px height = startFFDrag
+const int FFMAXBOTTOM = 28; // maximum y for firefox windows
 
 //vars
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
@@ -73,17 +74,12 @@ void updateFFBounds(CGPoint carbonPoint, BOOL mouseup) { //update window bounds
     BOOL didSizeChange = fabs(dW) + fabs(dH) > 1;
     BOOL didBoundsChangeTooMuch = fabs((curPt.x + roundf(dX)) - roundf(newPt.x)) > 1 || fabs((curPt.y + roundf(dY)) - roundf(newPt.y)) > 1;
     if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) { //window snapped, endFFDrag()
-        BOOL menushowing = YES;
-        int MENUBARHEIGHT = 25;
-        int FFMAXBOTTOM = 28; // maximum y for firefox windows
         int screenHeight = 900;
         if ((curPt.y >= screenHeight - FFMAXBOTTOM)) {}
         else if (mouseup) {
             FFDragInfo = nil;
             [[helperLib getApp]->timer timer1x];
             return;
-        }
-        if ((menushowing && curPt.y == MENUBARHEIGHT) || (!menushowing && curPt.y == 0)) {
         }
     }
     FFDragInfo = @{

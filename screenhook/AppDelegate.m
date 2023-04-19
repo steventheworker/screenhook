@@ -12,10 +12,7 @@
 #import "src/globals.h"
 #import "src/timer.h"
 
-@interface AppDelegate ()
-@property (strong) IBOutlet NSWindow *window;
-@end
-
+NSDictionary* mouseDownCache;
 //runOnce
 bool waitingForTimer = NO;
 void runOnceThenLater(void) {
@@ -29,14 +26,6 @@ void attemptRun(void) {
     runOnceThenLater();
 }
 
-//listen to clicks (more like mousedown's)
-float primaryScreenWidth = 0;
-float primaryScreenHeight = 0;
-float extScreenWidth = 0;
-float extScreenHeight = 0;
-float extOffsetX = 0;
-float extOffsetY = 0;
-NSDictionary* mouseDownCache;
 
 void cornerClick(void) {
     [helperLib runAppleScript:@"cornerClick"];
@@ -66,10 +55,11 @@ void steviaOSInit(BOOL initedWithBTT) {
         [helperLib runScript: @"tell application \"System Events\" to tell process \"QuickShade\" to if (value of attribute \"AXMenuItemMarkChar\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2) is equal to \"✓\") then perform action \"AXPress\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2)"];
     }
 }
+
+@interface AppDelegate ()
+@property (strong) IBOutlet NSWindow *window;
+@end
 @implementation AppDelegate
-/*
-   Lifecycle
-*/
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     void (^ __block pollForVars) (int i) = ^(int i) {
         setTimeout(^{
