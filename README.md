@@ -126,4 +126,4 @@ or, if you replace "YOUR_USERNAME" in the example string, it will look on the De
 
 </details>
 
-... then enable in karabiner-elements in order to bind Command+S to [firefox-sidebar-toggle.scpt / firefox-dev-sidebar-toggle.scpt](https://github.com/steventheworker/applescripts/blob/main/firefox-dev-sidebar-toggle.applescript)
+... then enable in [Karabiner-Elements](https://karabiner-elements.pqrs.org/) in order to bind Command+S to [firefox-sidebar-toggle.scpt / firefox-dev-sidebar-toggle.scpt](https://github.com/steventheworker/applescripts/blob/main/firefox-dev-sidebar-toggle.applescript)
