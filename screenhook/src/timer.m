@@ -12,11 +12,11 @@
 //config
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
 const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
-const int RESIZER = 3; // cursor changes to resize icon <=3 pixels into a window
 const int RESIZEAREAHEIGHT = 15; // 100% width x 15px height = startFFDrag
 const int FFMAXBOTTOM = 28; // maximum y for firefox windows
 
 //vars
+int EDGERESIZEAREA = 3; // cursor changes to resize icon <=3 pixels into a window (0 in fullscreen)
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
 BOOL ffSidebarClosed; //updates on mouseup
 
@@ -173,8 +173,8 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
         for (NSDictionary* winDict in wins) {
             NSDictionary* bounds = winDict[@"kCGWindowBounds"];
             if (![winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"]) {
-                if (carbonPoint.x >= [bounds[@"X"] floatValue] + RESIZER && carbonPoint.x <= [bounds[@"X"] floatValue] + 10) {
-                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT && carbonPoint.y <= [bounds[@"Y"] floatValue] + [bounds[@"Height"] floatValue] - RESIZER) {
+                if (carbonPoint.x >= [bounds[@"X"] floatValue] && carbonPoint.x <= [bounds[@"X"] floatValue] + 10) {
+                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] && carbonPoint.y <= [bounds[@"Y"] floatValue] + [bounds[@"Height"] floatValue]) {
                         BOOL curState = ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", [cur localizedName]]] isEqual: @"true"];
                         if (cachedWinDict && curState) [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
                         if (!cachedWinDict && curState) {
@@ -187,8 +187,8 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
                         return;
                     }
                 }
-                if (carbonPoint.x >= [bounds[@"X"] floatValue] + RESIZER && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
-                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZER && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
+                if (carbonPoint.x >= [bounds[@"X"] floatValue] + EDGERESIZEAREA && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
+                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] + EDGERESIZEAREA && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
                         startFFDrag(winDict, info, carbonPoint);
             }
         }
