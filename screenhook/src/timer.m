@@ -20,10 +20,13 @@ const int FFMAXBOTTOM = 28; // maximum y for firefox windows
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
 BOOL ffSidebarClosed; //updates on mouseup
 
-void ffSidebarUpdate(NSString* ff) {
-    NSString* response = [helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", ff]];
-    ffSidebarClosed = ![response isEqual: @"true"];
+void ffSidebarUpdateClosed(NSString* ff) {
+    [helperLib runAppleScriptAsync: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", ff] : ^(NSString* data) {
+        ffSidebarClosed = ![data isEqual: @"true"];
+    }];
 }
+void snapFFWindow(NSString* ffName) {}
+void unsnapFFWindow(NSString* ffName) {}
 
 NSDictionary* FFInitialDrag;
 NSDictionary* FFDragInfo;
@@ -73,11 +76,12 @@ void updateFFBounds(CGPoint carbonPoint, BOOL mouseup) { //update window bounds
     float dH = curSize.height - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
     BOOL didSizeChange = fabs(dW) + fabs(dH) > 1;
     BOOL didBoundsChangeTooMuch = fabs((curPt.x + roundf(dX)) - roundf(newPt.x)) > 1 || fabs((curPt.y + roundf(dY)) - roundf(newPt.y)) > 1;
-    if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) { //window snapped, endFFDrag()
+    if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) {
         if ((curPt.y >= [helperLib getApp]->primaryScreenHeight - FFMAXBOTTOM)) {} //todo: replace primaryScreenHeight w/ screenAtPoint(carbonPoint).height
-        else if (mouseup) {
+        else if (mouseup) { //window snapped, endFFDrag()
             FFDragInfo = nil;
             [[helperLib getApp]->timer timer1x];
+            snapFFWindow(FFInitialDrag[@"winDict"][@"kCGWindowOwnerName"]); //by bounds
             return;
         }
     }
@@ -89,17 +93,20 @@ void updateFFBounds(CGPoint carbonPoint, BOOL mouseup) { //update window bounds
                 @"X": @(curPt.x),
                 @"Y": @(curPt.y)
             },
-            @"kCGWindowOwnerPID": @(pid)
+            @"kCGWindowOwnerPID": @(pid),
+            @"kCGWindowOwnerName": FFInitialDrag[@"winDict"][@"kCGWindowOwnerName"],
         },
         @"info": FFDragInfo[@"info"],
         @"x": @(carbonPoint.x), @"y": @(carbonPoint.y)
     };
     if (didSizeChange) {
-        if (coordinatesChangedDuringDragCounter <= 5) { //desnap window
+        if (coordinatesChangedDuringDragCounter <= 5) { //unsnap window
             FFInitialDrag = FFDragInfo;
+            unsnapFFWindow(FFInitialDrag[@"winDict"][@"kCGWindowOwnerName"]);
         } else { //window snapped, endFFDrag()
             FFDragInfo = nil;
             [[helperLib getApp]->timer timer1x];
+            snapFFWindow(FFInitialDrag[@"winDict"][@"kCGWindowOwnerName"]); //by resize
             return;
         }
     }
@@ -108,6 +115,7 @@ void updateFFBounds(CGPoint carbonPoint, BOOL mouseup) { //update window bounds
 }
 void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     updateFFBounds(carbonPoint, YES);
+    ffSidebarUpdateClosed(FFInitialDrag[@"winDict"][@"kCGWindowOwnerName"]);
     FFDragInfo = nil;
     [[helperLib getApp]->timer timer1x];
 }
@@ -160,6 +168,7 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
         AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
         NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
         
+        if ([info[@"role"] isEqual: @"AXButton"]) return; // ignore traffic light buttons
         NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
         for (NSDictionary* winDict in wins) {
             NSDictionary* bounds = winDict[@"kCGWindowBounds"];
@@ -190,7 +199,7 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
 }
 + (void) trackFrontApp: (NSNotification*) notification {
     NSRunningApplication* frontmost = [[NSWorkspace sharedWorkspace] frontmostApplication];
-    if ([[frontmost localizedName] isEqual:@"Firefox"] || [[frontmost localizedName] isEqual:@"Firefox Developer Edition"]) ffSidebarUpdate([frontmost localizedName]);
+    if ([[frontmost localizedName] isEqual:@"Firefox"] || [[frontmost localizedName] isEqual:@"Firefox Developer Edition"]) ffSidebarUpdateClosed([frontmost localizedName]);
 }
 - (void) timer1x {
     [timerRef invalidate];

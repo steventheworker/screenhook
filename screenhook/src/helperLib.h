@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*) twoSigFigs: (float) val;
 + (BOOL) dockautohide;
 + (NSString*) runScript: (NSString*) scriptTxt;
++ (void) runAppleScriptAsync: (NSString*) scriptTxt : (void(^)(NSString*)) _cb;
 + (void) runAppleScript: (NSString*) scptPath;
 + (void) trackFrontApp: (NSNotification*) notification;
 + (void) listenRunningAppsChanged;
