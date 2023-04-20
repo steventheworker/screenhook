@@ -8,7 +8,6 @@
 #import "helperLib.h"
 #import "globals.h"
 #import "timer.h"
-#import "callbacks.h"
 
 NSDictionary* appAliases = @{
     @"Visual Studio Code": @"Code",
@@ -59,28 +58,19 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     [task setLaunchPath: @"/bin/bash"];
     scriptTxt = [NSString stringWithFormat: @"/usr/bin/osascript -e %@", scriptTxt];
     [task setArguments: [NSArray arrayWithObjects:@"-c", scriptTxt, nil]];
-        
     NSPipe *standardOutput = [[NSPipe alloc] init];
     [task setStandardOutput:standardOutput];
-    
     [[NSNotificationCenter defaultCenter] addObserverForName: NSFileHandleReadCompletionNotification object: [standardOutput fileHandleForReading] queue: nil usingBlock: ^(NSNotification * _Nonnull notification) {
         NSData *data = [[notification userInfo] objectForKey: NSFileHandleNotificationDataItem];
         NSFileHandle *handle = [notification object];
         if ([data length]) {
             NSString* str = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
             cb([str substringToIndex:[str length]-1]); // remove end of line \n
-//            [handle readInBackgroundAndNotify]; // calls this observer, with blank data?
         } else {
             [[NSNotificationCenter defaultCenter] removeObserver: self name: NSFileHandleReadCompletionNotification object: [notification object]];
             cb(nil);
         }
     }];
-    
-//    [[NSNotificationCenter defaultCenter] addObserverForName: NSTaskDidTerminateNotification object: nil queue: nil usingBlock: ^(NSNotification * _Nonnull notification) {
-//        NSTask *task = [notification object];
-//        [[NSNotificationCenter defaultCenter] removeObserver: self name:NSTaskDidTerminateNotification object: [notification object]];
-//    }];
-    
     [task launch];
     [[standardOutput fileHandleForReading] readInBackgroundAndNotify];
 }
