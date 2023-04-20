@@ -172,10 +172,25 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
         NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
         for (NSDictionary* winDict in wins) {
             NSDictionary* bounds = winDict[@"kCGWindowBounds"];
-            if (![winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"])
-            if (carbonPoint.x >= [bounds[@"X"] floatValue] + RESIZER && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
-            if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZER && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
-                startFFDrag(winDict, info, carbonPoint);
+            if (![winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"]) {
+                if (carbonPoint.x >= [bounds[@"X"] floatValue] + RESIZER && carbonPoint.x <= [bounds[@"X"] floatValue] + 10) {
+                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT && carbonPoint.y <= [bounds[@"Y"] floatValue] + [bounds[@"Height"] floatValue] - RESIZER) {
+                        BOOL curState = ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", [cur localizedName]]] isEqual: @"true"];
+                        if (cachedWinDict && curState) [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
+                        if (!cachedWinDict && curState) {
+                            ffSidebarClosed =! ffSidebarClosed;
+                        }
+                        if (cachedWinDict && !curState) {
+                            cachedWinDict = nil;
+                            ffSidebarClosed =! ffSidebarClosed;
+                        }
+                        return;
+                    }
+                }
+                if (carbonPoint.x >= [bounds[@"X"] floatValue] + RESIZER && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
+                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] + RESIZER && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
+                        startFFDrag(winDict, info, carbonPoint);
+            }
         }
     }
 }
