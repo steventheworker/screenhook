@@ -161,50 +161,56 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
     }
 }
 + (void) mousedown: (CGEventRef) e : (CGEventType) etype {
-    NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
-    if ([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) {
-        NSPoint mouseLocation = [NSEvent mouseLocation];
-        CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
-        AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
-        NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
-        
-        if ([info[@"role"] isEqual: @"AXButton"]) return; // ignore traffic light buttons
-        NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
-        for (NSDictionary* winDict in wins) {
-            NSDictionary* bounds = winDict[@"kCGWindowBounds"];
-            if (![winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"]) {
-                if (carbonPoint.x >= [bounds[@"X"] floatValue] && carbonPoint.x <= [bounds[@"X"] floatValue] + 10) {
-                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] && carbonPoint.y <= [bounds[@"Y"] floatValue] + [bounds[@"Height"] floatValue]) {
-                        BOOL curState = ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", [cur localizedName]]] isEqual: @"true"];
-                        if (cachedWinDict && curState) [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
-                        if (!cachedWinDict && curState) {
-                            ffSidebarClosed =! ffSidebarClosed;
+    BOOL rightBtn = (etype == kCGEventRightMouseDown);
+    if (rightBtn) {} else {
+        NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
+        if ([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) {
+            NSPoint mouseLocation = [NSEvent mouseLocation];
+            CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
+            AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
+            NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
+            
+            if ([info[@"role"] isEqual: @"AXButton"]) return; // ignore traffic light buttons
+            NSMutableArray* wins = [helperLib getWindowsForOwnerOnScreen: [cur localizedName]];
+            for (NSDictionary* winDict in wins) {
+                NSDictionary* bounds = winDict[@"kCGWindowBounds"];
+                if (![winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"]) {
+                    if (carbonPoint.x >= [bounds[@"X"] floatValue] && carbonPoint.x <= [bounds[@"X"] floatValue] + 10) {
+                        if (carbonPoint.y >= [bounds[@"Y"] floatValue] && carbonPoint.y <= [bounds[@"Y"] floatValue] + [bounds[@"Height"] floatValue]) {
+                            BOOL curState = ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", [cur localizedName]]] isEqual: @"true"];
+                            if (cachedWinDict && curState) [helperLib runScript: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", [cur localizedName]]];
+                            if (!cachedWinDict && curState) {
+                                ffSidebarClosed =! ffSidebarClosed;
+                            }
+                            if (cachedWinDict && !curState) {
+                                cachedWinDict = nil;
+                                ffSidebarClosed =! ffSidebarClosed;
+                            }
+                            return;
                         }
-                        if (cachedWinDict && !curState) {
-                            cachedWinDict = nil;
-                            ffSidebarClosed =! ffSidebarClosed;
-                        }
-                        return;
                     }
+                    if (carbonPoint.x >= [bounds[@"X"] floatValue] + EDGERESIZEAREA && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
+                        if (carbonPoint.y >= [bounds[@"Y"] floatValue] + EDGERESIZEAREA && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
+                            startFFDrag(winDict, info, carbonPoint);
                 }
-                if (carbonPoint.x >= [bounds[@"X"] floatValue] + EDGERESIZEAREA && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
-                    if (carbonPoint.y >= [bounds[@"Y"] floatValue] + EDGERESIZEAREA && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
-                        startFFDrag(winDict, info, carbonPoint);
             }
         }
     }
 }
 + (void) mouseup: (CGEventRef) e : (CGEventType) etype {
-    NSPoint mouseLocation = [NSEvent mouseLocation];
-    CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
-    AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
-    NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
-    
-    if (FFDragInfo) endFFDrag(info, carbonPoint);
+    BOOL rightBtn = (etype == kCGEventRightMouseDown);
+    if (rightBtn) {} else {
+        NSPoint mouseLocation = [NSEvent mouseLocation];
+        CGPoint carbonPoint = [helperLib carbonPointFrom: mouseLocation];
+        AXUIElementRef elementUnderCursor = [helperLib elementAtPoint: carbonPoint];
+        NSMutableDictionary* info = [NSMutableDictionary dictionaryWithDictionary: [helperLib axInfo: elementUnderCursor]];
         
-    NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
-    if ([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) {
+        if (FFDragInfo) endFFDrag(info, carbonPoint);
         
+        NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
+        if ([[cur localizedName] isEqual:@"Firefox"] || [[cur localizedName] isEqual:@"Firefox Developer Edition"]) {
+            
+        }
     }
 }
 + (void) updateFFSidebarShowing: (BOOL) val {
