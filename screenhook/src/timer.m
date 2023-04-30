@@ -11,6 +11,7 @@
 
 //config
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
+const float DBLCLICKTIMEOUT = .25; // 250ms
 const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
 const int RESIZEAREAHEIGHT = 15; // 100% width x 15px height = startFFDrag
 const int FFMAXBOTTOM = 28; // maximum y for firefox windows
@@ -19,6 +20,9 @@ const int FFMAXBOTTOM = 28; // maximum y for firefox windows
 int EDGERESIZEAREA = 3; // cursor changes to resize icon <=3 pixels into a window (0 in fullscreen)
 NSDictionary* cachedWinDict; //nonnull when sidebar forced open
 BOOL ffSidebarClosed; //updates on mouseup
+NSTimer* doubleClickTimeout;
+BOOL checkingForDblClick = NO;
+NSString* steviaOSSystemFiles;
 
 void ffSidebarUpdateClosed(NSString* ff) {
     [helperLib runAppleScriptAsync: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", ff] : ^(NSString* data) {
@@ -28,10 +32,34 @@ void ffSidebarUpdateClosed(NSString* ff) {
 void snapFFWindow(NSString* ffName) {}
 void unsnapFFWindow(NSString* ffName) {}
 
+void steviaOSGreenTrafficButton(void) { //run steviaOS applescript to toggle between maximized / restored window size
+    if ([steviaOSSystemFiles isEqual:@"(null)"]) return;
+    NSString *path = [NSString stringWithFormat:@"%@/green-button-click.scpt", steviaOSSystemFiles];
+    NSTask *task = [[NSTask alloc] init];
+    NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
+    NSArray *arguments = [NSArray arrayWithObjects: @"-c" , commandToRun, nil];
+    [task setLaunchPath:@"/bin/sh"];
+    [task setArguments:arguments];
+    [task launch];
+}
+
 NSDictionary* FFInitialDrag;
 NSDictionary* FFDragInfo;
 int coordinatesChangedDuringDragCounter = 0;
 void startFFDrag(NSDictionary* winDict, NSDictionary* info, CGPoint carbonPoint) {
+    if (checkingForDblClick) {
+        // dblclick
+        [doubleClickTimeout invalidate];
+        checkingForDblClick = false;
+        steviaOSGreenTrafficButton();
+    } else {
+        checkingForDblClick = true;
+        doubleClickTimeout = [NSTimer scheduledTimerWithTimeInterval:DBLCLICKTIMEOUT repeats:NO block:^(NSTimer * _Nonnull timer) {
+            checkingForDblClick = false;
+        }];
+    }
+    
+    // init drag
     FFInitialDrag = @{
         @"winDict": winDict,
         @"info": info,
@@ -121,7 +149,15 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
 }
 
 @implementation timer
-+ (void) initialize {[[[timer alloc] init] timer1x];}
++ (void) initialize {
+    [[[timer alloc] init] timer1x];
+    
+    //get steviaOS info
+    steviaOSSystemFiles = [helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""];
+    //DockAltTab [app fullDirPath]
+    unichar char1 = [steviaOSSystemFiles characterAtIndex:0];
+    if ([[NSString stringWithCharacters:&char1 length:1] isEqual:@"~"]) steviaOSSystemFiles = [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), [steviaOSSystemFiles substringFromIndex:1]];
+}
 - (void) timerTick: (NSTimer * _Nonnull) t {
     NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
     NSPoint mouseLocation = [NSEvent mouseLocation];
@@ -175,6 +211,7 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
             for (NSDictionary* winDict in wins) {
                 NSDictionary* bounds = winDict[@"kCGWindowBounds"];
                 if (![winDict[@"kCGWindowName"] isEqual: @"Picture-in-Picture"]) {
+                    //left edge
                     if (carbonPoint.x >= [bounds[@"X"] floatValue] && carbonPoint.x <= [bounds[@"X"] floatValue] + 10) {
                         if (carbonPoint.y >= [bounds[@"Y"] floatValue] && carbonPoint.y <= [bounds[@"Y"] floatValue] + [bounds[@"Height"] floatValue]) {
                             BOOL curState = ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to exists (first menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1 whose value of attribute \"AXMenuItemMarkChar\" is equal to \"✓\")", [cur localizedName]]] isEqual: @"true"];
@@ -189,6 +226,7 @@ void endFFDrag(NSDictionary* info, CGPoint carbonPoint) {
                             return;
                         }
                     }
+                    //top edge
                     if (carbonPoint.x >= [bounds[@"X"] floatValue] + EDGERESIZEAREA && carbonPoint.x <= [bounds[@"X"] floatValue] + [bounds[@"Width"] floatValue])
                         if (carbonPoint.y >= [bounds[@"Y"] floatValue] + EDGERESIZEAREA && carbonPoint.y <= [bounds[@"Y"] floatValue] + RESIZEAREAHEIGHT)
                             startFFDrag(winDict, info, carbonPoint);
