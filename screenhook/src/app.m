@@ -31,7 +31,7 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy ,
                                   void * refcon ) {
     if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) {
         // Handle disabled event tap
-        return event;
+        return (CGEventTapCallBack) event;
     }
     
     // Get the event type
