@@ -24,6 +24,30 @@ void askForAccessibility(void) {
     }
 }
 
+
+CGEventTapCallBack allHandler(CGEventTapProxy proxy ,
+                                  CGEventType type ,
+                                  CGEventRef event ,
+                                  void * refcon ) {
+    if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) {
+        // Handle disabled event tap
+        return event;
+    }
+    
+    // Get the event type
+    NSEvent *nsEvent = [NSEvent eventWithCGEvent:event];
+    NSEventType eventType = [nsEvent type];
+    
+    if (eventType == NSEventTypeGesture) {
+        NSSet<NSTouch *> *touches = [nsEvent touchesMatchingPhase:NSTouchPhaseTouching inView:nil];
+        NSInteger numberOfTouches = [touches count];
+        
+        NSLog(@"Number of touches: %ld", numberOfTouches);
+    }
+
+    return (CGEventTapCallBack) nil;
+}
+
 @implementation app
 //initialize app variables (onLaunch)
 + (void) init {
@@ -57,6 +81,9 @@ void askForAccessibility(void) {
     
     // init UI
     if (del->runningApps[@"BTT"]) [[del->BTTState cell] setTitle:@"Checking if afterBTTLaunched..."];
+    
+    CGEventMask mask = kCGEventMaskForAllEvents;// | CGEventMaskBit();
+    [helperLib listenMask:mask : (CGEventTapCallBack) allHandler];
 }
 + (BOOL) isSpotlightOpen : (BOOL) isAlfred {
     return ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to count of windows", isAlfred ? @"Alfred" : @"Spotlight"]] isEqual:@"0"];
