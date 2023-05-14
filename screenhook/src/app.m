@@ -38,6 +38,7 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
         [gm recognizeGesture: event : type];
     } else if (eventType == NSEventTypeLeftMouseUp) { //3 finger drag triggers mouseup at the end
         [gm endRecognition]; //todo: only call, if 3 finger drag enabled (may interfere in rare case where you use external mouse and trackpad at same time???)
+        //todo: check if this block is necessary (i think gesture phase ended check (in updateTouches/recognizeGesture) already calls this)
     } else {
         if (eventType != NSEventTypePressure && eventType != NSEventTypeSystemDefined && eventType != NSEventTypeMouseMoved && eventType != NSEventTypeLeftMouseDown && eventType != NSEventTypeLeftMouseUp && // pressure = audible click (not by tap), NSEventTypeSystemDefined = tap to click
             eventType != NSEventTypeFlagsChanged && eventType != NSEventTypeKeyUp && eventType != NSEventTypeKeyDown) { // keyboard events

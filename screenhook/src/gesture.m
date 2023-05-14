@@ -17,23 +17,28 @@ void twoFingerSwipeFromLeftEdge(void) {
     return self;
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
-    [gesture addObject: touches];
+    NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
     if ((int) [touches count] == 0) {
-        [self endRecognition]; //todo: only if phase == gesture ended
-    } else touchCount = (int) [touches count];
+        if ([nsEvent phase] == NSEventPhaseEnded) [self endRecognition];
+    } else {
+        touchCount = (int) [touches count];
+        [gesture addObject: touches];
+    }
 }
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
     NSEventType eventType = [nsEvent type];
+//    if ([nsEvent phase] == NSEventPhaseEnded) {
+//        NSLog(@"it has ended!!!");
+//    }
     if (eventType == NSEventTypeLeftMouseDragged && touchCount == 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
     if (touchCount == 2) {
         NSArray* touchesInitial = [[gesture objectAtIndex: 0] allObjects];
         NSArray* touchesFinal = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
         // detect twoFingerSwipeFromLeftEdge
         const float r = 0.01; //todo: (firefox) if right sidebar r = 1 - r
-        if ([touchesFinal[0] normalizedPosition].x < r || [touchesFinal[1] normalizedPosition].x < r) twoFingerSwipeFromLeftEdge();
+        if ([touchesFinal[0] normalizedPosition].x < r || ([touchesFinal count] == 2 && [touchesFinal[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
         if ([touchesInitial[0] normalizedPosition].x < r || ([touchesInitial count] == 2 && [touchesInitial[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
-
     } else if (touchCount == 3) {
     } else if (touchCount == 4) {
     } else if (touchCount == 5) {
