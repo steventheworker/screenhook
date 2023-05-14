@@ -24,27 +24,33 @@ void askForAccessibility(void) {
     }
 }
 
-
-CGEventTapCallBack allHandler(CGEventTapProxy proxy ,
-                                  CGEventType type ,
-                                  CGEventRef event ,
-                                  void * refcon ) {
-    if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) {
-        // Handle disabled event tap
-        return (CGEventTapCallBack) event;
-    }
+void recognizeGesture(CGEventRef event, CGEventType type) {
     
-    // Get the event type
-    NSEvent *nsEvent = [NSEvent eventWithCGEvent:event];
-    NSEventType eventType = [nsEvent type];
-    
-    if (eventType == NSEventTypeGesture) {
-        NSSet<NSTouch *> *touches = [nsEvent touchesMatchingPhase:NSTouchPhaseTouching inView:nil];
-        NSInteger numberOfTouches = [touches count];
+}
+void handleTouches(NSSet<NSTouch*>* touches, CGEventRef event, CGEventType type) {
+    NSInteger touchCount = [touches count];
+    for (NSTouch* touch in touches) {
+        NSPoint touchLocation = touch.normalizedPosition;
         
-        NSLog(@"Number of touches: %ld", numberOfTouches);
     }
 
+}
+
+CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon) {
+    if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) return (CGEventTapCallBack) event;
+    NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
+    NSEventType eventType = [nsEvent type];
+    if (eventType == NSEventTypeGesture) {
+        handleTouches([nsEvent touchesMatchingPhase:NSTouchPhaseTouching inView:nil], event, type);
+    } else if (eventType == NSEventTypeScrollWheel || eventType == NSEventTypeLeftMouseDragged || eventType == NSEventTypeMagnify) {
+        //gestures always use NSEventTypeScrollWheel (unless: if gesture set in Settings->trackpad => NSEventTypeMagnify; else if drag style is 3 finger drag => NSEventTypeLeftMouseDragged)
+        recognizeGesture(event, type);
+    } else {
+        if (eventType != NSEventTypePressure && eventType != NSEventTypeSystemDefined && eventType != NSEventTypeMouseMoved && eventType != NSEventTypeLeftMouseDown && eventType != NSEventTypeLeftMouseUp && // pressure = audible click (not by tap), NSEventTypeSystemDefined = tap to click
+            eventType != NSEventTypeFlagsChanged && eventType != NSEventTypeKeyUp && eventType != NSEventTypeKeyDown) { // keyboard events
+            NSLog(@"%lu", (unsigned long)eventType);
+        }
+    }
     return (CGEventTapCallBack) nil;
 }
 
