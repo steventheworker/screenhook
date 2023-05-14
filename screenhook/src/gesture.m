@@ -21,12 +21,12 @@
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
     NSEventType eventType = [nsEvent type];
-//    NSLog(@"%d", touchCount);
     if (eventType == NSEventTypeLeftMouseDragged && touchCount == 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
     if (touchCount == 2) {
         NSLog(@"%d",(int) [gesture count]);
     } else if (touchCount == 3) {
     } else if (touchCount == 4) {
+    } else if (touchCount == 5) {
     }
 }
 - (void) endRecognition {
