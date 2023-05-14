@@ -5,10 +5,12 @@ originally made to make up for features BTT lacks like:
 -   running applescript when monitor is attached/detached
 -   running applescript when you click on a corner
 -   running applescript for any click (without modifiers keys held)
+-   lets you use 3 fingers to open exposé/mission control/switch spaces w/ 3 finger drag
 
 -   **Firefox (_new_ &nbsp;--vertical tabs support)** [(my config)](https://github.com/steventheworker/ff-chrome-folder)
     -   cmd+shift+T to reopen tabs AND windows (requires BTT bindings)
     -   _left-edge of window = sidebar peak_
+    -   twoFingerSwipeFromLeftEdge of trackpad = sidebar peak_
     -   _top-edge of window = more consistent window dragging (compensate for userChrome.css w/ auto-reveal location bar (prevent drag))_
 
 \*_Note_:\* best if used w/ the BetterTouchTool triggers included in "steviaOS" (but not required for all features)
