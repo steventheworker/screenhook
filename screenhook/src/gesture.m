@@ -6,9 +6,13 @@
 //
 
 #import "gesture.h"
+#import "app.h"
 
+BOOL twoFingerSwipeFromLeftEdgeTriggered = NO; //has gesture fired yet?
 void twoFingerSwipeFromLeftEdge(void) {
-    NSLog(@"toggle firefox sidebar (if it's the active app)");
+    if (twoFingerSwipeFromLeftEdgeTriggered) return;
+    twoFingerSwipeFromLeftEdgeTriggered = YES;
+    [app twoFingerSwipeFromLeftEdge];
 }
 
 @implementation GestureManager
@@ -27,11 +31,11 @@ void twoFingerSwipeFromLeftEdge(void) {
 }
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
-    NSEventType eventType = [nsEvent type];
+//    NSEventType eventType = [nsEvent type];
 //    if ([nsEvent phase] == NSEventPhaseEnded) {
 //        NSLog(@"it has ended!!!");
 //    }
-    if (eventType == NSEventTypeLeftMouseDragged && touchCount == 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
+    if (touchCount <= 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
     NSArray* touches1 = [[gesture objectAtIndex: 0] allObjects];
     NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
     if (touchCount == 2) {
@@ -47,6 +51,7 @@ void twoFingerSwipeFromLeftEdge(void) {
 - (void) endRecognition {
     gesture = [NSMutableArray new];
     touchCount = 0;
+    twoFingerSwipeFromLeftEdgeTriggered = NO;
 }
 
 @end

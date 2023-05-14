@@ -50,8 +50,29 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
     return (CGEventTapCallBack) nil;
 }
 
+NSString* fullDirPath(NSString* _path) {
+    unichar char1 = [_path characterAtIndex:0];
+    if ([[NSString stringWithCharacters:&char1 length:1] isEqual:@"~"]) {
+        return [NSString stringWithFormat:@"%@%@", NSHomeDirectory(), [_path substringFromIndex:1]];
+    } else return _path;
+}
 @implementation app
 //initialize app variables (onLaunch)
++ (void) twoFingerSwipeFromLeftEdge {
+    NSRunningApplication* front = [[NSWorkspace sharedWorkspace] frontmostApplication];
+    if (!([[front localizedName] isEqual:@"Firefox"] || [[front localizedName] isEqual:@"Firefox Developer Edition"])) return;
+
+    NSString* steviaOSSystemFiles = fullDirPath([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""]);
+    if ([steviaOSSystemFiles isEqual:@"(null)"]) return;
+    NSString *path = [NSString stringWithFormat:@"%@/firefox-dev-sidebar-toggle.scpt", steviaOSSystemFiles];
+    NSTask *task = [[NSTask alloc] init];
+    NSString *commandToRun = [NSString stringWithFormat:@"/usr/bin/osascript -e \'run script \"%@\"'", path];
+    NSLog(@"%@",commandToRun);
+    NSArray *arguments = [NSArray arrayWithObjects: @"-c" , commandToRun, nil];
+    [task setLaunchPath:@"/bin/sh"];
+    [task setArguments:arguments];
+    [task launch];
+}
 + (void) init {
     NSLog(@"%@", @"running app :)\n-------------------------------------------------------------------");
     // permissions
