@@ -8,6 +8,9 @@
 #import "app.h"
 #import "helperLib.h"
 #import "timer.h"
+#import "gesture.h"
+
+GestureManager* gm;
 
 //config
 void askForAccessibility(void) {
@@ -24,33 +27,25 @@ void askForAccessibility(void) {
     }
 }
 
-void recognizeGesture(CGEventRef event, CGEventType type) {
-    
-}
-void handleTouches(NSSet<NSTouch*>* touches, CGEventRef event, CGEventType type) {
-    NSInteger touchCount = [touches count];
-    for (NSTouch* touch in touches) {
-        NSPoint touchLocation = touch.normalizedPosition;
-        
-    }
-
-}
-
 CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon) {
     if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) return (CGEventTapCallBack) event;
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
     NSEventType eventType = [nsEvent type];
     if (eventType == NSEventTypeGesture) {
-        handleTouches([nsEvent touchesMatchingPhase:NSTouchPhaseTouching inView:nil], event, type);
-    } else if (eventType == NSEventTypeScrollWheel || eventType == NSEventTypeLeftMouseDragged || eventType == NSEventTypeMagnify) {
+        [gm updateTouches: [nsEvent touchesMatchingPhase:NSTouchPhaseTouching inView:nil] : event : type];
         //gestures always use NSEventTypeScrollWheel (unless: if gesture set in Settings->trackpad => NSEventTypeMagnify; else if drag style is 3 finger drag => NSEventTypeLeftMouseDragged)
-        recognizeGesture(event, type);
+    } else if (eventType == NSEventTypeScrollWheel || eventType == NSEventTypeLeftMouseDragged || eventType == NSEventTypeMagnify) {
+        [gm recognizeGesture: event : type];
+    } else if (eventType == NSEventTypeLeftMouseUp) { //3 finger drag triggers mouseup at the end
+        [gm endRecognition]; //todo: only call, if 3 finger drag enabled (may interfere in rare case where you use external mouse and trackpad at same time???)
     } else {
         if (eventType != NSEventTypePressure && eventType != NSEventTypeSystemDefined && eventType != NSEventTypeMouseMoved && eventType != NSEventTypeLeftMouseDown && eventType != NSEventTypeLeftMouseUp && // pressure = audible click (not by tap), NSEventTypeSystemDefined = tap to click
             eventType != NSEventTypeFlagsChanged && eventType != NSEventTypeKeyUp && eventType != NSEventTypeKeyDown) { // keyboard events
             NSLog(@"%lu", (unsigned long)eventType);
         }
     }
+//    if (eventType != NSEventTypeGesture && eventType != NSEventTypeMouseMoved && eventType != NSEventTypeFlagsChanged && eventType != NSEventTypeKeyUp && eventType != NSEventTypeKeyDown) NSLog(@"%lu", (unsigned long)eventType);
+
     return (CGEventTapCallBack) nil;
 }
 
@@ -61,14 +56,22 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
     // permissions
     AppDelegate* del = [helperLib getApp];
     del->_systemWideAccessibilityObject = AXUIElementCreateSystemWide();
-    [helperLib listenMouseDown]; // ask for input monitoring first
-    [helperLib listenMouseUp]; // ask for input monitoring first
+    
+    // ask for input monitoring first
+    [helperLib listenMouseDown];
+    [helperLib listenMouseUp];
+    
+    //listen gestures
+    CGEventMask mask = kCGEventMaskForAllEvents;// | CGEventMaskBit();
+    [helperLib listenMask:mask : (CGEventTapCallBack) allHandler];
+    gm = [[GestureManager alloc] init];
+    
     askForAccessibility();
-    [del measureScreens]; // get all screen values onLaunch
     
     // permission-free events
+    [del measureScreens]; // get all screen values onLaunch
     [helperLib listenScreens];
-    
+
     // functional variables
     del->dockPos = [helperLib getDockPosition];
     del->runningApps = @{
@@ -87,9 +90,6 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
     
     // init UI
     if (del->runningApps[@"BTT"]) [[del->BTTState cell] setTitle:@"Checking if afterBTTLaunched..."];
-    
-    CGEventMask mask = kCGEventMaskForAllEvents;// | CGEventMaskBit();
-    [helperLib listenMask:mask : (CGEventTapCallBack) allHandler];
 }
 + (BOOL) isSpotlightOpen : (BOOL) isAlfred {
     return ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to count of windows", isAlfred ? @"Alfred" : @"Spotlight"]] isEqual:@"0"];

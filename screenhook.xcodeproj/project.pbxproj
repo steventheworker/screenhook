@@ -17,6 +17,7 @@
 		BFC80D16295309F700F9BC67 /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BFC80D15295309F700F9BC67 /* MenuIcon.png */; };
 		BFCABB2529E64036002A75F9 /* screenhook.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BFCABB2429E64036002A75F9 /* screenhook.sdef */; };
 		BFCABB2929E64965002A75F9 /* updateFFSidebarShowing.m in Sources */ = {isa = PBXBuildFile; fileRef = BFCABB2829E64965002A75F9 /* updateFFSidebarShowing.m */; };
+		BFD57F0D2A109A5D0021F63E /* gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD57F0C2A109A5D0021F63E /* gesture.m */; };
 		BFD784AC2888B1B200371155 /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784A92888B1B200371155 /* app.m */; };
 		BFD784AD2888B1B200371155 /* helperLib.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784AA2888B1B200371155 /* helperLib.m */; };
 		BFECF8FA29E3BA74004600B6 /* timer.m in Sources */ = {isa = PBXBuildFile; fileRef = BFECF8F929E3BA74004600B6 /* timer.m */; };
@@ -40,6 +41,8 @@
 		BFCABB2429E64036002A75F9 /* screenhook.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = screenhook.sdef; sourceTree = "<group>"; };
 		BFCABB2729E64965002A75F9 /* updateFFSidebarShowing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = updateFFSidebarShowing.h; sourceTree = "<group>"; };
 		BFCABB2829E64965002A75F9 /* updateFFSidebarShowing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = updateFFSidebarShowing.m; sourceTree = "<group>"; };
+		BFD57F0B2A109A5D0021F63E /* gesture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gesture.h; sourceTree = "<group>"; };
+		BFD57F0C2A109A5D0021F63E /* gesture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gesture.m; sourceTree = "<group>"; };
 		BFD784A82888B1B200371155 /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app.h; path = ../src/app.h; sourceTree = "<group>"; };
 		BFD784A92888B1B200371155 /* app.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = app.m; path = ../src/app.m; sourceTree = "<group>"; };
 		BFD784AA2888B1B200371155 /* helperLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = helperLib.m; path = ../src/helperLib.m; sourceTree = "<group>"; };
@@ -72,6 +75,8 @@
 				BF39DF9E2915013200BCB772 /* globals.m */,
 				BFECF8F829E3BA74004600B6 /* timer.h */,
 				BFECF8F929E3BA74004600B6 /* timer.m */,
+				BFD57F0B2A109A5D0021F63E /* gesture.h */,
+				BFD57F0C2A109A5D0021F63E /* gesture.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -200,6 +205,7 @@
 				BF8CF64526F61F0400D396FD /* main.m in Sources */,
 				BFCABB2929E64965002A75F9 /* updateFFSidebarShowing.m in Sources */,
 				BF39DF9F2915013200BCB772 /* globals.m in Sources */,
+				BFD57F0D2A109A5D0021F63E /* gesture.m in Sources */,
 				BFD784AC2888B1B200371155 /* app.m in Sources */,
 				BFECF8FA29E3BA74004600B6 /* timer.m in Sources */,
 				BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */,
