@@ -31,7 +31,7 @@ void twoFingerSwipeFromLeftEdge(void) {
         [self preProcessTouches];
     }
 }
-- (void) preProcessTouches { // called before recognizeGesture to make sure it has a
+- (void) preProcessTouches { // called before recognizeGesture to make sure it has a swipeDirection
     NSArray *touches1 = [[gesture objectAtIndex:0 ] allObjects];
     NSArray *touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
     int numTouches = (int) [touches1 count];
