@@ -11,12 +11,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface GestureManager : NSObject {
-    @public NSMutableArray<NSSet<NSTouch*>*>* gesture; // array of NSSet<NSTouch*>* touches
-    @public int touchCount;
+    NSMutableArray<NSSet<NSTouch*>*>* gesture; // array of NSSet<NSTouch*>* touches
+    int touchCount;
+    NSString* swipeDirection;
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type;
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type;
 - (void) endRecognition;
+- (void) preProcessTouches;
 @end
 
 NS_ASSUME_NONNULL_END
