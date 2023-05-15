@@ -8,13 +8,18 @@
 #import "gesture.h"
 #import "app.h"
 
-void CoreDockSendNotification(CFStringRef, void*); // add CoreDock fn's
+GestureManager* _gm;
+BOOL twoFingerSwipeFromLeftEdgeTriggered = NO; //has gesture fired yet?
+NSMutableDictionary* triggeredGestures; // prevents re-firing swipe (3-5 finger) gestures
 
-NSMutableDictionary* triggeredGestures; // prevents re-firing gestures
+void CoreDockSendNotification(CFStringRef, void*); // add CoreDock fn's (exposé / mission control)
+void setTriggeredGesture(NSString* touchCount, NSString* swipeDirection) {
+    [_gm resetTriggeredGestures];
+    triggeredGestures[touchCount][swipeDirection] = @1;
+}
 
 /* Gesture Handlers */
 // 2 fingers
-BOOL twoFingerSwipeFromLeftEdgeTriggered = NO; //has gesture fired yet?
 void twoFingerSwipeFromLeftEdge(void) {
     if (twoFingerSwipeFromLeftEdgeTriggered) return;
     twoFingerSwipeFromLeftEdgeTriggered = YES;
@@ -23,28 +28,29 @@ void twoFingerSwipeFromLeftEdge(void) {
 // 3 fingers
 void threeFingerSwipeLeft(void) {
     if ([triggeredGestures[@"3"][@"left"] boolValue]) return;
-    triggeredGestures[@"3"][@"left"] = @1;
+    setTriggeredGesture(@"3", @"left");
     [[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 124 using {control down}"] executeAndReturnError: nil];
 }
 void threeFingerSwipeRight(void) {
     if ([triggeredGestures[@"3"][@"right"] boolValue]) return;
-    triggeredGestures[@"3"][@"right"] = @1;
+    setTriggeredGesture(@"3", @"right");
     [[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 123 using {control down}"] executeAndReturnError: nil];
 }
 void threeFingerSwipeUp(void) {
     if ([triggeredGestures[@"3"][@"up"] boolValue]) return;
-    triggeredGestures[@"3"][@"up"] = @1;
+    setTriggeredGesture(@"3", @"up");
     CoreDockSendNotification(CFSTR("com.apple.expose.awake"), (id) nil);
 }
 void threeFingerSwipeDown(void) {
     if ([triggeredGestures[@"3"][@"down"] boolValue]) return;
-    triggeredGestures[@"3"][@"down"] = @1;
+    setTriggeredGesture(@"3", @"down");
     CoreDockSendNotification(CFSTR("com.apple.expose.front.awake"), (id) nil);
 }
 
 @implementation GestureManager
 - (instancetype) init {
     [self endRecognition];
+    _gm = self;
     return self;
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
@@ -144,8 +150,9 @@ void threeFingerSwipeDown(void) {
     gesture = [NSMutableArray new];
     touchCount = 0;
     twoFingerSwipeFromLeftEdgeTriggered = NO;
-    
-    // reset triggeredGestures
+    [self resetTriggeredGestures];
+}
+- (void) resetTriggeredGestures {
     triggeredGestures = [NSMutableDictionary dictionaryWithDictionary: @{
         @"3": [NSMutableDictionary dictionaryWithDictionary: @{@"left": @0, @"right": @0, @"up": @0, @"down": @0,}],
         @"4": [NSMutableDictionary dictionaryWithDictionary: @{@"left": @0, @"right": @0, @"up": @0, @"down": @0,}],

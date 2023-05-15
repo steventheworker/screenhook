@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type;
 - (void) endRecognition;
 - (void) detectSwipeGesture;
+- (void) resetTriggeredGestures;
 @end
 
 NS_ASSUME_NONNULL_END
