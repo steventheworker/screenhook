@@ -22,19 +22,17 @@ void twoFingerSwipeFromLeftEdge(void) {
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
-    if ((int) [touches count] == 0) {
-        if ([nsEvent phase] == NSEventPhaseEnded) [self endRecognition];
-    } else {
+    if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseEnded) [self endRecognition];
+    if ((int) [touches count] == 0) {} else { // sometimes touches are 0 for no reason (...but i think it's just during NSEventPhaseEnded / NSEventPhaseStarted)
         touchCount = (int) [touches count];
         [gesture addObject: touches];
     }
 }
-- (void) recognizeGesture: (CGEventRef) event : (CGEventType) type {
+- (void) recognizeGesture: (CGEventRef) event : (CGEventType) type { //handler for NSEventTypeScrollWheel | NSEventTypeLeftMouseDragged | NSEventTypeMagnify
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
-//    NSEventType eventType = [nsEvent type];
-//    if ([nsEvent phase] == NSEventPhaseEnded) {
-//        NSLog(@"it has ended!!!");
-//    }
+    NSEventType eventType = [nsEvent type];
+    // phase DNE on mousedragged
+    if (eventType != NSEventTypeLeftMouseDragged) if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseBegan) return; // probably not the right time to detect gesture during these phases
     if (touchCount <= 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
     NSArray* touches1 = [[gesture objectAtIndex: 0] allObjects];
     NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
@@ -44,6 +42,7 @@ void twoFingerSwipeFromLeftEdge(void) {
         if ([touches2[0] normalizedPosition].x < r || ([touches2 count] == 2 && [touches2[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
         if ([touches1[0] normalizedPosition].x < r || ([touches1 count] == 2 && [touches1[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
     } else if (touchCount == 3) {
+        
     } else if (touchCount == 4) {
     } else if (touchCount == 5) {
     }
