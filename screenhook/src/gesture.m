@@ -40,7 +40,7 @@ void twoFingerSwipeFromLeftEdge(void) {
     NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
     if (touchCount == 2) {
         // detect twoFingerSwipeFromLeftEdge
-        const float r = 0.01; //todo: (firefox) if right sidebar r = 1 - r
+        const float r = 0.1; //todo: (firefox) if right sidebar r = 1 - r
         if ([touches2[0] normalizedPosition].x < r || ([touches2 count] == 2 && [touches2[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
         if ([touches1[0] normalizedPosition].x < r || ([touches1 count] == 2 && [touches1[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
     } else if (touchCount == 3) {
