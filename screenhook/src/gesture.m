@@ -7,6 +7,7 @@
 
 #import "gesture.h"
 #import "app.h"
+#import "globals.h"
 
 GestureManager* _gm;
 BOOL twoFingerSwipeFromLeftEdgeTriggered = NO; //has gesture fired yet?
@@ -19,34 +20,58 @@ void setTriggeredGesture(NSString* touchCount, NSString* swipeDirection) {
 }
 
 /* Gesture Handlers */
-// 2 fingers
+/*
+ 2 fingers
+*/
 void twoFingerSwipeFromLeftEdge(void) {
     if (twoFingerSwipeFromLeftEdgeTriggered) return;
     twoFingerSwipeFromLeftEdgeTriggered = YES;
+    
     [app twoFingerSwipeFromLeftEdge];
 }
-// 3 fingers
+/*
+ 3 fingers
+*/
 void threeFingerSwipeLeft(void) {
     if ([triggeredGestures[@"3"][@"left"] boolValue]) return;
     setTriggeredGesture(@"3", @"left");
+    
+    // next space
     [[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 124 using {control down}"] executeAndReturnError: nil];
 }
 void threeFingerSwipeRight(void) {
     if ([triggeredGestures[@"3"][@"right"] boolValue]) return;
     setTriggeredGesture(@"3", @"right");
+    
+    // previous space
     [[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 123 using {control down}"] executeAndReturnError: nil];
 }
 void threeFingerSwipeUp(void) {
     if ([triggeredGestures[@"3"][@"up"] boolValue]) return;
     setTriggeredGesture(@"3", @"up");
+    
+    // mission control immediately =  //get mouse x,y  //set mouse to 0,0  //mission control // delay .01 //set mouse back to x,y
+    void (^setMouseCoordinates)(CGPoint) = ^(CGPoint position) {
+        CGEventRef event = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, position, kCGMouseButtonLeft);
+        CGEventPost(kCGHIDEventTap, event);
+        CFRelease(event);
+    };
+    CGEventRef event = CGEventCreate(NULL);
+    CGPoint cursor = CGEventGetLocation(event);
+    CFRelease(event);
+    setMouseCoordinates(NSMakePoint(0, 0));
     CoreDockSendNotification(CFSTR("com.apple.expose.awake"), (id) nil);
+    setTimeout(^{setMouseCoordinates(cursor);}, 10);
 }
 void threeFingerSwipeDown(void) {
     if ([triggeredGestures[@"3"][@"down"] boolValue]) return;
     setTriggeredGesture(@"3", @"down");
+    
+    // app exposé
     CoreDockSendNotification(CFSTR("com.apple.expose.front.awake"), (id) nil);
 }
 
+/* GestureManager */
 @implementation GestureManager
 - (instancetype) init {
     [self endRecognition];
