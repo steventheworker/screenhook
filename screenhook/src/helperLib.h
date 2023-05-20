@@ -39,5 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) runAppleScript: (NSString*) scptPath;
 + (void) trackFrontApp: (NSNotification*) notification;
 + (void) listenRunningAppsChanged;
++ (void) nextSpace;
++ (void) previousSpace;
 @end
 NS_ASSUME_NONNULL_END

@@ -8,8 +8,9 @@
 #import "gesture.h"
 #import "app.h"
 #import "globals.h"
+#import "helperLib.h"
 
-GestureManager* _gm;
+GestureManager* _gm; //reference to the main (and likely the only) instance of the gesture manager
 BOOL twoFingerSwipeFromLeftEdgeTriggered = NO; //has gesture fired yet?
 NSMutableDictionary* triggeredGestures; // prevents re-firing swipe (3-5 finger) gestures
 
@@ -36,51 +37,67 @@ void threeFingerSwipeLeft(void) {
     if ([triggeredGestures[@"3"][@"left"] boolValue]) return;
     setTriggeredGesture(@"3", @"left");
     
-    // next space
-    [[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 124 using {control down}"] executeAndReturnError: nil];
+    if (!_gm->isClickSwipe) [helperLib nextSpace];
 }
 void threeFingerSwipeRight(void) {
     if ([triggeredGestures[@"3"][@"right"] boolValue]) return;
     setTriggeredGesture(@"3", @"right");
     
-    // previous space
-    [[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 123 using {control down}"] executeAndReturnError: nil];
+    if (!_gm->isClickSwipe) [helperLib previousSpace];
 }
 void threeFingerSwipeUp(void) {
     if ([triggeredGestures[@"3"][@"up"] boolValue]) return;
     setTriggeredGesture(@"3", @"up");
     
-    // mission control immediately =  //get mouse x,y  //set mouse to 0,0  //mission control // delay .01 //set mouse back to x,y
-    void (^setMouseCoordinates)(CGPoint) = ^(CGPoint position) {
-        CGEventRef event = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, position, kCGMouseButtonLeft);
-        CGEventPost(kCGHIDEventTap, event);
+    if (!_gm->isClickSwipe) { // mission control immediately =  //get mouse x,y  //set mouse to 0,0  //mission control // delay .01 //set mouse back to x,y
+        void (^setMouseCoordinates)(CGPoint) = ^(CGPoint position) {
+            CGEventRef event = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, position, kCGMouseButtonLeft);
+            CGEventPost(kCGHIDEventTap, event);
+            CFRelease(event);
+        };
+        CGEventRef event = CGEventCreate(NULL);
+        CGPoint cursor = CGEventGetLocation(event);
         CFRelease(event);
-    };
-    CGEventRef event = CGEventCreate(NULL);
-    CGPoint cursor = CGEventGetLocation(event);
-    CFRelease(event);
-    setMouseCoordinates(NSMakePoint(0, 0));
-    CoreDockSendNotification(CFSTR("com.apple.expose.awake"), (id) nil);
-    setTimeout(^{setMouseCoordinates(cursor);}, 10);
+        setMouseCoordinates(NSMakePoint(0, 0));
+        CoreDockSendNotification(CFSTR("com.apple.expose.awake"), (id) nil);
+        setTimeout(^{setMouseCoordinates(cursor);}, 10);
+    }
 }
 void threeFingerSwipeDown(void) {
     if ([triggeredGestures[@"3"][@"down"] boolValue]) return;
     setTriggeredGesture(@"3", @"down");
     
-    // app exposé
-    CoreDockSendNotification(CFSTR("com.apple.expose.front.awake"), (id) nil);
+    if (!_gm->isClickSwipe) CoreDockSendNotification(CFSTR("com.apple.expose.front.awake"), (id) nil); // app exposé
 }
+/*
+ 4 fingers
+*/
+void fourFingerSwipeLeft(void) {
+    if ([triggeredGestures[@"4"][@"left"] boolValue]) return;
+    setTriggeredGesture(@"4", @"left");
+    
+    if (!_gm->isClickSwipe) [helperLib nextSpace];
+}
+void fourFingerSwipeRight(void) {
+    if ([triggeredGestures[@"4"][@"right"] boolValue]) return;
+    setTriggeredGesture(@"4", @"right");
+    
+    if (!_gm->isClickSwipe) [helperLib previousSpace];
+}
+
 
 /* GestureManager */
 @implementation GestureManager
 - (instancetype) init {
     [self endRecognition];
     _gm = self;
+//    isClickSwipe = NO;
     return self;
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
     if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseEnded) [self endRecognition];
+//    if ([nsEvent phase] == NSEventPhaseBegan) {    isClickSwipe = NO;}
     if ((int) [touches count] == 0) {} else { // sometimes touches are 0 for no reason (...but i think it's just during NSEventPhaseEnded / NSEventPhaseStarted)
         if ((int) [touches count] != touchCount) [self endRecognition]; // going from 2 to 3 to 4 to 5 fingers is different (ie. stop comparing touch states with different finger counts to decide the gesture)
         touchCount = (int) [touches count];
@@ -136,9 +153,11 @@ void threeFingerSwipeDown(void) {
     if (isSwipeLeft == numTouches) {
         NSLog(@"Swipe left detected");
         if (touchCount == 3) threeFingerSwipeLeft();
+        if (touchCount == 4) fourFingerSwipeLeft();
     } else if (isSwipeRight == numTouches) {
         NSLog(@"Swipe right detected");
         if (touchCount == 3) threeFingerSwipeRight();
+        if (touchCount == 4) fourFingerSwipeRight();
     }
     if (isSwipeUp == numTouches) {
         NSLog(@"Swipe up detected");
@@ -175,6 +194,7 @@ void threeFingerSwipeDown(void) {
     gesture = [NSMutableArray new];
     touchCount = 0;
     twoFingerSwipeFromLeftEdgeTriggered = NO;
+    isClickSwipe = NO;
     [self resetTriggeredGestures];
 }
 - (void) resetTriggeredGestures {
@@ -183,6 +203,16 @@ void threeFingerSwipeDown(void) {
         @"4": [NSMutableDictionary dictionaryWithDictionary: @{@"left": @0, @"right": @0, @"up": @0, @"down": @0,}],
         @"5": [NSMutableDictionary dictionaryWithDictionary: @{@"left": @0, @"right": @0, @"up": @0, @"down": @0,}],
     }];
+    int lastIndex = (int) ([gesture count] - 1);
+    if (lastIndex > -1) {
+        NSSet<NSTouch*>* lastTouches = gesture[lastIndex];
+        gesture = [NSMutableArray new];
+        gesture[0] = lastTouches;
+    }
 }
-
+- (void) setIsClickSwipe {
+    if (touchCount < 2) return;
+    isClickSwipe = YES;
+    NSLog(@"is click swipe");
+}
 @end

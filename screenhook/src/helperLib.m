@@ -43,6 +43,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     return [NSString stringWithFormat:@"%.02f", val];
 }
 //misc
++ (void) nextSpace {[[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 124 using {control down}"] executeAndReturnError: nil];}
++ (void) previousSpace {[[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 123 using {control down}"] executeAndReturnError: nil];}
 + (NSString*) runScript: (NSString*) scriptTxt {
     NSDictionary *error = nil;
     NSAppleScript *script = [[NSAppleScript alloc] initWithSource: scriptTxt];

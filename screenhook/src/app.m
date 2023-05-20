@@ -39,7 +39,7 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
     } else if (eventType == NSEventTypeLeftMouseDown || eventType == NSEventTypeLeftMouseUp) {
         //todo: only call, if 3 finger drag enabled (may interfere in rare case where you use external mouse and trackpad at same time???)
         if (eventType == NSEventTypeLeftMouseDown) {}  //3 finger drag triggers mousedown at the beginning/end (instead of NSEventPhaseBegan)
-        if (eventType == NSEventTypeLeftMouseUp) [gm endRecognition];  //3 finger drag triggers mouseup at the end (instead of NSEventPhaseEnded)
+        else if (eventType == NSEventTypeLeftMouseUp) [gm endRecognition];  //3 finger drag triggers mouseup at the end (instead of NSEventPhaseEnded)
     } else {
         if (eventType != NSEventTypePressure && eventType != NSEventTypeSystemDefined && eventType != NSEventTypeMouseMoved && eventType != NSEventTypeLeftMouseDown && eventType != NSEventTypeLeftMouseUp && // pressure = audible click (not by tap), NSEventTypeSystemDefined = tap to click
             eventType != NSEventTypeFlagsChanged && eventType != NSEventTypeKeyUp && eventType != NSEventTypeKeyDown) { // keyboard events
