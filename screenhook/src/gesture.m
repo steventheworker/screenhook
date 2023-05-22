@@ -156,6 +156,12 @@ void fourFingerSwipeRight(void) {
         if (touchCount == 4) fourFingerSwipeLeft();
     } else if (isSwipeRight == numTouches) {
         NSLog(@"Swipe right detected");
+        if (touchCount == 2) {
+            // firefox
+            const float r = 0.1; //todo: (firefox) if right sidebar r = 1 - r
+            if ([touches2[0] normalizedPosition].x < r || ([touches2 count] == 2 && [touches2[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
+            if ([touches1[0] normalizedPosition].x < r || ([touches1 count] == 2 && [touches1[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
+        }
         if (touchCount == 3) threeFingerSwipeRight();
         if (touchCount == 4) fourFingerSwipeRight();
     }
@@ -168,27 +174,13 @@ void fourFingerSwipeRight(void) {
     }
 }
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type { //handler for NSEventTypeScrollWheel | NSEventTypeLeftMouseDragged | NSEventTypeMagnify
-    NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
-    NSEventType eventType = [nsEvent type];
-    // phase DNE on mousedragged
-    if (eventType != NSEventTypeLeftMouseDragged) if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseBegan) return; // probably not the right time to detect gesture during these phases
-    if (touchCount <= 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
-    NSArray* touches1 = [[gesture objectAtIndex: 0] allObjects];
-    NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
-    if (touchCount == 2) {
-        // detect twoFingerSwipeFromLeftEdge
-        const float r = 0.1; //todo: (firefox) if right sidebar r = 1 - r
-        if ([touches2[0] normalizedPosition].x < r || ([touches2 count] == 2 && [touches2[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
-        if ([touches1[0] normalizedPosition].x < r || ([touches1 count] == 2 && [touches1[1] normalizedPosition].x < r)) twoFingerSwipeFromLeftEdge();
-    } else {
-        
-        
-        if (touchCount == 3) {
-            
-        } else if (touchCount == 4) {} else if (touchCount == 5) {}
-        
-        
-    }
+//    NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
+//    NSEventType eventType = [nsEvent type];
+//    // phase DNE on mousedragged
+//    if (eventType != NSEventTypeLeftMouseDragged) if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseBegan) return; // probably not the right time to detect gesture during these phases
+//    if (touchCount <= 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
+//    NSArray* touches1 = [[gesture objectAtIndex: 0] allObjects];
+//    NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
 }
 - (void) endRecognition {
     gesture = [NSMutableArray new];
