@@ -96,7 +96,7 @@ void fourFingerSwipeRight(void) {
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
-    if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseEnded) [self endRecognition];
+    if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseCancelled) [self endRecognition];
 //    if ([nsEvent phase] == NSEventPhaseBegan) {    isClickSwipe = NO;}
     if ((int) [touches count] == 0) {} else { // sometimes touches are 0 for no reason (...but i think it's just during NSEventPhaseEnded / NSEventPhaseStarted)
         if ((int) [touches count] != touchCount) [self endRecognition]; // going from 2 to 3 to 4 to 5 fingers is different (ie. stop comparing touch states with different finger counts to decide the gesture)
