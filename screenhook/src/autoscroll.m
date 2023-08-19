@@ -14,17 +14,41 @@ BOOL isBlacklisted(NSString* appBID) {
     return NO;
 }
 
+NSTimer* timerRef;
 CGPoint startPoint; // start cursor position
 CGPoint cur; // current cursor position
 int scrollCounter = -1; //every time interval runs +1, resets on mouseup (-1 === disabled)
+void (^autoscrollLoop)(NSTimer *timer) = ^(NSTimer *timer) {
+    if (scrollCounter == -1) return;
+    int dx = cur.x - startPoint.x;
+    int dy = cur.y - startPoint.y;
+    scrollCounter++;
+    //scroll
+    // Create a scroll event
+    CGEventRef scrollEvent = CGEventCreateScrollWheelEvent(NULL,
+                                                           kCGScrollEventUnitLine,
+                                                           2, // number of wheel units (positive for forward, negative for backward)
+                                                           dy / 8, // number of vertical wheel units
+                                                           dx / 8, // number of horizontal wheel units,
+                                                           0); // no modifier flags
+    
+    // Post the scroll event
+    CGEventPost(kCGHIDEventTap, scrollEvent);
+    
+    // Release the event
+    CFRelease(scrollEvent);
+
+};
 void overrideDefaultMiddleMouseDown(CGEventRef e) {
     cur = CGEventGetLocation(e);
     scrollCounter = 0;
     startPoint = cur;
+    timerRef = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:YES block:autoscrollLoop];
 }
 void overrideDefaultMiddleMouseUp(CGEventRef e) {
     cur = CGEventGetLocation(e);
     scrollCounter = -1; // disable autoscroll
+    if (timerRef) [timerRef invalidate];
 }
 
 @implementation autoscroll
