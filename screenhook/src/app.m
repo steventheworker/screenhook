@@ -9,6 +9,7 @@
 #import "helperLib.h"
 #import "timer.h"
 #import "gesture.h"
+#import "autoscroll.h"
 
 GestureManager* gm;
 
@@ -31,6 +32,11 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
     if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) return (CGEventTapCallBack) event;
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
     NSEventType eventType = [nsEvent type];
+    
+    if (NSEventMaskMouseMoved) { //handle mousemoved
+        [autoscroll mousemoved: event : type];
+    }
+    
     if (eventType == NSEventTypeGesture) {
         [gm updateTouches: [nsEvent touchesMatchingPhase:NSTouchPhaseTouching inView:nil] : event : type];
         //gestures always use NSEventTypeScrollWheel (unless: if gesture set in Settings->trackpad => NSEventTypeMagnify; else if drag style is 3 finger drag => NSEventTypeLeftMouseDragged)

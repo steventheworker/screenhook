@@ -14,11 +14,17 @@ BOOL isBlacklisted(NSString* appBID) {
     return NO;
 }
 
+CGPoint startPoint; // start cursor position
+CGPoint cur; // current cursor position
+int scrollCounter = -1; //every time interval runs +1, resets on mouseup (-1 === disabled)
 void overrideDefaultMiddleMouseDown(CGEventRef e) {
-    
+    cur = CGEventGetLocation(e);
+    scrollCounter = 0;
+    startPoint = cur;
 }
 void overrideDefaultMiddleMouseUp(CGEventRef e) {
-    
+    cur = CGEventGetLocation(e);
+    scrollCounter = -1; // disable autoscroll
 }
 
 @implementation autoscroll
@@ -35,5 +41,9 @@ void overrideDefaultMiddleMouseUp(CGEventRef e) {
     if (isBlacklisted(activeApp.bundleIdentifier)) return YES;
     overrideDefaultMiddleMouseUp(e);
     return NO;
+}
++ (void) mousemoved: (CGEventRef) e : (CGEventType) etype {
+    if (scrollCounter == -1) return;
+    cur = CGEventGetLocation(e);
 }
 @end

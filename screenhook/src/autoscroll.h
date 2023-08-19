@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface autoscroll : NSObject {}
 + (BOOL) mousedown: (CGEventRef) e : (CGEventType) etype;
 + (BOOL) mouseup: (CGEventRef) e : (CGEventType) etype;
++ (void) mousemoved: (CGEventRef) e : (CGEventType) etype;
 @end
 
 NS_ASSUME_NONNULL_END
