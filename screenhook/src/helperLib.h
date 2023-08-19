@@ -41,5 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) listenRunningAppsChanged;
 + (void) nextSpace;
 + (void) previousSpace;
++ (void) setSimulatedClickFlag: (BOOL) val;
 @end
 NS_ASSUME_NONNULL_END

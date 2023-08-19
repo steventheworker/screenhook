@@ -10,6 +10,8 @@
 #import "timer.h"
 #import "autoscroll.h"
 
+BOOL isMiddleClickSimulated = NO;
+
 NSDictionary* appAliases = @{
     @"Visual Studio Code": @"Code",
     @"Adobe Lightroom Classic": @"Lightroom Classic",
@@ -22,6 +24,7 @@ CGEventTapCallBack handleMouseDown(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
+    if (isMiddleClickSimulated) return (CGEventTapCallBack) event; //  don't listen to simulated clicks, guarantees simulated click fires
     [[helperLib getApp] mousedown: event : type];
     return [autoscroll mousedown: event : type] ? (CGEventTapCallBack) event : nil;
 }
@@ -29,6 +32,7 @@ CGEventTapCallBack handleMouseUp(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
+    if (isMiddleClickSimulated) {isMiddleClickSimulated = NO;return (CGEventTapCallBack) event;} //  don't listen to simulated clicks, guarantees simulated click fires
     [[helperLib getApp] mouseup: event : type];
     return [autoscroll mouseup: event : type] ? (CGEventTapCallBack) event : nil;
 }
@@ -44,6 +48,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     return [NSString stringWithFormat:@"%.02f", val];
 }
 //misc
++ (void) setSimulatedClickFlag: (BOOL) val {isMiddleClickSimulated = val;}
 + (void) nextSpace {[[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 124 using {control down}"] executeAndReturnError: nil];}
 + (void) previousSpace {[[[NSAppleScript alloc] initWithSource: @"tell application \"System Events\" to key code 123 using {control down}"] executeAndReturnError: nil];}
 + (NSString*) runScript: (NSString*) scriptTxt {

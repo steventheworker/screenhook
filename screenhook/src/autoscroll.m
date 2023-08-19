@@ -6,6 +6,7 @@
 //
 
 #import "autoscroll.h"
+#import "helperLib.h"
 
 NSArray* blacklist = @[@"com.microsoft.VSCode", @"org.mozilla.firefoxdeveloperedition"];
 BOOL isBlacklisted(NSString* appBID) {
@@ -31,21 +32,31 @@ void (^autoscrollLoop)(NSTimer *timer) = ^(NSTimer *timer) {
                                                            dy / 8, // number of vertical wheel units
                                                            dx / 8, // number of horizontal wheel units,
                                                            0); // no modifier flags
-    
-    // Post the scroll event
     CGEventPost(kCGHIDEventTap, scrollEvent);
-    
-    // Release the event
     CFRelease(scrollEvent);
-
 };
+
+
+void shouldTriggerMiddleClick(void) { // allows middle clicks to go through if intention wasn't to scroll
+    int dx = cur.x - startPoint.x;
+    int dy = cur.y - startPoint.y;
+    if (abs(dx) + abs(dy) > 4) return; // probably intended to scroll
+    if (scrollCounter > 5 && abs(dx) + abs(dy) > 2) return; // probably intended to scroll
+    // Simulate a middle click
+    [helperLib setSimulatedClickFlag: YES];
+    CGEventPost (kCGHIDEventTap, CGEventCreateMouseEvent (NULL,kCGEventOtherMouseDown,cur,kCGMouseButtonCenter));
+    CGEventPost (kCGHIDEventTap, CGEventCreateMouseEvent (NULL,kCGEventOtherMouseUp,cur,kCGMouseButtonCenter));
+}
+
 void overrideDefaultMiddleMouseDown(CGEventRef e) {
     cur = CGEventGetLocation(e);
     scrollCounter = 0;
     startPoint = cur;
+    if (timerRef) [timerRef invalidate];
     timerRef = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:YES block:autoscrollLoop];
 }
 void overrideDefaultMiddleMouseUp(CGEventRef e) {
+    shouldTriggerMiddleClick();
     cur = CGEventGetLocation(e);
     scrollCounter = -1; // disable autoscroll
     if (timerRef) [timerRef invalidate];
