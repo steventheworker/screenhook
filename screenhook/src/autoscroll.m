@@ -24,17 +24,33 @@ void (^autoscrollLoop)(NSTimer *timer) = ^(NSTimer *timer) {
     int dx = cur.x - startPoint.x;
     int dy = cur.y - startPoint.y;
     scrollCounter++;
-    //scroll
-    // Create a scroll event
+
+    // Move the mouse to the startPoint coordinates
+    CGPoint movePoint = CGPointMake(startPoint.x, startPoint.y);
+    CGEventRef moveEvent = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, movePoint, kCGMouseButtonCenter);
+    CGEventPost(kCGHIDEventTap, moveEvent);
+    CFRelease(moveEvent);
+
+    usleep(10000);  // 10ms, Wait a bit to let the mouse movement take effect
+
+    // Create and post a scroll event at the new mouse position
     CGEventRef scrollEvent = CGEventCreateScrollWheelEvent(NULL,
                                                            kCGScrollEventUnitLine,
                                                            2, // number of wheel units (positive for forward, negative for backward)
                                                            dy / 8, // number of vertical wheel units
-                                                           dx / 8, // number of horizontal wheel units,
+                                                           dx / 16, // number of horizontal wheel units,
                                                            0); // no modifier flags
     CGEventPost(kCGHIDEventTap, scrollEvent);
     CFRelease(scrollEvent);
+    
+    // Move the mouse to the cur coordinates
+    CGPoint movePoint2 = CGPointMake(cur.x, cur.y);
+    CGEventRef moveEvent2 = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, movePoint2, kCGMouseButtonCenter);
+    CGEventPost(kCGHIDEventTap, moveEvent2);
+    CFRelease(moveEvent2);
+
 };
+
 
 
 void shouldTriggerMiddleClick(void) { // allows middle clicks to go through if intention wasn't to scroll
