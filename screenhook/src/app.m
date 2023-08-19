@@ -48,7 +48,7 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
     }
 //    if (eventType != NSEventTypeGesture && eventType != NSEventTypeMouseMoved && eventType != NSEventTypeFlagsChanged && eventType != NSEventTypeKeyUp && eventType != NSEventTypeKeyDown) NSLog(@"%lu", (unsigned long)eventType);
 
-    return (CGEventTapCallBack) nil;
+    return (CGEventTapCallBack) event;
 }
 
 NSString* fullDirPath(NSString* _path) {

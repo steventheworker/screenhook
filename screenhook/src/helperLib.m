@@ -21,15 +21,21 @@ CGEventTapCallBack handleMouseDown(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
+    if (type == kCGEventOtherMouseDown) {
+//        return nil; // preventDefault
+    }
     [[helperLib getApp] mousedown:event : type];
-    return (CGEventTapCallBack) nil;
+    return (CGEventTapCallBack) event;
 }
 CGEventTapCallBack handleMouseUp(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
+    if (type == kCGEventOtherMouseUp) {
+//        return nil; // preventDefault
+    }
     [[helperLib getApp] mouseup:event : type];
-    return (CGEventTapCallBack) nil;
+    return (CGEventTapCallBack) event;
 }
 //listening to monitors attach / detach
 void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo) {
@@ -311,15 +317,15 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 
 //event listening
 + (void) listenScreens {CGDisplayRegisterReconfigurationCallback((CGDisplayReconfigurationCallBack) proc, (void*) nil);}
-+ (void) listenMouseDown {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseDown) | CGEventMaskBit(kCGEventRightMouseDown) : (CGEventTapCallBack) handleMouseDown];}
-+ (void) listenMouseUp {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseUp) | CGEventMaskBit(kCGEventRightMouseUp) : (CGEventTapCallBack) handleMouseUp];}
++ (void) listenMouseDown {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseDown) | CGEventMaskBit(kCGEventRightMouseDown) | CGEventMaskBit(kCGEventOtherMouseDown) : (CGEventTapCallBack) handleMouseDown];}
++ (void) listenMouseUp {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseUp) | CGEventMaskBit(kCGEventRightMouseUp) | CGEventMaskBit(kCGEventOtherMouseUp) : (CGEventTapCallBack) handleMouseUp];}
 + (void) listenMask : (CGEventMask) emask : (CGEventTapCallBack) handler {
     CFMachPortRef myEventTap;
     CFRunLoopSourceRef eventTapRLSrc;
     myEventTap = CGEventTapCreate (
         kCGSessionEventTap, // Catch all events for current user session
         kCGTailAppendEventTap, // Append to end of EventTap list
-        kCGEventTapOptionListenOnly, // We only listen, we don't modify
+        kCGEventTapOptionDefault, // handler returns nil to preventDefault
         emask,
         handler,
         nil // We need no extra data in the callback

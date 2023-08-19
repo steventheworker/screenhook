@@ -14,6 +14,7 @@
 		BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF63C26F61F0300D396FD /* AppDelegate.m */; };
 		BF8CF64226F61F0400D396FD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64026F61F0400D396FD /* MainMenu.xib */; };
 		BF8CF64526F61F0400D396FD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF64426F61F0400D396FD /* main.m */; };
+		BFB44CD62A906BCE0078988C /* autoscroll.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB44CD52A906BCE0078988C /* autoscroll.m */; };
 		BFC80D16295309F700F9BC67 /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BFC80D15295309F700F9BC67 /* MenuIcon.png */; };
 		BFCABB2529E64036002A75F9 /* screenhook.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BFCABB2429E64036002A75F9 /* screenhook.sdef */; };
 		BFCABB2929E64965002A75F9 /* updateFFSidebarShowing.m in Sources */ = {isa = PBXBuildFile; fileRef = BFCABB2829E64965002A75F9 /* updateFFSidebarShowing.m */; };
@@ -37,6 +38,8 @@
 		BF8CF64426F61F0400D396FD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BF8CF64626F61F0400D396FD /* screenhook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = screenhook.entitlements; sourceTree = "<group>"; };
 		BF8CF64E26F64DCC00D396FD /* Scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Scripts; sourceTree = "<group>"; };
+		BFB44CD42A906BCE0078988C /* autoscroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = autoscroll.h; sourceTree = "<group>"; };
+		BFB44CD52A906BCE0078988C /* autoscroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = autoscroll.m; sourceTree = "<group>"; };
 		BFC80D15295309F700F9BC67 /* MenuIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuIcon.png; sourceTree = "<group>"; };
 		BFCABB2429E64036002A75F9 /* screenhook.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = screenhook.sdef; sourceTree = "<group>"; };
 		BFCABB2729E64965002A75F9 /* updateFFSidebarShowing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = updateFFSidebarShowing.h; sourceTree = "<group>"; };
@@ -69,6 +72,8 @@
 				BFCABB2629E64937002A75F9 /* ScriptCommands */,
 				BFD784A82888B1B200371155 /* app.h */,
 				BFD784A92888B1B200371155 /* app.m */,
+				BFB44CD42A906BCE0078988C /* autoscroll.h */,
+				BFB44CD52A906BCE0078988C /* autoscroll.m */,
 				BFD784AB2888B1B200371155 /* helperLib.h */,
 				BFD784AA2888B1B200371155 /* helperLib.m */,
 				BF39DF9D2915013200BCB772 /* globals.h */,
@@ -203,6 +208,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF8CF64526F61F0400D396FD /* main.m in Sources */,
+				BFB44CD62A906BCE0078988C /* autoscroll.m in Sources */,
 				BFCABB2929E64965002A75F9 /* updateFFSidebarShowing.m in Sources */,
 				BF39DF9F2915013200BCB772 /* globals.m in Sources */,
 				BFD57F0D2A109A5D0021F63E /* gesture.m in Sources */,
