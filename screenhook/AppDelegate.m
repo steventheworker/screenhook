@@ -103,8 +103,7 @@ void steviaOSInit(BOOL initedWithBTT) {
 //    if (!mouseDownCache) NSLog(@"settime"); // handle mouseup ran --before mousedown finished (todo: fix this with async applescript)
     if (!mouseDownCache) return setTimeout(^{[self mouseup:e : etype];}, 84);
     
-    BOOL rightBtn = (etype == kCGEventRightMouseUp);
-    if (rightBtn) return;
+    if (etype == kCGEventRightMouseUp || etype == kCGEventOtherMouseUp) return;
     NSPoint pos = [NSEvent mouseLocation];
     CGPoint carbonPoint = [helperLib carbonPointFrom:pos];
     AXUIElementRef el = [helperLib elementAtPoint:carbonPoint];
@@ -122,8 +121,7 @@ void steviaOSInit(BOOL initedWithBTT) {
 - (void) mousedown: (CGEventRef) e : (CGEventType) etype {
     [timer mousedown: e : etype];
     mouseDownCache = nil;
-    BOOL rightBtn = (etype == kCGEventRightMouseDown);
-    if (rightBtn) return;
+    if (etype == kCGEventRightMouseDown || etype == kCGEventOtherMouseDown) return;
     NSPoint pos = [NSEvent mouseLocation];
     if (primaryScreenWidth - pos.x <= 30 && primaryScreenHeight - pos.y <= 20) cornerClick();
     if (pos.x > primaryScreenWidth || pos.x < 0) { //on extended monitor

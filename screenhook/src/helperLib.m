@@ -8,6 +8,7 @@
 #import "helperLib.h"
 #import "globals.h"
 #import "timer.h"
+#import "autoscroll.h"
 
 NSDictionary* appAliases = @{
     @"Visual Studio Code": @"Code",
@@ -21,21 +22,15 @@ CGEventTapCallBack handleMouseDown(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
-    if (type == kCGEventOtherMouseDown) {
-//        return nil; // preventDefault
-    }
-    [[helperLib getApp] mousedown:event : type];
-    return (CGEventTapCallBack) event;
+    [[helperLib getApp] mousedown: event : type];
+    return [autoscroll mousedown: event : type] ? (CGEventTapCallBack) event : nil;
 }
 CGEventTapCallBack handleMouseUp(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
-    if (type == kCGEventOtherMouseUp) {
-//        return nil; // preventDefault
-    }
-    [[helperLib getApp] mouseup:event : type];
-    return (CGEventTapCallBack) event;
+    [[helperLib getApp] mouseup: event : type];
+    return [autoscroll mouseup: event : type] ? (CGEventTapCallBack) event : nil;
 }
 //listening to monitors attach / detach
 void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo) {
