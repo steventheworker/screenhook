@@ -11,6 +11,7 @@
 		BF29E762293498D10045C816 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = BF29E761293498D10045C816 /* .gitignore */; };
 		BF39DF9F2915013200BCB772 /* globals.m in Sources */ = {isa = PBXBuildFile; fileRef = BF39DF9E2915013200BCB772 /* globals.m */; };
 		BF3BF4D926F7051C000FC40D /* Scripts in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64E26F64DCC00D396FD /* Scripts */; };
+		BF435DA52A91AABC00D402A1 /* default cursor.png in Resources */ = {isa = PBXBuildFile; fileRef = BF435DA42A91AABC00D402A1 /* default cursor.png */; };
 		BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF63C26F61F0300D396FD /* AppDelegate.m */; };
 		BF8CF64226F61F0400D396FD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64026F61F0400D396FD /* MainMenu.xib */; };
 		BF8CF64526F61F0400D396FD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF64426F61F0400D396FD /* main.m */; };
@@ -30,6 +31,7 @@
 		BF29E761293498D10045C816 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		BF39DF9D2915013200BCB772 /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		BF39DF9E2915013200BCB772 /* globals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = globals.m; sourceTree = "<group>"; };
+		BF435DA42A91AABC00D402A1 /* default cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default cursor.png"; sourceTree = "<group>"; };
 		BF8CF63826F61F0300D396FD /* screenhook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = screenhook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF8CF63B26F61F0300D396FD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BF8CF63C26F61F0300D396FD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -86,6 +88,14 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		BF435DA32A91A3B600D402A1 /* cursor images */ = {
+			isa = PBXGroup;
+			children = (
+				BF435DA42A91AABC00D402A1 /* default cursor.png */,
+			);
+			path = "cursor images";
+			sourceTree = "<group>";
+		};
 		BF8CF62F26F61F0300D396FD = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +117,7 @@
 		BF8CF63A26F61F0300D396FD /* screenhook */ = {
 			isa = PBXGroup;
 			children = (
+				BF435DA32A91A3B600D402A1 /* cursor images */,
 				BF8CF64E26F64DCC00D396FD /* Scripts */,
 				BF39DF9C2915010200BCB772 /* src */,
 				BF8CF63B26F61F0300D396FD /* AppDelegate.h */,
@@ -190,6 +201,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF435DA52A91AABC00D402A1 /* default cursor.png in Resources */,
 				BF29E762293498D10045C816 /* .gitignore in Resources */,
 				BF3BF4D926F7051C000FC40D /* Scripts in Resources */,
 				BF29E760293498CA0045C816 /* README.md in Resources */,
