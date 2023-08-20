@@ -64,18 +64,6 @@ void shouldTriggerMiddleClick(void) { // allows middle clicks to go through if i
 }
 
 
-void showCursor(void) {CGDisplayShowCursor(kCGDirectMainDisplay);}
-void hideCusor(void) {
-    void CGSSetConnectionProperty(int, int, CFStringRef, CFBooleanRef);
-    int _CGSDefaultConnection(void);
-    CFStringRef propertyString;
-    // Hack to make background cursor setting work
-    propertyString = CFStringCreateWithCString(NULL, "SetsCursorInBackground", kCFStringEncodingUTF8);
-    CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue);
-    CFRelease(propertyString);
-    CGDisplayHideCursor(kCGDirectMainDisplay); // this should work, but doesn't w/o all above lines ;_;
-}
-
 void overrideDefaultMiddleMouseDown(CGEventRef e) {
     cur = CGEventGetLocation(e);
     scrollCounter = 0;
@@ -83,7 +71,6 @@ void overrideDefaultMiddleMouseDown(CGEventRef e) {
     if (timerRef) [timerRef invalidate];
     timerRef = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:YES block:autoscrollLoop];
     //custom cursor
-    hideCusor();
 }
 void overrideDefaultMiddleMouseUp(CGEventRef e) {
     shouldTriggerMiddleClick();
@@ -91,7 +78,6 @@ void overrideDefaultMiddleMouseUp(CGEventRef e) {
     scrollCounter = -1; // disable autoscroll
     if (timerRef) [timerRef invalidate];
     // Restore the cursor to its default state
-    showCursor();
 }
 
 @implementation autoscroll
