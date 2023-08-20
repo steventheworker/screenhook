@@ -112,6 +112,9 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     CFRelease(up);
     CFRelease(src);
 }
++ (NSScreen*) getMouseScreen {
+    return [self getScreen:0];
+}
 + (NSScreen*) getScreen: (int) screenIndex {
     NSScreen* screen = nil;
     int i = 0;

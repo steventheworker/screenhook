@@ -10,7 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface autoscroll : NSObject {}
+@interface autoscroll : NSObject {
+//    @public NSWindow* overlay;
+    
+}
++ (void) init;
 + (BOOL) mousedown: (CGEventRef) e : (CGEventType) etype;
 + (BOOL) mouseup: (CGEventRef) e : (CGEventType) etype;
 + (void) mousemoved: (CGEventRef) e : (CGEventType) etype;

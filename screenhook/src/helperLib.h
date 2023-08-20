@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (pid_t) getPID: (NSString*) tar;
 + (NSDictionary*) appInfo: (NSString*) owner;
 + (NSScreen*) getScreen: (int) screenIndex;
++ (NSScreen*) getMouseScreen;
 + (CGPoint) carbonPointFrom: (NSPoint) cocoaPoint;
 + (void) triggerKeycode: (CGKeyCode) key;
 + (NSRunningApplication*) runningAppFromAxTitle: (NSString*) tar;

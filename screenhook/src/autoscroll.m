@@ -8,6 +8,8 @@
 #import "autoscroll.h"
 #import "helperLib.h"
 
+//"config"
+int autoscrollIconSize = 32;
 NSArray* blacklist = @[@"com.microsoft.VSCode", /* @"com.apple.Safari", @"org.mozilla.firefoxdeveloperedition" */];
 BOOL isBlacklisted(NSString* appBID) {
     for (NSString *str in blacklist)
@@ -15,6 +17,7 @@ BOOL isBlacklisted(NSString* appBID) {
     return NO;
 }
 
+NSWindow* autoscrollImageWindow;
 NSTimer* timerRef;
 CGPoint startPoint; // start cursor position
 CGPoint cur; // current cursor position
@@ -71,6 +74,9 @@ void overrideDefaultMiddleMouseDown(CGEventRef e) {
     if (timerRef) [timerRef invalidate];
     timerRef = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:YES block:autoscrollLoop];
     //custom cursor
+    [autoscrollImageWindow setIsVisible:YES];
+    float convertedY = [[helperLib getMouseScreen] frame].size.height - cur.y;
+    [autoscrollImageWindow setFrame: NSMakeRect(cur.x - autoscrollIconSize/2, convertedY - autoscrollIconSize/2, autoscrollIconSize, autoscrollIconSize) display: YES];
 }
 void overrideDefaultMiddleMouseUp(CGEventRef e) {
     shouldTriggerMiddleClick();
@@ -78,9 +84,15 @@ void overrideDefaultMiddleMouseUp(CGEventRef e) {
     scrollCounter = -1; // disable autoscroll
     if (timerRef) [timerRef invalidate];
     // Restore the cursor to its default state
+    [autoscrollImageWindow setIsVisible:NO];
 }
 
 @implementation autoscroll
++ (void) init {
+    //create window from xib
+    autoscrollImageWindow = [[[NSWindowController alloc] initWithWindowNibName:@"autoscroll-overlay"] window];
+    [autoscrollImageWindow setLevel: NSPopUpMenuWindowLevel]; //float window
+}
 + (BOOL) mousedown: (CGEventRef) e : (CGEventType) etype {
     if (etype != kCGEventOtherMouseDown) return YES;
     NSRunningApplication* activeApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
