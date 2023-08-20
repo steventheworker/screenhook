@@ -48,18 +48,6 @@ void (^autoscrollLoop)(NSTimer *timer) = ^(NSTimer *timer) {
     CGEventRef moveEvent2 = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, movePoint2, kCGMouseButtonCenter);
     CGEventPost(kCGHIDEventTap, moveEvent2);
     CFRelease(moveEvent2);
-
-    //custom cursor
-    void CGSSetConnectionProperty(int, int, CFStringRef, CFBooleanRef);
-    int _CGSDefaultConnection(void);
-    CFStringRef propertyString;
-    // Hack to make background cursor setting work
-    propertyString = CFStringCreateWithCString(NULL, "SetsCursorInBackground", kCFStringEncodingUTF8);
-    CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue);
-    CFRelease(propertyString);
-    
-    NSCursor *customCursor = [[NSCursor alloc] initWithImage:[NSImage imageNamed:@"default cursor.png"] hotSpot:NSMakePoint(16, 16)];
-    [customCursor set];
 };
 
 
@@ -95,7 +83,7 @@ void overrideDefaultMiddleMouseDown(CGEventRef e) {
     if (timerRef) [timerRef invalidate];
     timerRef = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:YES block:autoscrollLoop];
     //custom cursor
-//    hideCusor();
+    hideCusor();
 }
 void overrideDefaultMiddleMouseUp(CGEventRef e) {
     shouldTriggerMiddleClick();
@@ -103,8 +91,7 @@ void overrideDefaultMiddleMouseUp(CGEventRef e) {
     scrollCounter = -1; // disable autoscroll
     if (timerRef) [timerRef invalidate];
     // Restore the cursor to its default state
-//    showCursor();
-    [NSCursor currentCursor]; // undo custom cursor image
+    showCursor();
 }
 
 @implementation autoscroll
