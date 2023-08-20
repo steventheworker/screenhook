@@ -92,6 +92,7 @@ void overrideDefaultMiddleMouseUp(CGEventRef e) {
     //create window from xib
     autoscrollImageWindow = [[[NSWindowController alloc] initWithWindowNibName:@"autoscroll-overlay"] window];
     [autoscrollImageWindow setLevel: NSPopUpMenuWindowLevel]; //float window
+    [autoscrollImageWindow setIgnoresMouseEvents:YES]; //allows the scroll to not be absorbed by the window
 }
 + (BOOL) mousedown: (CGEventRef) e : (CGEventType) etype {
     if (etype != kCGEventOtherMouseDown) return YES;
