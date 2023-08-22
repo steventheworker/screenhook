@@ -5,7 +5,6 @@
 //  Created by Steven G on 9/18/21.
 //
 
-
 #import "AppDelegate.h"
 #import "src/helperLib.h"
 #import "src/app.h"
@@ -36,14 +35,16 @@ void cornerClick(void) {
 void launchDockAltTab(void) { // DockAltTab.app file is an alias pointing to a DerivedData debug build
     NSWorkspaceOpenConfiguration *config = [NSWorkspaceOpenConfiguration configuration];
 //    config.createsNewApplicationInstance = TRUE; // can be used to launch a new instance of vlc / blender!!!
-    NSURL* aliasUrl = [NSURL fileURLWithPath: @"/Applications/MyApps/DockAltTab.app"];
+    NSURL* aliasUrl = [NSURL fileURLWithPath: @"/Applications/MyApps/DockAltTab.app"]; //todo: don't hardcode
     NSURLBookmarkResolutionOptions options = 0;
     options |= /* DISABLES CODE */ (1) ? NSURLBookmarkResolutionWithoutUI : 0;
     options |= /* DISABLES CODE */ (1) ? NSURLBookmarkResolutionWithoutMounting : 0;
     NSURL* _url = [NSURL URLByResolvingAliasFileAtURL: aliasUrl options: options error: nil];
     [[NSWorkspace sharedWorkspace] openApplicationAtURL:[NSURL URLWithString:  [_url absoluteString]] configuration:config completionHandler:^(NSRunningApplication * _Nullable app, NSError * _Nullable error) {}];
 }
+BOOL steviaBTTPathSet(void) {return [helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] != nil;}
 void steviaOSInit(BOOL initedWithBTT) {
+    [helperLib runScript:@"tell application \"System Events\" to tell process \"AltTab\" to if count of windows > 0 then click button 2 of window 1"]; //close AltTab if prefs open on login, which happens when you use the login items (recommended), rather than the "Start at login" checkbox (in AltTab prefs)
     launchDockAltTab();  // start DockAltTab @ login, but AFTER AltTab & BetterTouchTool (and afterBTTLaunched)
     AppDelegate* del = [helperLib getApp];
     [[del->BTTState cell] setTitle: initedWithBTT ? @"BTT initialized steviaOS ✅" : @"screenhook initialized steviaOS as a fallback ❌"];
@@ -55,9 +56,13 @@ void steviaOSInit(BOOL initedWithBTT) {
         [helperLib runScript: @"tell application \"System Events\" to tell process \"QuickShade\" to if (value of attribute \"AXMenuItemMarkChar\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2) is equal to \"✓\") then click menu bar item 1 of menu bar 2"];
         [helperLib runScript: @"tell application \"System Events\" to tell process \"QuickShade\" to if (value of attribute \"AXMenuItemMarkChar\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2) is equal to \"✓\") then perform action \"AXPress\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2)"];
     }
-    
-    //init ui2 (for some reason doesn't work as a login item in init ui1)
+}
+void secondaryInit(BOOL isBTTRunning, BOOL initedWithBTT) {
+    //init for all users
     [autoscroll init];
+    //init for BTT/steviaOS users
+    if (!isBTTRunning) return;
+    steviaOSInit(initedWithBTT);
 }
 
 @interface AppDelegate ()
@@ -65,29 +70,28 @@ void steviaOSInit(BOOL initedWithBTT) {
 @end
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    [app init]; //primary init (setup screenhook)
+    if (extScreenWidth) attemptRun(); // run cleandesktop if 2+ monitors
+    
+    //wait until apps launch
     void (^ __block pollForVars) (int i) = ^(int i) {
         setTimeout(^{
-            if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] != nil) steviaOSInit(NO);
+            if (steviaBTTPathSet()) secondaryInit(YES, NO);
             else if (i < 5) pollForVars(i + 1);
             else [[self->BTTState cell] setTitle:@"restartBTT failed, steviaOSInit failed"];
             [[self->BTTState cell] setTitle: [NSString stringWithFormat:@"%@ - ran pollForVars %d times", [[self->BTTState cell] title], i]];
         }, 1000);
     };
-    [app init];
-    if (extScreenWidth) attemptRun(); // run cleandesktop if 2+ monitors
-    
-    //wait until apps launch
-    setTimeout(^{
-        if (self->runningApps[@"KeyCastr"]) [helperLib runScript:@"tell application \"System Events\" to tell process \"KeyCastr\" to set position of window 1 to {0, 820}"];
-
+    setTimeout(^{ //wait to run secondary init
+        if (self->runningApps[@"KeyCastr"]) [helperLib runScript:@"tell application \"System Events\" to tell process \"KeyCastr\" to set position of window 1 to {0, 820}"]; //todo: don't hardcode
         if (self->runningApps[@"BTT"]) setTimeout(^{ // Ventura broke BTT Launched event (after login only)  --trigger afterBTTLaunched.scpt
-            if ([helperLib runScript:@"tell application \"BetterTouchTool\" to get_string_variable \"steviaOSSystemFiles\""] == nil) {
+            if (!steviaBTTPathSet()) {
                 [helperLib runScript:@"tell application \"BetterTouchTool\" to trigger_named \"restartBTT\""];
                 [[self->BTTState cell] setTitle: @"restarted... polling..."];
                 pollForVars(0); // see if afterBTTLaunched ran
-            } else steviaOSInit(YES);
-            [helperLib runScript:@"tell application \"System Events\" to tell process \"AltTab\" to if count of windows > 0 then click button 2 of window 1"]; //close AltTab if prefs open on login, which happens when you use the login items (recommended), rather than the "Start at login" checkbox (in AltTab prefs)
+            } else secondaryInit(YES, YES);
         }, 6.67*1000);
+        else secondaryInit(NO, NO); //no BTT init
         [[self->BTTState cell] setTitle: @"..."];
     }, 6.67*1000);
 }
