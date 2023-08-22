@@ -11,6 +11,7 @@
 #import "src/app.h"
 #import "src/globals.h"
 #import "src/timer.h"
+#import "src/autoscroll.h"
 
 NSDictionary* mouseDownCache;
 //runOnce
@@ -54,6 +55,9 @@ void steviaOSInit(BOOL initedWithBTT) {
         [helperLib runScript: @"tell application \"System Events\" to tell process \"QuickShade\" to if (value of attribute \"AXMenuItemMarkChar\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2) is equal to \"✓\") then click menu bar item 1 of menu bar 2"];
         [helperLib runScript: @"tell application \"System Events\" to tell process \"QuickShade\" to if (value of attribute \"AXMenuItemMarkChar\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2) is equal to \"✓\") then perform action \"AXPress\" of (menu item \"Enable Shade\" of menu 1 of menu bar item 1 of menu bar 2)"];
     }
+    
+    //init ui2 (for some reason doesn't work as a login item in init ui1)
+    [autoscroll init];
 }
 
 @interface AppDelegate ()

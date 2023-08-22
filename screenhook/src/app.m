@@ -33,9 +33,8 @@ CGEventTapCallBack allHandler(CGEventTapProxy proxy, CGEventType type, CGEventRe
     NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
     NSEventType eventType = [nsEvent type];
     
-    if (NSEventMaskMouseMoved) { //handle mousemoved
-        [autoscroll mousemoved: event : type];
-    }
+    //handle mousemoved
+    if (type == kCGEventMouseMoved || type == kCGEventOtherMouseDragged) [autoscroll mousemoved: event : type];
     
     if (eventType == NSEventTypeGesture) {
         [gm updateTouches: [nsEvent touchesMatchingPhase:NSTouchPhaseTouching inView:nil] : event : type];
@@ -119,7 +118,6 @@ NSString* fullDirPath(NSString* _path) {
     
     // init UI
     if (del->runningApps[@"BTT"]) [[del->BTTState cell] setTitle:@"Checking if afterBTTLaunched..."];
-    [autoscroll init];
 }
 + (BOOL) isSpotlightOpen : (BOOL) isAlfred {
     return ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to count of windows", isAlfred ? @"Alfred" : @"Spotlight"]] isEqual:@"0"];

@@ -68,6 +68,7 @@ void shouldTriggerMiddleClick(void) { // allows middle clicks to go through if i
 
 
 void overrideDefaultMiddleMouseDown(CGEventRef e) {
+    if (!autoscrollImageWindow) return;
     cur = CGEventGetLocation(e);
     scrollCounter = 0;
     startPoint = cur;
@@ -79,6 +80,7 @@ void overrideDefaultMiddleMouseDown(CGEventRef e) {
     [autoscrollImageWindow setFrame: NSMakeRect(cur.x - autoscrollIconSize/2, convertedY - autoscrollIconSize/2, autoscrollIconSize, autoscrollIconSize) display: YES];
 }
 void overrideDefaultMiddleMouseUp(CGEventRef e) {
+    if (!autoscrollImageWindow) return;
     shouldTriggerMiddleClick();
     cur = CGEventGetLocation(e);
     scrollCounter = -1; // disable autoscroll
