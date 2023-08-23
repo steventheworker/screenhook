@@ -27,9 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (AXUIElementRef) elementAtPoint: (CGPoint) carbonPoint;
 + (NSDictionary*) axInfo: (AXUIElementRef) el;
 + (void) listenScreens;
-+ (void) listenMouseDown;
-+ (void) listenMouseUp;
-+ (void) listenMask: (CGEventMask) emask : (CGEventTapCallBack) handler;
++ (CFMachPortRef) listenMouseDown;
++ (CFMachPortRef) listenMouseUp;
++ (CFMachPortRef) listenMask: (CGEventMask) emask : (CGEventTapCallBack) handler;
 + (AppDelegate *) getApp;
 + (void) killDock;
 + (void) dockSetting: (CFStringRef) pref : (BOOL) val;

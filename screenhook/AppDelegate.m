@@ -96,6 +96,8 @@ void secondaryInit(BOOL isBTTRunning, BOOL initedWithBTT) {
     }, 6.67*1000);
 }
 - (void) awakeFromNib {
+    self->menuDelegate = [[MenuDelegate alloc] init];
+    iconMenu.delegate = self->menuDelegate;
     statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength];
     [[statusItem button] setImage: [NSImage imageNamed:@"MenuIcon"]];
     [statusItem setMenu: iconMenu];

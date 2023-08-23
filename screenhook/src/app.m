@@ -12,6 +12,9 @@
 #import "autoscroll.h"
 
 GestureManager* gm;
+CFMachPortRef mousedownEventTapRef;
+CFMachPortRef mouseupEventTapRef;
+CFMachPortRef allEventTapRef;
 
 //config
 void askForAccessibility(void) {
@@ -85,13 +88,8 @@ NSString* fullDirPath(NSString* _path) {
     AppDelegate* del = [helperLib getApp];
     del->_systemWideAccessibilityObject = AXUIElementCreateSystemWide();
     
-    // ask for input monitoring first
-    [helperLib listenMouseDown];
-    [helperLib listenMouseUp];
     
-    //listen gestures
-    CGEventMask mask = kCGEventMaskForAllEvents;// | CGEventMaskBit();
-    [helperLib listenMask:mask : (CGEventTapCallBack) allHandler];
+    [self startListening]; //cgeventtap
     gm = [[GestureManager alloc] init];
     
     askForAccessibility();
@@ -121,6 +119,20 @@ NSString* fullDirPath(NSString* _path) {
 }
 + (BOOL) isSpotlightOpen : (BOOL) isAlfred {
     return ![[helperLib runScript: [NSString stringWithFormat: @"tell application \"System Events\" to tell process \"%@\" to count of windows", isAlfred ? @"Alfred" : @"Spotlight"]] isEqual:@"0"];
+}
++ (void) startListening {
+    // ask for input monitoring first
+    mousedownEventTapRef = [helperLib listenMouseDown];
+    mouseupEventTapRef = [helperLib listenMouseUp];
+    allEventTapRef = [helperLib listenMask: kCGEventMaskForAllEvents : (CGEventTapCallBack) allHandler]; //listen gestures
+}
++ (void) stopListening {
+    CFRelease(mousedownEventTapRef);
+    mousedownEventTapRef = NULL;
+    CFRelease(mouseupEventTapRef);
+    mouseupEventTapRef = NULL;
+    CFRelease(allEventTapRef);
+    allEventTapRef = NULL;
 }
 @end
 

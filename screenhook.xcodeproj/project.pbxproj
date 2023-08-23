@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BF29E760293498CA0045C816 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = BF29E75F293498CA0045C816 /* README.md */; };
 		BF29E762293498D10045C816 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = BF29E761293498D10045C816 /* .gitignore */; };
+		BF387B0D2A958E03009D7305 /* MenuDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF387B0C2A958E03009D7305 /* MenuDelegate.m */; };
 		BF39DF9F2915013200BCB772 /* globals.m in Sources */ = {isa = PBXBuildFile; fileRef = BF39DF9E2915013200BCB772 /* globals.m */; };
 		BF3BF4D926F7051C000FC40D /* Scripts in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64E26F64DCC00D396FD /* Scripts */; };
 		BF435DA52A91AABC00D402A1 /* default cursor.png in Resources */ = {isa = PBXBuildFile; fileRef = BF435DA42A91AABC00D402A1 /* default cursor.png */; };
@@ -30,6 +31,8 @@
 /* Begin PBXFileReference section */
 		BF29E75F293498CA0045C816 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BF29E761293498D10045C816 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		BF387B0B2A958E03009D7305 /* MenuDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuDelegate.h; sourceTree = "<group>"; };
+		BF387B0C2A958E03009D7305 /* MenuDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuDelegate.m; sourceTree = "<group>"; };
 		BF39DF9D2915013200BCB772 /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		BF39DF9E2915013200BCB772 /* globals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = globals.m; sourceTree = "<group>"; };
 		BF435DA42A91AABC00D402A1 /* default cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default cursor.png"; sourceTree = "<group>"; };
@@ -87,6 +90,8 @@
 				BFECF8F929E3BA74004600B6 /* timer.m */,
 				BFD57F0B2A109A5D0021F63E /* gesture.h */,
 				BFD57F0C2A109A5D0021F63E /* gesture.m */,
+				BF387B0B2A958E03009D7305 /* MenuDelegate.h */,
+				BF387B0C2A958E03009D7305 /* MenuDelegate.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -232,6 +237,7 @@
 				BFECF8FA29E3BA74004600B6 /* timer.m in Sources */,
 				BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */,
 				BFD784AD2888B1B200371155 /* helperLib.m in Sources */,
+				BF387B0D2A958E03009D7305 /* MenuDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

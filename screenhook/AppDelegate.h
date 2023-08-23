@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "timer.h"
+#import "MenuDelegate.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
     @public AXUIElementRef   _systemWideAccessibilityObject;
@@ -25,6 +26,7 @@
     BOOL                   dockautohide;
     NSDictionary*         runningApps;
     timer*               timer;
+    MenuDelegate*         menuDelegate;
 
     //UI
     NSStatusItem *statusItem;

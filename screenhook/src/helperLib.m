@@ -24,6 +24,7 @@ CGEventTapCallBack handleMouseDown(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
+    NSLog(@"md");
     if (isMiddleClickSimulated) return (CGEventTapCallBack) event; //  don't listen to simulated clicks, guarantees simulated click fires
     [[helperLib getApp] mousedown: event : type];
     return [autoscroll mousedown: event : type] ? (CGEventTapCallBack) event : nil;
@@ -32,6 +33,7 @@ CGEventTapCallBack handleMouseUp(CGEventTapProxy proxy ,
                                   CGEventType type ,
                                   CGEventRef event ,
                                   void * refcon ) {
+    NSLog(@"mu");
     if (isMiddleClickSimulated) {isMiddleClickSimulated = NO;return (CGEventTapCallBack) event;} //  don't listen to simulated clicks, guarantees simulated click fires
     [[helperLib getApp] mouseup: event : type];
     return [autoscroll mouseup: event : type] ? (CGEventTapCallBack) event : nil;
@@ -320,15 +322,16 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 
 //event listening
 + (void) listenScreens {CGDisplayRegisterReconfigurationCallback((CGDisplayReconfigurationCallBack) proc, (void*) nil);}
-+ (void) listenMouseDown {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseDown) | CGEventMaskBit(kCGEventRightMouseDown) | CGEventMaskBit(kCGEventOtherMouseDown) : (CGEventTapCallBack) handleMouseDown];}
-+ (void) listenMouseUp {[helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseUp) | CGEventMaskBit(kCGEventRightMouseUp) | CGEventMaskBit(kCGEventOtherMouseUp) : (CGEventTapCallBack) handleMouseUp];}
-+ (void) listenMask : (CGEventMask) emask : (CGEventTapCallBack) handler {
++ (CFMachPortRef) listenMouseDown {return [helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseDown) | CGEventMaskBit(kCGEventRightMouseDown) | CGEventMaskBit(kCGEventOtherMouseDown) : (CGEventTapCallBack) handleMouseDown];}
++ (CFMachPortRef) listenMouseUp {return [helperLib listenMask:CGEventMaskBit(kCGEventLeftMouseUp) | CGEventMaskBit(kCGEventRightMouseUp) | CGEventMaskBit(kCGEventOtherMouseUp) : (CGEventTapCallBack) handleMouseUp];}
++ (CFMachPortRef) listenMask : (CGEventMask) emask : (CGEventTapCallBack) handler {
     CFMachPortRef myEventTap;
     CFRunLoopSourceRef eventTapRLSrc;
     myEventTap = CGEventTapCreate (
         kCGSessionEventTap, // Catch all events for current user session
         kCGTailAppendEventTap, // Append to end of EventTap list
         kCGEventTapOptionDefault, // handler returns nil to preventDefault
+//        kCGEventTapOptionListenOnly, // handler returns nil to preventDefault
         emask,
         handler,
         nil // We need no extra data in the callback
@@ -344,6 +347,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         kCFRunLoopDefaultMode
     );
     CFRelease(eventTapRLSrc);
+    return myEventTap;
 }
 + (void) trackFrontApp: (NSNotification*) notification {
     setTimeout(^{ //wait for next app to fully activate

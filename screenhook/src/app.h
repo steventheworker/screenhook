@@ -12,5 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) init;
 + (BOOL) isSpotlightOpen : (BOOL) isAlfred;
 + (void) twoFingerSwipeFromLeftEdge;
++ (void) startListening;
++ (void) stopListening;
 @end
 NS_ASSUME_NONNULL_END
