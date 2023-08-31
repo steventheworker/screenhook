@@ -10,8 +10,7 @@
 
 //"config"
 int autoscrollIconSize = 32;
-NSArray* blacklist = @[@"com.microsoft.VSCode", /* @"com.apple.Safari", @"org.mozilla.firefoxdeveloperedition" */];
-BOOL isBlacklisted(NSString* appBID) {
+NSArray* blacklist = @[@"com.microsoft.VSCode", @"com.microsoft.VSCodeInsiders", @"com.visualstudio.code.oss", @"com.barebones.bbedit", @"com.jetbrains.intellij", @"com.jetbrains.WebStorm", @"com.jetbrains.PhpStorm", @"com.jetbrains.rubymine", @"com.jetbrains.clion", @"com.jetbrains.goland", @"com.jetbrains.appcode", @"com.jetbrains.pycharm", /* @"com.apple.Safari", @"org.mozilla.firefoxdeveloperedition" */];BOOL isBlacklisted(NSString* appBID) {
     for (NSString *str in blacklist)
         if ([str isEqualToString: appBID]) return YES;
     return NO;
