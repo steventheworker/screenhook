@@ -330,8 +330,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     myEventTap = CGEventTapCreate (
         kCGSessionEventTap, // Catch all events for current user session
         kCGTailAppendEventTap, // Append to end of EventTap list
-        kCGEventTapOptionDefault, // handler returns nil to preventDefault
-//        kCGEventTapOptionListenOnly, // handler returns nil to preventDefault
+//        kCGEventTapOptionDefault, // handler returns nil to preventDefault
+        kCGEventTapOptionListenOnly, // handler returns nil to preventDefault
         emask,
         handler,
         nil // We need no extra data in the callback

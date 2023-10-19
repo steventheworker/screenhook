@@ -91,20 +91,20 @@ void overrideDefaultMiddleMouseUp(CGEventRef e) {
 @implementation autoscroll
 + (void) init {
     //create window from xib
-    autoscrollImageWindow = [[[NSWindowController alloc] initWithWindowNibName:@"autoscroll-overlay"] window];
-    [autoscrollImageWindow setLevel: NSPopUpMenuWindowLevel]; //float window
-    [autoscrollImageWindow setIgnoresMouseEvents:YES]; //allows the scroll to not be absorbed by the window
-    [autoscrollImageWindow setBackgroundColor:[NSColor clearColor]]; //transparent window background
+//    autoscrollImageWindow = [[[NSWindowController alloc] initWithWindowNibName:@"autoscroll-overlay"] window];
+//    [autoscrollImageWindow setLevel: NSPopUpMenuWindowLevel]; //float window
+//    [autoscrollImageWindow setIgnoresMouseEvents:YES]; //allows the scroll to not be absorbed by the window
+//    [autoscrollImageWindow setBackgroundColor:[NSColor clearColor]]; //transparent window background
 }
 + (BOOL) mousedown: (CGEventRef) e : (CGEventType) etype {
-    if (etype != kCGEventOtherMouseDown) return YES;
+    if (1) return YES;
     NSRunningApplication* activeApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if (isBlacklisted(activeApp.bundleIdentifier)) return YES;
     overrideDefaultMiddleMouseDown(e);
     return NO;
 }
 + (BOOL) mouseup: (CGEventRef) e : (CGEventType) etype {
-    if (etype != kCGEventOtherMouseUp) return YES;
+    if (1) return YES;
     NSRunningApplication* activeApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
     if (isBlacklisted(activeApp.bundleIdentifier)) return YES;
     overrideDefaultMiddleMouseUp(e);
