@@ -3,67 +3,28 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF29E760293498CA0045C816 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = BF29E75F293498CA0045C816 /* README.md */; };
-		BF29E762293498D10045C816 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = BF29E761293498D10045C816 /* .gitignore */; };
-		BF387B0D2A958E03009D7305 /* MenuDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF387B0C2A958E03009D7305 /* MenuDelegate.m */; };
-		BF39DF9F2915013200BCB772 /* globals.m in Sources */ = {isa = PBXBuildFile; fileRef = BF39DF9E2915013200BCB772 /* globals.m */; };
-		BF3BF4D926F7051C000FC40D /* Scripts in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64E26F64DCC00D396FD /* Scripts */; };
-		BF435DA52A91AABC00D402A1 /* default cursor.png in Resources */ = {isa = PBXBuildFile; fileRef = BF435DA42A91AABC00D402A1 /* default cursor.png */; };
-		BF435DA72A91B75D00D402A1 /* autoscroll-overlay.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF435DA62A91B75D00D402A1 /* autoscroll-overlay.xib */; };
-		BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF63C26F61F0300D396FD /* AppDelegate.m */; };
-		BF8CF64226F61F0400D396FD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF8CF64026F61F0400D396FD /* MainMenu.xib */; };
-		BF8CF64526F61F0400D396FD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CF64426F61F0400D396FD /* main.m */; };
-		BFB44CD62A906BCE0078988C /* autoscroll.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB44CD52A906BCE0078988C /* autoscroll.m */; };
-		BFC80D16295309F700F9BC67 /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BFC80D15295309F700F9BC67 /* MenuIcon.png */; };
-		BFCABB2529E64036002A75F9 /* screenhook.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BFCABB2429E64036002A75F9 /* screenhook.sdef */; };
-		BFCABB2929E64965002A75F9 /* updateFFSidebarShowing.m in Sources */ = {isa = PBXBuildFile; fileRef = BFCABB2829E64965002A75F9 /* updateFFSidebarShowing.m */; };
-		BFD57F0D2A109A5D0021F63E /* gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD57F0C2A109A5D0021F63E /* gesture.m */; };
-		BFD784AC2888B1B200371155 /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784A92888B1B200371155 /* app.m */; };
-		BFD784AD2888B1B200371155 /* helperLib.m in Sources */ = {isa = PBXBuildFile; fileRef = BFD784AA2888B1B200371155 /* helperLib.m */; };
-		BFECF8FA29E3BA74004600B6 /* timer.m in Sources */ = {isa = PBXBuildFile; fileRef = BFECF8F929E3BA74004600B6 /* timer.m */; };
-		BFEEDD9E295307A60004F56C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFEEDD9D295307A60004F56C /* Assets.xcassets */; };
+		BF3B73FB2AE0EB3600D80555 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF3B73FA2AE0EB3600D80555 /* AppDelegate.m */; };
+		BF3B73FD2AE0EB3700D80555 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF3B73FC2AE0EB3700D80555 /* Assets.xcassets */; };
+		BF3B74002AE0EB3700D80555 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF3B73FE2AE0EB3700D80555 /* MainMenu.xib */; };
+		BF3B74022AE0EB3700D80555 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF3B74012AE0EB3700D80555 /* main.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BF29E75F293498CA0045C816 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		BF29E761293498D10045C816 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		BF387B0B2A958E03009D7305 /* MenuDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuDelegate.h; sourceTree = "<group>"; };
-		BF387B0C2A958E03009D7305 /* MenuDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuDelegate.m; sourceTree = "<group>"; };
-		BF39DF9D2915013200BCB772 /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
-		BF39DF9E2915013200BCB772 /* globals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = globals.m; sourceTree = "<group>"; };
-		BF435DA42A91AABC00D402A1 /* default cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default cursor.png"; sourceTree = "<group>"; };
-		BF435DA62A91B75D00D402A1 /* autoscroll-overlay.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "autoscroll-overlay.xib"; sourceTree = "<group>"; };
-		BF8CF63826F61F0300D396FD /* screenhook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = screenhook.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BF8CF63B26F61F0300D396FD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		BF8CF63C26F61F0300D396FD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		BF8CF64126F61F0400D396FD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		BF8CF64326F61F0400D396FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BF8CF64426F61F0400D396FD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		BF8CF64626F61F0400D396FD /* screenhook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = screenhook.entitlements; sourceTree = "<group>"; };
-		BF8CF64E26F64DCC00D396FD /* Scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Scripts; sourceTree = "<group>"; };
-		BFB44CD42A906BCE0078988C /* autoscroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = autoscroll.h; sourceTree = "<group>"; };
-		BFB44CD52A906BCE0078988C /* autoscroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = autoscroll.m; sourceTree = "<group>"; };
-		BFC80D15295309F700F9BC67 /* MenuIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuIcon.png; sourceTree = "<group>"; };
-		BFCABB2429E64036002A75F9 /* screenhook.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = screenhook.sdef; sourceTree = "<group>"; };
-		BFCABB2729E64965002A75F9 /* updateFFSidebarShowing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = updateFFSidebarShowing.h; sourceTree = "<group>"; };
-		BFCABB2829E64965002A75F9 /* updateFFSidebarShowing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = updateFFSidebarShowing.m; sourceTree = "<group>"; };
-		BFD57F0B2A109A5D0021F63E /* gesture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gesture.h; sourceTree = "<group>"; };
-		BFD57F0C2A109A5D0021F63E /* gesture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gesture.m; sourceTree = "<group>"; };
-		BFD784A82888B1B200371155 /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app.h; path = ../src/app.h; sourceTree = "<group>"; };
-		BFD784A92888B1B200371155 /* app.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = app.m; path = ../src/app.m; sourceTree = "<group>"; };
-		BFD784AA2888B1B200371155 /* helperLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = helperLib.m; path = ../src/helperLib.m; sourceTree = "<group>"; };
-		BFD784AB2888B1B200371155 /* helperLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = helperLib.h; path = ../src/helperLib.h; sourceTree = "<group>"; };
-		BFECF8F829E3BA74004600B6 /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
-		BFECF8F929E3BA74004600B6 /* timer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = timer.m; sourceTree = "<group>"; };
-		BFEEDD9D295307A60004F56C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BF3B73F62AE0EB3600D80555 /* screenhook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = screenhook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF3B73F92AE0EB3600D80555 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		BF3B73FA2AE0EB3600D80555 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		BF3B73FC2AE0EB3700D80555 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BF3B73FF2AE0EB3700D80555 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		BF3B74012AE0EB3700D80555 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BF3B74032AE0EB3700D80555 /* screenhook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = screenhook.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BF8CF63526F61F0300D396FD /* Frameworks */ = {
+		BF3B73F32AE0EB3600D80555 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -73,93 +34,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		BF39DF9C2915010200BCB772 /* src */ = {
+		BF3B73ED2AE0EB3600D80555 = {
 			isa = PBXGroup;
 			children = (
-				BFCABB2629E64937002A75F9 /* ScriptCommands */,
-				BFD784A82888B1B200371155 /* app.h */,
-				BFD784A92888B1B200371155 /* app.m */,
-				BF435DA62A91B75D00D402A1 /* autoscroll-overlay.xib */,
-				BFB44CD42A906BCE0078988C /* autoscroll.h */,
-				BFB44CD52A906BCE0078988C /* autoscroll.m */,
-				BFD784AB2888B1B200371155 /* helperLib.h */,
-				BFD784AA2888B1B200371155 /* helperLib.m */,
-				BF39DF9D2915013200BCB772 /* globals.h */,
-				BF39DF9E2915013200BCB772 /* globals.m */,
-				BFECF8F829E3BA74004600B6 /* timer.h */,
-				BFECF8F929E3BA74004600B6 /* timer.m */,
-				BFD57F0B2A109A5D0021F63E /* gesture.h */,
-				BFD57F0C2A109A5D0021F63E /* gesture.m */,
-				BF387B0B2A958E03009D7305 /* MenuDelegate.h */,
-				BF387B0C2A958E03009D7305 /* MenuDelegate.m */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		BF435DA32A91A3B600D402A1 /* cursor images */ = {
-			isa = PBXGroup;
-			children = (
-				BF435DA42A91AABC00D402A1 /* default cursor.png */,
-			);
-			path = "cursor images";
-			sourceTree = "<group>";
-		};
-		BF8CF62F26F61F0300D396FD = {
-			isa = PBXGroup;
-			children = (
-				BF8CF63A26F61F0300D396FD /* screenhook */,
-				BF29E761293498D10045C816 /* .gitignore */,
-				BF29E75F293498CA0045C816 /* README.md */,
-				BF8CF63926F61F0300D396FD /* Products */,
+				BF3B73F82AE0EB3600D80555 /* screenhook */,
+				BF3B73F72AE0EB3600D80555 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		BF8CF63926F61F0300D396FD /* Products */ = {
+		BF3B73F72AE0EB3600D80555 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BF8CF63826F61F0300D396FD /* screenhook.app */,
+				BF3B73F62AE0EB3600D80555 /* screenhook.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BF8CF63A26F61F0300D396FD /* screenhook */ = {
+		BF3B73F82AE0EB3600D80555 /* screenhook */ = {
 			isa = PBXGroup;
 			children = (
-				BF435DA32A91A3B600D402A1 /* cursor images */,
-				BF8CF64E26F64DCC00D396FD /* Scripts */,
-				BF39DF9C2915010200BCB772 /* src */,
-				BF8CF63B26F61F0300D396FD /* AppDelegate.h */,
-				BF8CF63C26F61F0300D396FD /* AppDelegate.m */,
-				BFEEDD9D295307A60004F56C /* Assets.xcassets */,
-				BF8CF64326F61F0400D396FD /* Info.plist */,
-				BF8CF64426F61F0400D396FD /* main.m */,
-				BF8CF64026F61F0400D396FD /* MainMenu.xib */,
-				BFC80D15295309F700F9BC67 /* MenuIcon.png */,
-				BF8CF64626F61F0400D396FD /* screenhook.entitlements */,
-				BFCABB2429E64036002A75F9 /* screenhook.sdef */,
+				BF3B73F92AE0EB3600D80555 /* AppDelegate.h */,
+				BF3B73FA2AE0EB3600D80555 /* AppDelegate.m */,
+				BF3B73FC2AE0EB3700D80555 /* Assets.xcassets */,
+				BF3B73FE2AE0EB3700D80555 /* MainMenu.xib */,
+				BF3B74012AE0EB3700D80555 /* main.m */,
+				BF3B74032AE0EB3700D80555 /* screenhook.entitlements */,
 			);
 			path = screenhook;
-			sourceTree = "<group>";
-		};
-		BFCABB2629E64937002A75F9 /* ScriptCommands */ = {
-			isa = PBXGroup;
-			children = (
-				BFCABB2729E64965002A75F9 /* updateFFSidebarShowing.h */,
-				BFCABB2829E64965002A75F9 /* updateFFSidebarShowing.m */,
-			);
-			path = ScriptCommands;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BF8CF63726F61F0300D396FD /* screenhook */ = {
+		BF3B73F52AE0EB3600D80555 /* screenhook */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BF8CF64926F61F0400D396FD /* Build configuration list for PBXNativeTarget "screenhook" */;
+			buildConfigurationList = BF3B74062AE0EB3700D80555 /* Build configuration list for PBXNativeTarget "screenhook" */;
 			buildPhases = (
-				BF8CF63426F61F0300D396FD /* Sources */,
-				BF8CF63526F61F0300D396FD /* Frameworks */,
-				BF8CF63626F61F0300D396FD /* Resources */,
+				BF3B73F22AE0EB3600D80555 /* Sources */,
+				BF3B73F32AE0EB3600D80555 /* Frameworks */,
+				BF3B73F42AE0EB3600D80555 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -167,87 +80,70 @@
 			);
 			name = screenhook;
 			productName = screenhook;
-			productReference = BF8CF63826F61F0300D396FD /* screenhook.app */;
+			productReference = BF3B73F62AE0EB3600D80555 /* screenhook.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		BF8CF63026F61F0300D396FD /* Project object */ = {
+		BF3B73EE2AE0EB3600D80555 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				KnownAssetTags = (
-					New,
-				);
-				LastUpgradeCheck = 1410;
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					BF8CF63726F61F0300D396FD = {
-						CreatedOnToolsVersion = 12.5.1;
+					BF3B73F52AE0EB3600D80555 = {
+						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = BF8CF63326F61F0300D396FD /* Build configuration list for PBXProject "screenhook" */;
-			compatibilityVersion = "Xcode 9.3";
+			buildConfigurationList = BF3B73F12AE0EB3600D80555 /* Build configuration list for PBXProject "screenhook" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = BF8CF62F26F61F0300D396FD;
-			productRefGroup = BF8CF63926F61F0300D396FD /* Products */;
+			mainGroup = BF3B73ED2AE0EB3600D80555;
+			productRefGroup = BF3B73F72AE0EB3600D80555 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BF8CF63726F61F0300D396FD /* screenhook */,
+				BF3B73F52AE0EB3600D80555 /* screenhook */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		BF8CF63626F61F0300D396FD /* Resources */ = {
+		BF3B73F42AE0EB3600D80555 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF435DA52A91AABC00D402A1 /* default cursor.png in Resources */,
-				BF435DA72A91B75D00D402A1 /* autoscroll-overlay.xib in Resources */,
-				BF29E762293498D10045C816 /* .gitignore in Resources */,
-				BF3BF4D926F7051C000FC40D /* Scripts in Resources */,
-				BF29E760293498CA0045C816 /* README.md in Resources */,
-				BFC80D16295309F700F9BC67 /* MenuIcon.png in Resources */,
-				BF8CF64226F61F0400D396FD /* MainMenu.xib in Resources */,
-				BFCABB2529E64036002A75F9 /* screenhook.sdef in Resources */,
-				BFEEDD9E295307A60004F56C /* Assets.xcassets in Resources */,
+				BF3B73FD2AE0EB3700D80555 /* Assets.xcassets in Resources */,
+				BF3B74002AE0EB3700D80555 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BF8CF63426F61F0300D396FD /* Sources */ = {
+		BF3B73F22AE0EB3600D80555 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF8CF64526F61F0400D396FD /* main.m in Sources */,
-				BFB44CD62A906BCE0078988C /* autoscroll.m in Sources */,
-				BFCABB2929E64965002A75F9 /* updateFFSidebarShowing.m in Sources */,
-				BF39DF9F2915013200BCB772 /* globals.m in Sources */,
-				BFD57F0D2A109A5D0021F63E /* gesture.m in Sources */,
-				BFD784AC2888B1B200371155 /* app.m in Sources */,
-				BFECF8FA29E3BA74004600B6 /* timer.m in Sources */,
-				BF8CF63D26F61F0300D396FD /* AppDelegate.m in Sources */,
-				BFD784AD2888B1B200371155 /* helperLib.m in Sources */,
-				BF387B0D2A958E03009D7305 /* MenuDelegate.m in Sources */,
+				BF3B74022AE0EB3700D80555 /* main.m in Sources */,
+				BF3B73FB2AE0EB3600D80555 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		BF8CF64026F61F0400D396FD /* MainMenu.xib */ = {
+		BF3B73FE2AE0EB3700D80555 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				BF8CF64126F61F0400D396FD /* Base */,
+				BF3B73FF2AE0EB3700D80555 /* Base */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -255,14 +151,14 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		BF8CF64726F61F0400D396FD /* Debug */ = {
+		BF3B74042AE0EB3700D80555 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -289,11 +185,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -307,7 +203,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -315,14 +212,14 @@
 			};
 			name = Debug;
 		};
-		BF8CF64826F61F0400D396FD /* Release */ = {
+		BF3B74052AE0EB3700D80555 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -349,11 +246,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -361,85 +258,92 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 			};
 			name = Release;
 		};
-		BF8CF64A26F61F0400D396FD /* Debug */ = {
+		BF3B74072AE0EB3700D80555 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = screenhook/screenhook.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L33QBJT48B;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = screenhook/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ScreenHook;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.01;
+				MACOSX_DEPLOYMENT_TARGET = 11.2;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.steventheworker.screenhook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Debug;
 		};
-		BF8CF64B26F61F0400D396FD /* Release */ = {
+		BF3B74082AE0EB3700D80555 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = screenhook/screenhook.entitlements;
-				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L33QBJT48B;
-				INFOPLIST_FILE = screenhook/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ScreenHook;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.01;
+				MACOSX_DEPLOYMENT_TARGET = 11.2;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.steventheworker.screenhook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BF8CF63326F61F0300D396FD /* Build configuration list for PBXProject "screenhook" */ = {
+		BF3B73F12AE0EB3600D80555 /* Build configuration list for PBXProject "screenhook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BF8CF64726F61F0400D396FD /* Debug */,
-				BF8CF64826F61F0400D396FD /* Release */,
+				BF3B74042AE0EB3700D80555 /* Debug */,
+				BF3B74052AE0EB3700D80555 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BF8CF64926F61F0400D396FD /* Build configuration list for PBXNativeTarget "screenhook" */ = {
+		BF3B74062AE0EB3700D80555 /* Build configuration list for PBXNativeTarget "screenhook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BF8CF64A26F61F0400D396FD /* Debug */,
-				BF8CF64B26F61F0400D396FD /* Release */,
+				BF3B74072AE0EB3700D80555 /* Debug */,
+				BF3B74082AE0EB3700D80555 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = BF8CF63026F61F0300D396FD /* Project object */;
+	rootObject = BF3B73EE2AE0EB3600D80555 /* Project object */;
 }
