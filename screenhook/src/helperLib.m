@@ -7,6 +7,7 @@
 
 #import "globals.h"
 #import "helperLib.h"
+#import <UserNotifications/UserNotifications.h>
 
 const int DOCK_BOTTOM_PADDING = 6; //eg: if screen 1080px, dock pos.y is actually <= 1074px (for bottom dock, but same for left/right)
 NSDictionary* listenOnlyEvents = @{@"mousemove": @1}; //events that you probably shouldn't modify:    mousemove causes xcode to crash when selecting lines w/ kcgtapoptionDefault)
@@ -508,6 +509,21 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     CGEventPost(kCGHIDEventTap, down);
     CGEventPost(kCGHIDEventTap, up);
 }
++ (void) sendNotificationWithID: (NSString*) notificationID : (NSString*) title : (NSString*) message { //if use same notificationID, notification replaced/updated
+    UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+    content.title = title;
+    content.body = message;
+    /* attach image to bottom right of notification */
+//    NSString* iconPath = [[NSBundle mainBundle] pathForResource: @"MenuIcon.png" ofType:nil];
+//    UNNotificationAttachment* iconAttachment = [UNNotificationAttachment attachmentWithIdentifier: @"notificationIcon" URL: [NSURL fileURLWithPath: iconPath] options: nil error: nil];
+//    content.attachments = @[iconAttachment];
+    UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval: 1 repeats: NO];
+    UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier: notificationID content: content trigger: trigger];
+    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+    [center addNotificationRequest: request withCompletionHandler: nil];
+}
++ (void) sendNotification: (NSString*) title : (NSString*) message {[self sendNotificationWithID: title : title : message];}
+
 
 /* misc. */
 + (NSView*) $0: (NSView*) container : (NSString*) tar { //getElementById stops after it find 1 match
