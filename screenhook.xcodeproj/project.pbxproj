@@ -11,6 +11,14 @@
 		BF3B73FD2AE0EB3700D80555 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF3B73FC2AE0EB3700D80555 /* Assets.xcassets */; };
 		BF3B74002AE0EB3700D80555 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF3B73FE2AE0EB3700D80555 /* MainMenu.xib */; };
 		BF3B74022AE0EB3700D80555 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF3B74012AE0EB3700D80555 /* main.m */; };
+		BF56004D2AE775CF005846CA /* Spaces.m in Sources */ = {isa = PBXBuildFile; fileRef = BF5600432AE775CF005846CA /* Spaces.m */; };
+		BF56004E2AE775CF005846CA /* globals.m in Sources */ = {isa = PBXBuildFile; fileRef = BF5600442AE775CF005846CA /* globals.m */; };
+		BF56004F2AE775CF005846CA /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = BF5600462AE775CF005846CA /* app.m */; };
+		BF5600502AE775CF005846CA /* prefs.m in Sources */ = {isa = PBXBuildFile; fileRef = BF5600492AE775CF005846CA /* prefs.m */; };
+		BF5600512AE775CF005846CA /* helperLib.m in Sources */ = {isa = PBXBuildFile; fileRef = BF56004B2AE775CF005846CA /* helperLib.m */; };
+		BF5600522AE775CF005846CA /* prefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = BF56004C2AE775CF005846CA /* prefsWindowController.m */; };
+		BF5600542AE7946E005846CA /* prefs.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF5600532AE7946E005846CA /* prefs.xib */; };
+		E48EBADFFDBCA5C6752F7A46 /* Pods_screenhook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED65A1D036F690412AEB1EAB /* Pods_screenhook.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +29,22 @@
 		BF3B73FF2AE0EB3700D80555 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		BF3B74012AE0EB3700D80555 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BF3B74032AE0EB3700D80555 /* screenhook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = screenhook.entitlements; sourceTree = "<group>"; };
+		BF5600412AE775CF005846CA /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app.h; sourceTree = "<group>"; };
+		BF5600422AE775CF005846CA /* Spaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Spaces.h; sourceTree = "<group>"; };
+		BF5600432AE775CF005846CA /* Spaces.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Spaces.m; sourceTree = "<group>"; };
+		BF5600442AE775CF005846CA /* globals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = globals.m; sourceTree = "<group>"; };
+		BF5600452AE775CF005846CA /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
+		BF5600462AE775CF005846CA /* app.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = app.m; sourceTree = "<group>"; };
+		BF5600472AE775CF005846CA /* helperLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = helperLib.h; sourceTree = "<group>"; };
+		BF5600482AE775CF005846CA /* prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefs.h; sourceTree = "<group>"; };
+		BF5600492AE775CF005846CA /* prefs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = prefs.m; sourceTree = "<group>"; };
+		BF56004A2AE775CF005846CA /* prefsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefsWindowController.h; sourceTree = "<group>"; };
+		BF56004B2AE775CF005846CA /* helperLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = helperLib.m; sourceTree = "<group>"; };
+		BF56004C2AE775CF005846CA /* prefsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = prefsWindowController.m; sourceTree = "<group>"; };
+		BF5600532AE7946E005846CA /* prefs.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = prefs.xib; sourceTree = "<group>"; };
+		ED65A1D036F690412AEB1EAB /* Pods_screenhook.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_screenhook.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1BE4A79DE38DFC0B4CFD465 /* Pods-screenhook.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-screenhook.release.xcconfig"; path = "Target Support Files/Pods-screenhook/Pods-screenhook.release.xcconfig"; sourceTree = "<group>"; };
+		F4C88BFC863FE312FF3EA5BC /* Pods-screenhook.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-screenhook.debug.xcconfig"; path = "Target Support Files/Pods-screenhook/Pods-screenhook.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,17 +52,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E48EBADFFDBCA5C6752F7A46 /* Pods_screenhook.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3E1FB2383953C66CDA5E9082 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ED65A1D036F690412AEB1EAB /* Pods_screenhook.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		BF3B73ED2AE0EB3600D80555 = {
 			isa = PBXGroup;
 			children = (
 				BF3B73F82AE0EB3600D80555 /* screenhook */,
 				BF3B73F72AE0EB3600D80555 /* Products */,
+				BFB824519695A7F39AD36621 /* Pods */,
+				3E1FB2383953C66CDA5E9082 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -53,14 +88,44 @@
 		BF3B73F82AE0EB3600D80555 /* screenhook */ = {
 			isa = PBXGroup;
 			children = (
+				BF5600402AE775AE005846CA /* src */,
 				BF3B73F92AE0EB3600D80555 /* AppDelegate.h */,
 				BF3B73FA2AE0EB3600D80555 /* AppDelegate.m */,
 				BF3B73FC2AE0EB3700D80555 /* Assets.xcassets */,
 				BF3B73FE2AE0EB3700D80555 /* MainMenu.xib */,
+				BF5600532AE7946E005846CA /* prefs.xib */,
 				BF3B74012AE0EB3700D80555 /* main.m */,
 				BF3B74032AE0EB3700D80555 /* screenhook.entitlements */,
 			);
 			path = screenhook;
+			sourceTree = "<group>";
+		};
+		BF5600402AE775AE005846CA /* src */ = {
+			isa = PBXGroup;
+			children = (
+				BF5600412AE775CF005846CA /* app.h */,
+				BF5600462AE775CF005846CA /* app.m */,
+				BF5600452AE775CF005846CA /* globals.h */,
+				BF5600442AE775CF005846CA /* globals.m */,
+				BF5600472AE775CF005846CA /* helperLib.h */,
+				BF56004B2AE775CF005846CA /* helperLib.m */,
+				BF5600482AE775CF005846CA /* prefs.h */,
+				BF5600492AE775CF005846CA /* prefs.m */,
+				BF56004A2AE775CF005846CA /* prefsWindowController.h */,
+				BF56004C2AE775CF005846CA /* prefsWindowController.m */,
+				BF5600422AE775CF005846CA /* Spaces.h */,
+				BF5600432AE775CF005846CA /* Spaces.m */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		BFB824519695A7F39AD36621 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F4C88BFC863FE312FF3EA5BC /* Pods-screenhook.debug.xcconfig */,
+				F1BE4A79DE38DFC0B4CFD465 /* Pods-screenhook.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -70,9 +135,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF3B74062AE0EB3700D80555 /* Build configuration list for PBXNativeTarget "screenhook" */;
 			buildPhases = (
+				5D539C641F01FC837EB72339 /* [CP] Check Pods Manifest.lock */,
 				BF3B73F22AE0EB3600D80555 /* Sources */,
 				BF3B73F32AE0EB3600D80555 /* Frameworks */,
 				BF3B73F42AE0EB3600D80555 /* Resources */,
+				89DC55728CBC4B4A9CE624B4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -122,17 +189,66 @@
 			files = (
 				BF3B73FD2AE0EB3700D80555 /* Assets.xcassets in Resources */,
 				BF3B74002AE0EB3700D80555 /* MainMenu.xib in Resources */,
+				BF5600542AE7946E005846CA /* prefs.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5D539C641F01FC837EB72339 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-screenhook-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		89DC55728CBC4B4A9CE624B4 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-screenhook/Pods-screenhook-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-screenhook/Pods-screenhook-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-screenhook/Pods-screenhook-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BF3B73F22AE0EB3600D80555 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF5600502AE775CF005846CA /* prefs.m in Sources */,
+				BF56004E2AE775CF005846CA /* globals.m in Sources */,
+				BF56004F2AE775CF005846CA /* app.m in Sources */,
+				BF56004D2AE775CF005846CA /* Spaces.m in Sources */,
+				BF5600512AE775CF005846CA /* helperLib.m in Sources */,
 				BF3B74022AE0EB3700D80555 /* main.m in Sources */,
+				BF5600522AE775CF005846CA /* prefsWindowController.m in Sources */,
 				BF3B73FB2AE0EB3600D80555 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,7 +304,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -249,7 +365,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -268,6 +384,7 @@
 		};
 		BF3B74072AE0EB3700D80555 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4C88BFC863FE312FF3EA5BC /* Pods-screenhook.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -277,6 +394,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L33QBJT48B;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -296,6 +414,7 @@
 		};
 		BF3B74082AE0EB3700D80555 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1BE4A79DE38DFC0B4CFD465 /* Pods-screenhook.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -305,6 +424,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L33QBJT48B;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
