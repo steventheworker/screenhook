@@ -399,7 +399,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
                                    
         listenDefault ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
         emask,
-        (CGEventTapCallBack) eventTapCallback,
+        (CGEventTapCallBack) handler,
         nil // We need no extra data in the callback
     );
     eventTapRLSrc = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, myEventTap, 0); //runloop source
@@ -443,15 +443,24 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
             return @"keydown";break;
         case kCGEventKeyUp:
             return @"keyup";break;
-        case kCGEventNull:
         case kCGEventFlagsChanged:
             return @"mods";break;
+        case kCGEventNull:
+            return @"null";break;
         case kCGEventScrollWheel:
+            return @"scrollwheel";break;
         case kCGEventTabletPointer:
+            return @"tabletpointer";break;
         case kCGEventTabletProximity:
+            return @"tabletproximity";break;
         case kCGEventTapDisabledByTimeout:
         case kCGEventTapDisabledByUserInput:
-            return @"default";break;
+            return @"tapdisabled";break;
+        case kCGScrollWheelEventInstantMouser:
+            return @"scrollWheelEventInstantMouser";break;
+        case kCGTabletProximityEventTabletID:
+            return @"tabletProximityEventTabletID";break;
+        default:return @"default";break;
     }
 }
 
