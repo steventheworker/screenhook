@@ -14,6 +14,12 @@ AXUIElementRef systemWideEl = nil;
 @property (strong) IBOutlet NSWindow *window;
 @end
 @implementation AppDelegate
+- (IBAction)openPrefs:(id)sender {[app openPrefs];}
+- (IBAction)checkForUpdates:(id)sender {
+    app->isSparkleUpdaterOpen = YES;
+    [[self updaterController] checkForUpdates: nil];
+}
+- (IBAction)quit:(id)sender {[NSApp terminate:nil];}
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     _updaterController = [[SPUStandardUpdaterController alloc] initWithStartingUpdater: YES updaterDelegate: nil userDriverDelegate: nil];
     [helperLib setSystemWideEl: (systemWideEl = AXUIElementCreateSystemWide())];
