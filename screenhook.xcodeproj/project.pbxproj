@@ -19,6 +19,8 @@
 		BF5600522AE775CF005846CA /* prefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = BF56004C2AE775CF005846CA /* prefsWindowController.m */; };
 		BF5600542AE7946E005846CA /* prefs.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF5600532AE7946E005846CA /* prefs.xib */; };
 		BF5600562AE796A5005846CA /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5600552AE796A4005846CA /* MenuIcon.png */; };
+		BF5600592AE79B9A005846CA /* screenhook.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BF5600582AE79B9A005846CA /* screenhook.sdef */; };
+		BF56006B2AE7A708005846CA /* updateFFSidebarShowing.m in Sources */ = {isa = PBXBuildFile; fileRef = BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */; };
 		E48EBADFFDBCA5C6752F7A46 /* Pods_screenhook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED65A1D036F690412AEB1EAB /* Pods_screenhook.framework */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +47,9 @@
 		BF5600532AE7946E005846CA /* prefs.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = prefs.xib; sourceTree = "<group>"; };
 		BF5600552AE796A4005846CA /* MenuIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuIcon.png; sourceTree = "<group>"; };
 		BF5600572AE79B0E005846CA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		BF5600582AE79B9A005846CA /* screenhook.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = screenhook.sdef; sourceTree = "<group>"; };
+		BF5600692AE7A708005846CA /* updateFFSidebarShowing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = updateFFSidebarShowing.h; sourceTree = "<group>"; };
+		BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = updateFFSidebarShowing.m; sourceTree = "<group>"; };
 		ED65A1D036F690412AEB1EAB /* Pods_screenhook.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_screenhook.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1BE4A79DE38DFC0B4CFD465 /* Pods-screenhook.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-screenhook.release.xcconfig"; path = "Target Support Files/Pods-screenhook/Pods-screenhook.release.xcconfig"; sourceTree = "<group>"; };
 		F4C88BFC863FE312FF3EA5BC /* Pods-screenhook.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-screenhook.debug.xcconfig"; path = "Target Support Files/Pods-screenhook/Pods-screenhook.debug.xcconfig"; sourceTree = "<group>"; };
@@ -101,6 +106,7 @@
 				BF5600532AE7946E005846CA /* prefs.xib */,
 				BF3B74032AE0EB3700D80555 /* screenhook.entitlements */,
 				BF5600572AE79B0E005846CA /* Info.plist */,
+				BF5600582AE79B9A005846CA /* screenhook.sdef */,
 			);
 			path = screenhook;
 			sourceTree = "<group>";
@@ -108,6 +114,8 @@
 		BF5600402AE775AE005846CA /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BF5600682AE7A6E7005846CA /* NSScriptCommands */,
+				BF5600662AE7A640005846CA /* applescripts */,
 				BF5600412AE775CF005846CA /* app.h */,
 				BF5600462AE775CF005846CA /* app.m */,
 				BF5600452AE775CF005846CA /* globals.h */,
@@ -122,6 +130,22 @@
 				BF5600432AE775CF005846CA /* Spaces.m */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		BF5600662AE7A640005846CA /* applescripts */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = applescripts;
+			sourceTree = "<group>";
+		};
+		BF5600682AE7A6E7005846CA /* NSScriptCommands */ = {
+			isa = PBXGroup;
+			children = (
+				BF5600692AE7A708005846CA /* updateFFSidebarShowing.h */,
+				BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */,
+			);
+			path = NSScriptCommands;
 			sourceTree = "<group>";
 		};
 		BFB824519695A7F39AD36621 /* Pods */ = {
@@ -193,6 +217,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF3B73FD2AE0EB3700D80555 /* Assets.xcassets in Resources */,
+				BF5600592AE79B9A005846CA /* screenhook.sdef in Resources */,
 				BF5600562AE796A5005846CA /* MenuIcon.png in Resources */,
 				BF3B74002AE0EB3700D80555 /* MainMenu.xib in Resources */,
 				BF5600542AE7946E005846CA /* prefs.xib in Resources */,
@@ -255,6 +280,7 @@
 				BF5600512AE775CF005846CA /* helperLib.m in Sources */,
 				BF3B74022AE0EB3700D80555 /* main.m in Sources */,
 				BF5600522AE775CF005846CA /* prefsWindowController.m in Sources */,
+				BF56006B2AE7A708005846CA /* updateFFSidebarShowing.m in Sources */,
 				BF3B73FB2AE0EB3600D80555 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
