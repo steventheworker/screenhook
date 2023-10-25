@@ -11,6 +11,8 @@
 #import "prefs.h"
 #import "prefsWindowController.h"
 
+CFMachPortRef allMachPortRef;
+
 @implementation App
 + (instancetype) init: (NSWindow*) window : (NSMenu*) iconMenu : (AXUIElementRef) systemWideAccessibilityElement {
     App* app = [[self alloc] init];
@@ -46,9 +48,20 @@
 - (void) mousemoveLess: (BOOL) yesno {mousemoveLess = yesno;}
 static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon) {
     NSString* eventString = [helperLib eventKeyWithEventType: type];
-    if ([eventString isEqual: @"default"]) NSLog(@"UNKNOWN EVENT TYPE %d", type);
-    NSLog(@"bruh %@", eventString);
-//    return processEvent(proxy, type, event, refcon) ? event : nil;
+    if (!([eventString isEqual: @"tabletProximityEventTabletID"] || [eventString isEqual: @"scrollWheelEventInstantMouser"] ||
+        [eventString isEqual: @"mousemove"]
+    )) NSLog(@"ev: %@", eventString);
+    else if ([eventString isEqual: @"default"]) NSLog(@"UNKNOWN EVENT TYPE %d", type);
+    
+    if ([eventString isEqual: @"tapdisabled"]) {
+        [helperLib sendNotification: @"tapdisabled" : @"CGEventTap will be enabled in a minute."];
+        for (int i = 0; i < 300; i++) NSLog(@"tapdisabled");
+        setTimeout(^{
+            CGEventTapEnable(allMachPortRef, true);
+            [helperLib sendNotification: @"tapdisabled" : @"Re-enabled event tap!"];
+        }, 1000 * 60);
+    }
+    //    return processEvent(proxy, type, event, refcon) ? event : nil;
     return event;
 }
 - (void) startListening {
@@ -63,7 +76,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     }];
     
     /* cgeventtap's */
-    CFMachPortRef allMachPortRef = [helperLib listenMask: kCGEventMaskForAllEvents : (CGEventTapCallBack) eventTapCallback];
+    allMachPortRef = [helperLib listenMask: kCGEventMaskForAllEvents : (CGEventTapCallBack) eventTapCallback];
     //mouse events
 //    [helperLib on: @"mousedown" : ^BOOL(CGEventTapProxy _Nonnull proxy, CGEventType type, CGEventRef  _Nonnull event, void * _Nonnull refcon) {
 //        if (self->mousemoveLess) self->cursorPos = CGEventGetLocation(event);
