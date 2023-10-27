@@ -54,14 +54,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     )) NSLog(@"ev: %@", eventString);
     else if ([eventString isEqual: @"default"]) NSLog(@"UNKNOWN EVENT TYPE %d", type);
     
-    if ([eventString isEqual: @"tapdisabled"]) {
-        [helperLib sendNotification: @"tapdisabled" : @"CGEventTap will be enabled in a minute."];
-        for (int i = 0; i < 300; i++) NSLog(@"tapdisabled");
-        setTimeout(^{
-            CGEventTapEnable(allMachPortRef, true);
-            [helperLib sendNotification: @"tapdisabled" : @"Re-enabled event tap!"];
-        }, 1000 * 60);
-    }
+    if ([eventString isEqual: @"tapdisabled"] && !CGEventTapIsEnabled(allMachPortRef)) CGEventTapEnable(allMachPortRef, true);
     //    return processEvent(proxy, type, event, refcon) ? event : nil;
     return event;
 }
