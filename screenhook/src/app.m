@@ -25,6 +25,7 @@ CFMachPortRef allMachPortRef;
         [app renderAndShowPermissionWindow];
         return app;
     }
+    [helperLib requestNotificationPermission: ^(BOOL granted) {NSLog(@"notifications granted: %d", granted);}];
     //load nib/xib prefsWindow
     app->prefsController = [[prefsWindowController alloc] initWithWindowNibName: @"prefs"];
     [app->prefsController loadWindow];

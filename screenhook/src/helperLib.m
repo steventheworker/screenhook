@@ -509,6 +509,12 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     CGEventPost(kCGHIDEventTap, down);
     CGEventPost(kCGHIDEventTap, up);
 }
++ (void) requestNotificationPermission:  (void(^)(BOOL granted)) cb {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        cb(granted);
+    }];
+}
 + (void) sendNotificationWithID: (NSString*) notificationID : (NSString*) title : (NSString*) message { //if use same notificationID, notification replaced/updated
     UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
     content.title = title;

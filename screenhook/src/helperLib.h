@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) toggleDock;
 + (void) killDock;
 + (void) sendKey: (int) keyCode;
++ (void) requestNotificationPermission:  (void(^)(BOOL granted)) cb;
 + (void) sendNotificationWithID: (NSString*) notificationID : (NSString*) title : (NSString*) message;
 + (void) sendNotification: (NSString*) title : (NSString*) message;
 + (NSArray*) $: (NSView*) container : (NSString*) identifier;
