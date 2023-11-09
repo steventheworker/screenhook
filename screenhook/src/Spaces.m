@@ -96,6 +96,7 @@ NSString* uuidForScreen(NSScreen* screen) {
     }
 //    NSLog(@"Current space %d", (int)currentSpaceId);
 }
++ (NSArray<NSNumber* /* CGSSpaceID */>*) spaces {return idsAndIndexes;}
 + (NSArray<NSNumber* /* CGSSpaceID */>*) otherSpaces {
     NSMutableArray* filteredIds = [NSMutableArray array]; // return idsAndIndexes.filter { $0.0 != currentSpaceId }.map { $0.0 }
     for (NSArray* tuple in idsAndIndexes) if ([tuple[0] intValue] != currentSpaceId) [filteredIds addObject:tuple[0]];

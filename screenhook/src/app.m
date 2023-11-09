@@ -10,6 +10,8 @@
 #import "helperLib.h"
 #import "prefs.h"
 #import "prefsWindowController.h"
+#import "WindowManager.h"
+#import "screenhook/screenhook.h"
 
 CFMachPortRef allMachPortRef;
 
@@ -33,6 +35,7 @@ CFMachPortRef allMachPortRef;
     [app addMenuIcon: iconMenu]; // adds menu icon / references
     
     [app startListening];
+    [screenhook init];
     setTimeout(^{app->isSparkleUpdaterOpen = [helperLib isSparkleUpdaterOpen];}, 1000);
     return app;
 }
@@ -55,8 +58,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     else if ([eventString isEqual: @"default"]) NSLog(@"UNKNOWN EVENT TYPE %d", type);
     
     if ([eventString isEqual: @"tapdisabled"] && !CGEventTapIsEnabled(allMachPortRef)) CGEventTapEnable(allMachPortRef, true);
-    //    return processEvent(proxy, type, event, refcon) ? event : nil;
-    return event;
+    return [screenhook processEvent: proxy : type : event : refcon : eventString] ? event : nil;
 }
 - (void) startListening {
     /* observers */
@@ -67,6 +69,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     //on space change
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName: NSWorkspaceActiveSpaceDidChangeNotification object: [NSWorkspace sharedWorkspace] queue: nil usingBlock:^(NSNotification * _Nonnull note) {
         NSLog(@"space changed");
+        [WindowManager spaceChanged: note];
     }];
     
     /* cgeventtap's */

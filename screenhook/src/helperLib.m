@@ -312,7 +312,11 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
                 dict[attributeName] = url;
             } else dict[attributeName] = @"";
         } else if (attribute == (id)kAXValueAttribute) {
-            // Handle kAXValueAttribute
+            NSString* axValue = nil;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXValueAttribute, (void *)&axValue);
+            if (result == kAXErrorSuccess) {
+                dict[attributeName] = axValue;
+            } else dict[attributeName] = @"";
         } else if (attribute == (id)kAXValueDescriptionAttribute) {
             // Handle kAXValueDescriptionAttribute
         } else if (attribute == (id)kAXValueIncrementAttribute) {
