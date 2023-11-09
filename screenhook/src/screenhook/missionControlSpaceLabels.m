@@ -110,20 +110,21 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     NSLog(@"%@", elDict);
     if (![elDict[@"role"] isEqual: @"AXTextArea"]) return;
     
-    [helperLib sendKey: 53]; //esc
+    [helperLib applescript: @"tell application \"System Events\" to key code 53"]; //esc (for some reason using [helperLib sendKey: 53] doesn't close consistently if mission control/macOS is bugging out)
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [helperLib applescript: @"tell application \"screenhook\" to activate"];
         setTimeout(^{
-            [helperLib sendKey: 48]; //esc
-            [helperLib sendKey: 48]; //esc
+            [helperLib sendKey: 48]; //tab
+            [helperLib sendKey: 48]; //tab
         }, 666);
         dispatch_semaphore_signal(semaphore);
     });
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
+    
+    //can't put in semaphore, "window creation must be in main thread" (paraphrasing)
         // Create an NSAlert instance
-        NSAlert *alert = [[NSAlert alloc] init];
+        NSAlert* alert = [[NSAlert alloc] init];
 
         // Set the title and message
         [alert setMessageText:@"Enter Name/Title"];
