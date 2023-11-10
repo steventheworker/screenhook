@@ -70,6 +70,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName: NSWorkspaceActiveSpaceDidChangeNotification object: [NSWorkspace sharedWorkspace] queue: nil usingBlock:^(NSNotification * _Nonnull note) {
         NSLog(@"space changed");
         [WindowManager spaceChanged: note];
+        [screenhook spaceChanged: note];
     }];
     
     /* cgeventtap's */

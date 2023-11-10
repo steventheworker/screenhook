@@ -45,4 +45,7 @@ const int intervalTickT = 333;
     }
     return YES;
 }
++ (void) spaceChanged: (NSNotification*) note {
+    [missionControlSpaceLabels spaceChanged: note];
+}
 @end

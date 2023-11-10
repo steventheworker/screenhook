@@ -54,7 +54,13 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 @implementation missionControlSpaceLabels : NSObject
 + (void) init {
     spaceLabels = [NSMutableArray array];
-    
+    [self addOverlayWindow];
+}
++ (void) tick: (int) exposeType {
+    if (exposeType) showLabels();
+    else hideLabels();
+}
++ (void) addOverlayWindow {
     //create window from xib
     overlayController = [[NSWindowController alloc] initWithWindowNibName: @"spaceLabelsWindow"];
     [overlayController.window setOpaque: NO];
@@ -69,9 +75,11 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     
     loadLabelsFromPrefs();
 }
-+ (void) tick: (int) exposeType {
-    if (exposeType) showLabels();
-    else hideLabels();
++ (void) removeOverlayWindow {
+    if (overlayController) {
+        [overlayController close];
+        overlayController = nil;
+    }
 }
 + (void) clearView {
     [overlayController.window.contentView removeFromSuperview];
@@ -159,6 +167,13 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     } else {
         // User clicked Cancel or closed the dialog
         NSLog(@"Dialog canceled");
+    }
+}
++ (void) spaceChanged: (NSNotification*) note {
+    if (overlayController.window.isVisible) {
+        [self removeOverlayWindow]; //window won't be on top unless it's recreated
+        [self addOverlayWindow];
+        showLabels(); //reshow
     }
 }
 @end

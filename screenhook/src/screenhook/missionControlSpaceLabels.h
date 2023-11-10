@@ -14,7 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) init;
 + (void) tick: (int) exposeType;
 + (void) render;
++ (void) clearView;
++ (void) addOverlayWindow;
++ (void) removeOverlayWindow;
 + (void) labelClicked: (AXUIElementRef) el;
++ (void) spaceChanged: (NSNotification*) note;
 @end
 
 NS_ASSUME_NONNULL_END

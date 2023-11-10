@@ -14,7 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) init;
 + (void) tick;
 + (void) startTicking;
+
+/* events */
 + (BOOL) processEvent: (CGEventTapProxy) proxy : (CGEventType) type : (CGEventRef) event : (void*) refcon : (NSString*) eventString;
++ (void) spaceChanged: (NSNotification*) note;
 @end
 
 NS_ASSUME_NONNULL_END
