@@ -72,10 +72,10 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     [overlayController.window setLevel: NSPopUpMenuWindowLevel];
     
     NSScreen* screen = [helperLib primaryScreen];
-    windowWidth = screen.frame.size.width;
+    windowWidth = screen.frame.size.width * 0.925;
     windowHeight = 30;
     [overlayController.window setFrame: NSMakeRect(overlayController.window.frame.origin.x, overlayController.window.frame.origin.y, windowWidth, windowHeight) display: NO];
-    [overlayController.window setFrameTopLeftPoint: NSMakePoint(0, screen.frame.size.height)];
+    [overlayController.window setFrameTopLeftPoint: NSMakePoint((screen.frame.size.width - windowWidth) / 2, screen.frame.size.height)];
     
     loadLabelsFromPrefs();
 }
@@ -108,7 +108,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
         [label setString: str];
         [label setTextColor: NSColor.whiteColor];
-//        [label setAlignment: NSTextAlignmentCenter];
+        [label setAlignment: NSTextAlignmentCenter];
         [labelView addSubview: label];
         [labelsView addSubview: labelView];
     }
