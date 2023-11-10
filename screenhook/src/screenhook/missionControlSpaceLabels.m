@@ -68,7 +68,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     //create window from xib
     overlayController = [[NSWindowController alloc] initWithWindowNibName: @"spaceLabelsWindow"];
     [overlayController.window setOpaque: NO];
-    [overlayController.window setBackgroundColor: [NSColor colorWithSRGBRed: 0 green: 0 blue: 0 alpha: 0.75]];
+    [overlayController.window setBackgroundColor: NSColor.clearColor];
     [overlayController.window setLevel: NSPopUpMenuWindowLevel];
     
     NSScreen* screen = [helperLib primaryScreen];
@@ -100,8 +100,8 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     for (int i = 0; i < spaceLabels.count; i++) {
         int x = i * w;
         NSView* labelContainer = [[NSView alloc] initWithFrame: CGRectMake(x, y, w, h)];
-        [labelContainer setWantsLayer: YES];
-        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
+//        [labelContainer setWantsLayer: YES];
+//        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
         int textHeightPixels = 16;
         if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
         
@@ -109,6 +109,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         [label setString: spaceLabels[i]];
         [label setTextColor: NSColor.whiteColor];
         [label setAlignment: NSTextAlignmentCenter];
+        [label setBackgroundColor: NSColor.clearColor];
         
         NSString* spaceNumberStr = [NSString stringWithFormat: @"%d", (i+1)];
         float spaceNumberW = textHeightPixels * 0.6 * (spaceNumberStr.length * 1.2);
@@ -116,6 +117,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         [spaceNumber setString: spaceNumberStr];
         [spaceNumber setTextColor: NSColor.whiteColor];
         [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
+        [spaceNumber setBackgroundColor: NSColor.clearColor];
 
         [labelContainer addSubview: label];
         [labelContainer addSubview: spaceNumber];
