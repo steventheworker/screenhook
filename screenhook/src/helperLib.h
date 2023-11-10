@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL) isSparkleUpdaterOpen;
 + (NSString*) appVersion;
 + (NSString*) dictionaryStringOneLine : (NSDictionary*) dict : (BOOL) flattest;
++ (BOOL) isNaN : (NSString*) input;
 + (void) restartApp;
 @end
 NS_ASSUME_NONNULL_END

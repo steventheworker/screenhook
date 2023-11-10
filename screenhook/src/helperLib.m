@@ -154,6 +154,13 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
             // Handle kAXHorizontalScrollBarAttribute
         } else if (attribute == (id)kAXHourFieldAttribute) {
             // Handle kAXHourFieldAttribute
+        } else if (attribute == (id)kAXIdentifierAttribute) {
+            CFTypeRef idVal;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXIdentifierAttribute, &idVal);
+            if (result == kAXErrorSuccess && CFGetTypeID(idVal) == CFStringGetTypeID()) {
+                NSString* identifier = (__bridge NSString*) idVal;
+                dict[attributeName] = identifier;
+            } else dict[attributeName] = @"";
         } else if (attribute == (id)kAXIncrementorAttribute) {
             // Handle kAXIncrementorAttribute
         } else if (attribute == (id)kAXIndexAttribute) {
@@ -699,6 +706,11 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     return NO;
 }
 + (NSString*) appVersion {return [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];}
++ (BOOL) isNaN : (NSString*) input {
+    NSCharacterSet* numericCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
+    NSCharacterSet* inputCharacterSet = [NSCharacterSet characterSetWithCharactersInString: input];
+    return !([numericCharacterSet isSupersetOfSet: inputCharacterSet]);
+}
 + (NSString*) dictionaryStringOneLine : (NSDictionary*) dict : (BOOL) flattest {
     return [[[[[[[[[[[dict description] stringByReplacingOccurrencesOfString: @"\n" withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"     " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"     " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"    " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"   " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @";" withString: @","] stringByReplacingOccurrencesOfString: @" = " withString: @": "] stringByReplacingOccurrencesOfString: @", }" withString: @"}"] stringByReplacingOccurrencesOfString: @"{ " withString: @"{"] stringByReplacingOccurrencesOfString: @" =" withString: @":"];
 }

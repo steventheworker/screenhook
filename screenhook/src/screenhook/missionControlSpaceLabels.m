@@ -42,15 +42,9 @@ void loadLabelsFromPrefs(void) {
 void renameSpace(AXUIElementRef el, NSString* newTitle) {
     NSDictionary* elDict = [helperLib elementDict: el : @{
         @"value": (id)kAXValueAttribute,
+        @"identifier": (id)kAXIdentifierAttribute,
     }];
-    
-    //get spaceIndex
-    NSString* val = elDict[@"value"];
-    NSRange periodRange = [val rangeOfString: @"."];
-    if (periodRange.location == NSNotFound) return;
-    NSString* spaceIndexStr = [val substringToIndex: periodRange.location];
-    int spaceIndex = [spaceIndexStr intValue] - 1;
-    
+    int spaceIndex = [helperLib isNaN: elDict[@"value"]] ? [elDict[@"identifier"] intValue] : [elDict[@"value"] intValue] - 1;
     spaceLabels[spaceIndex] = newTitle;
     [prefs setArrayPref: @"spaceLabels" : spaceLabels];
 }
@@ -104,13 +98,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 //        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
         int textHeightPixels = 16;
         if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
-        
-        NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
-        [label setString: spaceLabels[i]];
-        [label setTextColor: NSColor.whiteColor];
-        [label setAlignment: NSTextAlignmentCenter];
-        [label setBackgroundColor: NSColor.clearColor];
-        
+                
         NSString* spaceNumberStr = [NSString stringWithFormat: @"%d", (i+1)];
         float spaceNumberW = textHeightPixels * 0.6 * (spaceNumberStr.length * 1.2);
         NSTextView* spaceNumber = [[NSTextView alloc] initWithFrame: CGRectMake(w/2 - spaceNumberW/2, (h - textHeightPixels) + textHeightPixels * 0.6 + -5, spaceNumberW, textHeightPixels * 0.6)];
@@ -118,6 +106,13 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         [spaceNumber setTextColor: NSColor.whiteColor];
         [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
         [spaceNumber setBackgroundColor: NSColor.clearColor];
+        
+        NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
+        [label setString: spaceLabels[i]];
+        [label setTextColor: NSColor.whiteColor];
+        [label setAlignment: NSTextAlignmentCenter];
+        [label setBackgroundColor: NSColor.clearColor];
+        [label setIdentifier: [NSString stringWithFormat: @"%d", i]];
 
         [labelContainer addSubview: label];
         [labelContainer addSubview: spaceNumber];
@@ -129,6 +124,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     NSDictionary* elDict = [helperLib elementDict: el : @{
         @"value": (id)kAXValueAttribute,
         @"role": (id)kAXRoleAttribute,
+        @"identifier": (id)kAXIdentifierAttribute,
     }];
     NSLog(@"%@", elDict);
     if (![elDict[@"role"] isEqual: @"AXTextArea"]) return;
@@ -156,11 +152,15 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     });
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
-    NSString* val = elDict[@"value"];
-    NSRange periodRange = [val rangeOfString: @"."];
-    NSString* spaceIndexStr = [val substringToIndex: periodRange.location];
-    NSUInteger spaceNameStart = periodRange.location + periodRange.length + 1; // Adding 1 to skip the space after the period
-    NSString* spaceName = [val substringFromIndex: spaceNameStart];
+    NSString* spaceName;
+    NSString* spaceIndexStr;
+    if ([elDict[@"value"] length] > 2 || [helperLib isNaN: elDict[@"value"]]) { //clicked on the space title / label
+        spaceName = elDict[@"value"];
+        spaceIndexStr = [NSString stringWithFormat: @"%d", [elDict[@"identifier"] intValue] + 1];
+    } else { //clicked on the spacenumber
+        spaceIndexStr = elDict[@"value"];
+        spaceName = spaceLabels[[spaceIndexStr intValue] - 1];
+    }
 
     //Create an NSAlert instance - can't put in semaphore, "window creation must be in main thread" (paraphrasing)
     NSAlert* alert = [[NSAlert alloc] init];
