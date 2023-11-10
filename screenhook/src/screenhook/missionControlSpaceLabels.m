@@ -97,16 +97,17 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 //        [labelContainer setWantsLayer: YES];
 //        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
         int textHeightPixels = 16;
-        if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
-                
         NSString* spaceNumberStr = [NSString stringWithFormat: @"%d", (i+1)];
         float spaceNumberW = textHeightPixels * 0.6 * (spaceNumberStr.length * 1.2);
-        NSTextView* spaceNumber = [[NSTextView alloc] initWithFrame: CGRectMake(w/2 - spaceNumberW/2, (h - textHeightPixels) + textHeightPixels * 0.6 + -5, spaceNumberW, textHeightPixels * 0.6)];
+        int spaceNumY = (h - textHeightPixels) + textHeightPixels * 0.6 + -5;
+        if ([spaceLabels[i] length] > 16) spaceNumY += 2; //if multi-line, shift spaceNumber up
+        NSTextView* spaceNumber = [[NSTextView alloc] initWithFrame: CGRectMake(w/2 - spaceNumberW/2, spaceNumY, spaceNumberW, textHeightPixels * 0.6)];
         [spaceNumber setString: spaceNumberStr];
         [spaceNumber setTextColor: NSColor.whiteColor];
         [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
         [spaceNumber setBackgroundColor: NSColor.clearColor];
         
+        if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
         NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
         [label setString: spaceLabels[i]];
         [label setTextColor: NSColor.whiteColor];
