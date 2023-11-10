@@ -133,8 +133,8 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     [helperLib applescript: @"tell application \"System Events\" to key code 53"]; //esc (for some reason using [helperLib sendKey: 53] doesn't close consistently if mission control/macOS is bugging out)
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [helperLib applescript: @"tell application \"screenhook\" to activate"];
         setTimeout(^{ //focus the input (for some reason the applescript below doesn't work (says dialog DNE, but works fine in script editor, so use send tab key instead)
+            [helperLib applescript: @"tell application \"screenhook\" to activate"];
             [helperLib sendKey: 48]; //tab
             [helperLib sendKey: 48]; //tab
 //          [helperLib applescript: @"tell application \"System Events\"\n\
