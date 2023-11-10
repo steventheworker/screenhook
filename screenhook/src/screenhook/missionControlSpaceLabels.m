@@ -169,11 +169,14 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         NSLog(@"Dialog canceled");
     }
 }
-+ (void) spaceChanged: (NSNotification*) note {
++ (void) reshow {
     if (overlayController.window.isVisible) {
         [self removeOverlayWindow]; //window won't be on top unless it's recreated
         [self addOverlayWindow];
         showLabels(); //reshow
     }
+}
++ (void) spaceChanged: (NSNotification*) note {
+    [self reshow];
 }
 @end
