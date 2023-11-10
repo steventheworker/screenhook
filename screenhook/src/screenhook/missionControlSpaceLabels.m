@@ -141,16 +141,22 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     });
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
+    NSString* val = elDict[@"value"];
+    NSRange periodRange = [val rangeOfString: @"."];
+    NSString* spaceIndexStr = [val substringToIndex: periodRange.location];
+    NSUInteger spaceNameStart = periodRange.location + periodRange.length + 1; // Adding 1 to skip the space after the period
+    NSString* spaceName = [val substringFromIndex: spaceNameStart];
+
     //Create an NSAlert instance - can't put in semaphore, "window creation must be in main thread" (paraphrasing)
     NSAlert* alert = [[NSAlert alloc] init];
 
     // Set the title and message
-    [alert setMessageText:@"Enter Name/Title"];
-    [alert setInformativeText:@"Please enter a name or title:"];
+    [alert setMessageText:@"Title for space:"];
+    [alert setInformativeText: spaceIndexStr];
 
     // Create an NSTextField control
     NSTextField *inputField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
-    [inputField setStringValue: elDict[@"value"]];
+    [inputField setStringValue: spaceName];
     [alert setAccessoryView:inputField];
 
     // Add buttons to the alert
