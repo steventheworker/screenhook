@@ -129,7 +129,6 @@
 			isa = PBXGroup;
 			children = (
 				BFF1E7DB2AFB71F000DCBBDB /* screenhook */,
-				BF5600682AE7A6E7005846CA /* NSScriptCommands */,
 				BF5600662AE7A640005846CA /* applescripts */,
 				BF5600412AE775CF005846CA /* app.h */,
 				BF5600462AE775CF005846CA /* app.m */,
@@ -179,6 +178,7 @@
 		BFF1E7DB2AFB71F000DCBBDB /* screenhook */ = {
 			isa = PBXGroup;
 			children = (
+				BF5600682AE7A6E7005846CA /* NSScriptCommands */,
 				BFF1E7E52AFCC8F200DCBBDB /* overlays */,
 				BFF1E7DC2AFB720200DCBBDB /* screenhook.h */,
 				BFF1E7DD2AFB720200DCBBDB /* screenhook.m */,
