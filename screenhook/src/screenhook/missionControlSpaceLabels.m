@@ -21,11 +21,10 @@ void showLabels(void) {
     if (overlayController.window.isVisible) return;
     [overlayController.window setIsVisible: YES];
     [missionControlSpaceLabels render];
-    NSLog(@"show");
 }
 void hideLabels(void) {
+    if (!overlayController.window.isVisible) return;
     [overlayController.window setIsVisible: NO];
-    NSLog(@"hide");
 }
 
 void loadLabelsFromPrefs(void) {

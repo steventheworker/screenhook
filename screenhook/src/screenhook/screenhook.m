@@ -16,7 +16,7 @@
 //features
 #import "missionControlSpaceLabels.h"
 
-const int intervalTickT = 1000;
+const int intervalTickT = 333;
 
 @implementation screenhook
 + (void) init {
