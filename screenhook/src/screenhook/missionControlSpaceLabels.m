@@ -12,8 +12,6 @@
 #import "../Spaces.h"
 #import "../WindowManager.h"
 
-int screenWidth = 1920;int screenHeight = 1080;
-
 NSWindowController* overlayController;
 NSMutableArray* spaceLabels;
 int windowWidth;
@@ -64,10 +62,11 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     [overlayController.window setBackgroundColor: [NSColor colorWithSRGBRed: 0 green: 0 blue: 0 alpha: 0.75]];
     [overlayController.window setLevel: NSPopUpMenuWindowLevel];
     
-    windowWidth = screenWidth;
+    NSScreen* screen = [helperLib primaryScreen];
+    windowWidth = screen.frame.size.width;
     windowHeight = 30;
     [overlayController.window setFrame: NSMakeRect(overlayController.window.frame.origin.x, overlayController.window.frame.origin.y, windowWidth, windowHeight) display: NO];
-    [overlayController.window setFrameTopLeftPoint: NSMakePoint(0, screenHeight)];
+    [overlayController.window setFrameTopLeftPoint: NSMakePoint(0, screen.frame.size.height)];
     
     loadLabelsFromPrefs();
 }
