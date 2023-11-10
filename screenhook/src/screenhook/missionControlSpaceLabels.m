@@ -73,7 +73,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     
     NSScreen* screen = [helperLib primaryScreen];
     windowWidth = screen.frame.size.width * 0.925;
-    windowHeight = 30;
+    windowHeight = 40;
     [overlayController.window setFrame: NSMakeRect(overlayController.window.frame.origin.x, overlayController.window.frame.origin.y, windowWidth, windowHeight) display: NO];
     [overlayController.window setFrameTopLeftPoint: NSMakePoint((screen.frame.size.width - windowWidth) / 2, screen.frame.size.height)];
     
@@ -99,18 +99,27 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     int h = windowHeight;
     for (int i = 0; i < spaceLabels.count; i++) {
         int x = i * w;
-        NSView* labelView = [[NSView alloc] initWithFrame: CGRectMake(x, y, w, h)];
-        [labelView setWantsLayer: YES];
-        [labelView.layer setBackgroundColor: NSColor.gridColor.CGColor];
+        NSView* labelContainer = [[NSView alloc] initWithFrame: CGRectMake(x, y, w, h)];
+        [labelContainer setWantsLayer: YES];
+        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
         int textHeightPixels = 16;
-        NSString* str = [[NSString stringWithFormat: @"%d. ", (i+1)] stringByAppendingString: spaceLabels[i]];
-        if ([str length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
+        if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
+        
         NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
-        [label setString: str];
+        [label setString: spaceLabels[i]];
         [label setTextColor: NSColor.whiteColor];
         [label setAlignment: NSTextAlignmentCenter];
-        [labelView addSubview: label];
-        [labelsView addSubview: labelView];
+        
+        NSString* spaceNumberStr = [NSString stringWithFormat: @"%d", (i+1)];
+        float spaceNumberW = textHeightPixels * 0.6 * (spaceNumberStr.length * 1.2);
+        NSTextView* spaceNumber = [[NSTextView alloc] initWithFrame: CGRectMake(w/2 - spaceNumberW/2, (h - textHeightPixels) + textHeightPixels * 0.6 + -4, spaceNumberW, textHeightPixels * 0.6)];
+        [spaceNumber setString: spaceNumberStr];
+        [spaceNumber setTextColor: NSColor.whiteColor];
+        [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
+
+        [labelContainer addSubview: label];
+        [labelContainer addSubview: spaceNumber];
+        [labelsView addSubview: labelContainer];
     }
     [view addSubview: labelsView];
 }
