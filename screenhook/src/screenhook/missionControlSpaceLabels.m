@@ -48,7 +48,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     NSRange periodRange = [val rangeOfString: @"."];
     if (periodRange.location == NSNotFound) return;
     NSString* spaceIndexStr = [val substringToIndex: periodRange.location];
-    int spaceIndex = [spaceIndexStr intValue];
+    int spaceIndex = [spaceIndexStr intValue] - 1;
     
     spaceLabels[spaceIndex] = newTitle;
     [prefs setArrayPref: @"spaceLabels" : spaceLabels];
@@ -114,41 +114,51 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [helperLib applescript: @"tell application \"screenhook\" to activate"];
-        setTimeout(^{
+        setTimeout(^{ //focus the input (for some reason the applescript below doesn't work (says dialog DNE, but works fine in script editor, so use send tab key instead)
             [helperLib sendKey: 48]; //tab
             [helperLib sendKey: 48]; //tab
+//          [helperLib applescript: @"tell application \"System Events\"\n\
+//                    tell process \"screenhook\"\n\
+//                        if exists (first window whose subrole = \"AXDialog\") then\n\
+//                            tell (first window whose subrole = \"AXDialog\")\n\
+//                                set focused of text field 1 to true\n\
+//                            end tell\n\
+//                        else\n\
+//                            return \"DNE\"\n\
+//                        end if\n\
+//                    end tell\n\
+//                end tell"];
         }, 666);
         dispatch_semaphore_signal(semaphore);
     });
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    
-    //can't put in semaphore, "window creation must be in main thread" (paraphrasing)
-        // Create an NSAlert instance
-        NSAlert* alert = [[NSAlert alloc] init];
 
-        // Set the title and message
-        [alert setMessageText:@"Enter Name/Title"];
-        [alert setInformativeText:@"Please enter a name or title:"];
+    //Create an NSAlert instance - can't put in semaphore, "window creation must be in main thread" (paraphrasing)
+    NSAlert* alert = [[NSAlert alloc] init];
 
-        // Create an NSTextField control
-        NSTextField *inputField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
-        [inputField setStringValue: elDict[@"value"]];
-        [alert setAccessoryView:inputField];
+    // Set the title and message
+    [alert setMessageText:@"Enter Name/Title"];
+    [alert setInformativeText:@"Please enter a name or title:"];
 
-        // Add buttons to the alert
-        [alert addButtonWithTitle:@"OK"];
-        [alert addButtonWithTitle:@"Cancel"];
+    // Create an NSTextField control
+    NSTextField *inputField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+    [inputField setStringValue: elDict[@"value"]];
+    [alert setAccessoryView:inputField];
 
-        // Display the alert
-        NSInteger buttonPressed = [alert runModal];
+    // Add buttons to the alert
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
 
-        if (buttonPressed == NSAlertFirstButtonReturn) {
-            // User clicked OK
-            NSString *enteredText = [inputField stringValue];
-            renameSpace(el, enteredText);
-        } else {
-            // User clicked Cancel or closed the dialog
-            NSLog(@"Dialog canceled");
-        }
+    // Display the alert
+    NSInteger buttonPressed = [alert runModal];
+
+    if (buttonPressed == NSAlertFirstButtonReturn) {
+        // User clicked OK
+        NSString *enteredText = [inputField stringValue];
+        renameSpace(el, enteredText);
+    } else {
+        // User clicked Cancel or closed the dialog
+        NSLog(@"Dialog canceled");
+    }
 }
 @end
