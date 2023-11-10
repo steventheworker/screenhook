@@ -16,7 +16,8 @@
 //features
 #import "missionControlSpaceLabels.h"
 
-const int intervalTickT = 333;
+const int DEFAULT_TICK_SPEED = 333;
+int intervalTickT = DEFAULT_TICK_SPEED;
 
 @implementation screenhook
 + (void) init {
@@ -26,6 +27,7 @@ const int intervalTickT = 333;
 }
 + (void) tick {
     int exposeType = [WindowManager exposeTick]; //check exposé type, loads new shared windows (Cgwindow's)
+    if (!exposeType) intervalTickT = DEFAULT_TICK_SPEED; else intervalTickT = DEFAULT_TICK_SPEED / 3;
     [missionControlSpaceLabels tick: exposeType];
 }
 + (void) startTicking {
