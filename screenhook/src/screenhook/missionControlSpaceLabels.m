@@ -91,8 +91,10 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         [labelView setWantsLayer: YES];
         [labelView.layer setBackgroundColor: NSColor.gridColor.CGColor];
         int textHeightPixels = 16;
+        NSString* str = [[NSString stringWithFormat: @"%d. ", (i+1)] stringByAppendingString: spaceLabels[i]];
+        if ([str length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
         NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
-        [label setString: [[NSString stringWithFormat: @"%d. ", (i+1)] stringByAppendingString: spaceLabels[i]]];
+        [label setString: str];
         [label setTextColor: NSColor.whiteColor];
 //        [label setAlignment: NSTextAlignmentCenter];
         [labelView addSubview: label];
