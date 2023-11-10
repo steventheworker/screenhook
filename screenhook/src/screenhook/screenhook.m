@@ -44,7 +44,7 @@ const int intervalTickT = 333;
         }
     }
     //reshow everytime, since dragging window into other space hides labels window (and can't detect moving window to another space...?)
-    if ([eventString isEqual: @"mouseup"] && [WindowManager exposeType]) [missionControlSpaceLabels reshow];
+    if ([eventString isEqual: @"mouseup"] && [WindowManager exposeType]) [missionControlSpaceLabels mouseup];
     return YES;
 }
 + (void) spaceChanged: (NSNotification*) note {

@@ -30,9 +30,13 @@ void hideLabels(void) {
 void loadLabelsFromPrefs(void) {
     spaceLabels = [NSMutableArray arrayWithArray: [prefs getArrayPref: @"spaceLabels"]];
     int numSpaces = (int) [Spaces spaces].count;
-    if (spaceLabels.count != numSpaces) { //forget all spaces, repopulate with untitled
+    if (spaceLabels.count == 0) { //populate with untitled
         spaceLabels = [NSMutableArray array];
         for (int i = 0; i < numSpaces; i++) [spaceLabels addObject: @"Untitled"];
+    } else if (numSpaces > spaceLabels.count) {
+        for (int i = (int) spaceLabels.count; i < numSpaces; i++) [spaceLabels addObject: @"Untitled"];
+    } else if (numSpaces < spaceLabels.count) {
+        for (int i = (int) spaceLabels.count; i > numSpaces; i--) [spaceLabels removeLastObject];
     }
 }
 void renameSpace(AXUIElementRef el, NSString* newTitle) {
@@ -181,6 +185,14 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         [self addOverlayWindow];
         showLabels(); //reshow
     }
+}
++ (void) mouseup { //test for space changes (see if a space was added,removed (and reflect it into "spaceLabels"))
+    setTimeout(^{
+        [Spaces refreshAllIdsAndIndexes];
+        NSLog(@"%lu", (unsigned long)[Spaces spaces].count);
+        //a window dragndropped into another space hides the window, reshow here, since haven't found way to detect window changing space/dragdrop
+        [self reshow];
+    }, 100);
 }
 + (void) spaceChanged: (NSNotification*) note {
     [self reshow];

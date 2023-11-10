@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) removeOverlayWindow;
 + (void) labelClicked: (AXUIElementRef) el;
 + (void) reshow;
++ (void) mouseup;
 + (void) spaceChanged: (NSNotification*) note;
 @end
 
