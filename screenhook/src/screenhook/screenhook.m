@@ -40,7 +40,7 @@ int intervalTickT = DEFAULT_TICK_SPEED;
         CGPoint cursorPos = CGEventGetLocation(event);
         AXUIElementRef el = [helperLib elementAtPoint: cursorPos];
         int elPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
-        if (NSRunningApplication.currentApplication.processIdentifier == elPID) {
+        if (NSRunningApplication.currentApplication.processIdentifier == elPID && cursorPos.y <= 100) { //space labels are at the top, w/o cursorPos check, interacting w/ screenhook windows in mission control is disabled!
             [missionControlSpaceLabels labelClicked: el];
             return NO;
         }
