@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface spaceKeyboardShortcuts : NSObject
-
++ (void) keyCode: (int) keyCode;
 @end
 
 NS_ASSUME_NONNULL_END

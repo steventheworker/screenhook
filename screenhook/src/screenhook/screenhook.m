@@ -15,6 +15,7 @@
 
 //features
 #import "missionControlSpaceLabels.h"
+#import "spaceKeyboardShortcuts.h"
 
 const int DEFAULT_TICK_SPEED = 333;
 int intervalTickT = DEFAULT_TICK_SPEED;
@@ -23,6 +24,7 @@ int intervalTickT = DEFAULT_TICK_SPEED;
 + (void) init {
     [WindowManager init];
     [missionControlSpaceLabels init];
+    [spaceKeyboardShortcuts init];
     [self startTicking];
 }
 + (void) tick {
@@ -35,6 +37,8 @@ int intervalTickT = DEFAULT_TICK_SPEED;
     setTimeout(^{[self startTicking];}, intervalTickT); //self-perpetuate
 }
 + (BOOL) processEvent: (CGEventTapProxy) proxy : (CGEventType) type : (CGEventRef) event : (void*) refcon : (NSString*) eventString {
+    NSDictionary* modifiers = [helperLib modifierKeys];
+    
     //change space labels
     if ([eventString isEqual: @"mousedown"] && [WindowManager exposeType]) {
         CGPoint cursorPos = CGEventGetLocation(event);
@@ -47,9 +51,19 @@ int intervalTickT = DEFAULT_TICK_SPEED;
     }
     //reshow everytime, since dragging window into other space hides labels window (and can't detect moving window to another space...?)
     if ([eventString isEqual: @"mouseup"] && [WindowManager exposeType]) [missionControlSpaceLabels mouseup];
+    
+    //key events
+    if ([eventString isEqual: @"keydown"]) {
+        if (modifiers[@"ctrl"]) {
+            int keyCode = (int)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
+            if ([@[@18, @19, @20, @21, @23, @22, @26, @28, @25] containsObject: @(keyCode)]) [spaceKeyboardShortcuts keyCode: keyCode];
+            NSLog(@"keycode %d", keyCode);
+        }
+    }
     return YES;
 }
 + (void) spaceChanged: (NSNotification*) note {
     [missionControlSpaceLabels spaceChanged: note];
+    [spaceKeyboardShortcuts spaceChanged: note];
 }
 @end

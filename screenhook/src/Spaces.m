@@ -31,6 +31,7 @@ NSString* uuidForScreen(NSScreen* screen) {
 }
 
 @implementation Spaces
++ (int) CGSMainConnectID {return receivedCGSMainConnectID;}
 + (int) currentSpaceId {return currentSpaceId;}
 + (int) currentSpaceIndex {return currentSpaceIndex;}
 + (void) init: (int) cgsMainConnectionId {

@@ -25,6 +25,8 @@
 		BF56006B2AE7A708005846CA /* updateFFSidebarShowing.m in Sources */ = {isa = PBXBuildFile; fileRef = BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */; };
 		BFB9BA092AFF42E100E66CB6 /* spacesIDsScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA082AFF42E100E66CB6 /* spacesIDsScriptCommand.m */; };
 		BFB9BA0C2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA0B2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m */; };
+		BFB9BA0F2AFF48A100E66CB6 /* missionControlWindows.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA0E2AFF48A100E66CB6 /* missionControlWindows.m */; };
+		BFB9BA122AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA112AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m */; };
 		BFEA09D62AEBB5F3009450BF /* Windows.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEA09D52AEBB5F3009450BF /* Windows.m */; };
 		BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF1E7DD2AFB720200DCBBDB /* screenhook.m */; };
 		BFF1E7E12AFB795500DCBBDB /* missionControlSpaceLabels.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF1E7E02AFB795500DCBBDB /* missionControlSpaceLabels.m */; };
@@ -67,6 +69,10 @@
 		BFB9BA082AFF42E100E66CB6 /* spacesIDsScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = spacesIDsScriptCommand.m; sourceTree = "<group>"; };
 		BFB9BA0A2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = currentSpaceIDScriptCommand.h; sourceTree = "<group>"; };
 		BFB9BA0B2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = currentSpaceIDScriptCommand.m; sourceTree = "<group>"; };
+		BFB9BA0D2AFF48A100E66CB6 /* missionControlWindows.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = missionControlWindows.h; sourceTree = "<group>"; };
+		BFB9BA0E2AFF48A100E66CB6 /* missionControlWindows.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = missionControlWindows.m; sourceTree = "<group>"; };
+		BFB9BA102AFF4CB900E66CB6 /* spaceKeyboardShortcuts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spaceKeyboardShortcuts.h; sourceTree = "<group>"; };
+		BFB9BA112AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = spaceKeyboardShortcuts.m; sourceTree = "<group>"; };
 		BFEA09D42AEBB5F3009450BF /* Windows.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Windows.h; sourceTree = "<group>"; };
 		BFEA09D52AEBB5F3009450BF /* Windows.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Windows.m; sourceTree = "<group>"; };
 		BFF1E7DC2AFB720200DCBBDB /* screenhook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = screenhook.h; sourceTree = "<group>"; };
@@ -204,6 +210,10 @@
 				BFF1E7DD2AFB720200DCBBDB /* screenhook.m */,
 				BFF1E7DF2AFB795500DCBBDB /* missionControlSpaceLabels.h */,
 				BFF1E7E02AFB795500DCBBDB /* missionControlSpaceLabels.m */,
+				BFB9BA0D2AFF48A100E66CB6 /* missionControlWindows.h */,
+				BFB9BA0E2AFF48A100E66CB6 /* missionControlWindows.m */,
+				BFB9BA102AFF4CB900E66CB6 /* spaceKeyboardShortcuts.h */,
+				BFB9BA112AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m */,
 			);
 			path = screenhook;
 			sourceTree = "<group>";
@@ -335,6 +345,7 @@
 			files = (
 				BF5600502AE775CF005846CA /* prefs.m in Sources */,
 				BF56004E2AE775CF005846CA /* globals.m in Sources */,
+				BFB9BA0F2AFF48A100E66CB6 /* missionControlWindows.m in Sources */,
 				BF56004F2AE775CF005846CA /* app.m in Sources */,
 				BF2659D32AFF12D000489D9C /* currentSpaceScriptCommand.m in Sources */,
 				BFF1E7E42AFCB38100DCBBDB /* WindowManager.m in Sources */,
@@ -342,6 +353,7 @@
 				BFB9BA092AFF42E100E66CB6 /* spacesIDsScriptCommand.m in Sources */,
 				BF5600512AE775CF005846CA /* helperLib.m in Sources */,
 				BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */,
+				BFB9BA122AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m in Sources */,
 				BFB9BA0C2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m in Sources */,
 				BF3B74022AE0EB3700D80555 /* main.m in Sources */,
 				BF5600522AE775CF005846CA /* prefsWindowController.m in Sources */,

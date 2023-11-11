@@ -130,6 +130,7 @@ extern void CGSRemoveWindowsFromSpaces(const CGSConnection cid, CFArrayRef _Null
 NS_ASSUME_NONNULL_BEGIN
 @interface Spaces : NSObject
 + (void) init: (int) cgsMainConnectionId;
++ (int) CGSMainConnectID;
 + (int) currentSpaceId;
 + (int) currentSpaceIndex;
 + (NSArray<NSNumber* /* CGSSpaceID */>*) spaces;
