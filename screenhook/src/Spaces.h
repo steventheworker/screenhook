@@ -131,6 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Spaces : NSObject
 + (void) init: (int) cgsMainConnectionId;
 + (int) currentSpaceId;
++ (int) currentSpaceIndex;
 + (NSArray<NSNumber* /* CGSSpaceID */>*) spaces;
 + (NSArray<NSNumber* /* CGSSpaceID */>*) otherSpaces;
 + (NSArray<NSNumber* /* CGWindowID */>*) windowsInSpaces: (NSArray*) spaces : (BOOL) includeInvisible;

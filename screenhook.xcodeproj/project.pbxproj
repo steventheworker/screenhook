@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF2659D32AFF12D000489D9C /* currentSpaceScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2659D22AFF12D000489D9C /* currentSpaceScriptCommand.m */; };
+		BF2659D62AFF178600489D9C /* spacesScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2659D52AFF178600489D9C /* spacesScriptCommand.m */; };
 		BF3B73FB2AE0EB3600D80555 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF3B73FA2AE0EB3600D80555 /* AppDelegate.m */; };
 		BF3B73FD2AE0EB3700D80555 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF3B73FC2AE0EB3700D80555 /* Assets.xcassets */; };
 		BF3B74002AE0EB3700D80555 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF3B73FE2AE0EB3700D80555 /* MainMenu.xib */; };
@@ -21,6 +23,8 @@
 		BF5600562AE796A5005846CA /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5600552AE796A4005846CA /* MenuIcon.png */; };
 		BF5600592AE79B9A005846CA /* screenhook.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BF5600582AE79B9A005846CA /* screenhook.sdef */; };
 		BF56006B2AE7A708005846CA /* updateFFSidebarShowing.m in Sources */ = {isa = PBXBuildFile; fileRef = BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */; };
+		BFB9BA092AFF42E100E66CB6 /* spacesIDsScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA082AFF42E100E66CB6 /* spacesIDsScriptCommand.m */; };
+		BFB9BA0C2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA0B2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m */; };
 		BFEA09D62AEBB5F3009450BF /* Windows.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEA09D52AEBB5F3009450BF /* Windows.m */; };
 		BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF1E7DD2AFB720200DCBBDB /* screenhook.m */; };
 		BFF1E7E12AFB795500DCBBDB /* missionControlSpaceLabels.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF1E7E02AFB795500DCBBDB /* missionControlSpaceLabels.m */; };
@@ -30,6 +34,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF2659D12AFF12D000489D9C /* currentSpaceScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = currentSpaceScriptCommand.h; sourceTree = "<group>"; };
+		BF2659D22AFF12D000489D9C /* currentSpaceScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = currentSpaceScriptCommand.m; sourceTree = "<group>"; };
+		BF2659D42AFF178600489D9C /* spacesScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spacesScriptCommand.h; sourceTree = "<group>"; };
+		BF2659D52AFF178600489D9C /* spacesScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = spacesScriptCommand.m; sourceTree = "<group>"; };
 		BF3B73F62AE0EB3600D80555 /* screenhook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = screenhook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3B73F92AE0EB3600D80555 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BF3B73FA2AE0EB3600D80555 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -55,6 +63,10 @@
 		BF5600582AE79B9A005846CA /* screenhook.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = screenhook.sdef; sourceTree = "<group>"; };
 		BF5600692AE7A708005846CA /* updateFFSidebarShowing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = updateFFSidebarShowing.h; sourceTree = "<group>"; };
 		BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = updateFFSidebarShowing.m; sourceTree = "<group>"; };
+		BFB9BA072AFF42E100E66CB6 /* spacesIDsScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spacesIDsScriptCommand.h; sourceTree = "<group>"; };
+		BFB9BA082AFF42E100E66CB6 /* spacesIDsScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = spacesIDsScriptCommand.m; sourceTree = "<group>"; };
+		BFB9BA0A2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = currentSpaceIDScriptCommand.h; sourceTree = "<group>"; };
+		BFB9BA0B2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = currentSpaceIDScriptCommand.m; sourceTree = "<group>"; };
 		BFEA09D42AEBB5F3009450BF /* Windows.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Windows.h; sourceTree = "<group>"; };
 		BFEA09D52AEBB5F3009450BF /* Windows.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Windows.m; sourceTree = "<group>"; };
 		BFF1E7DC2AFB720200DCBBDB /* screenhook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = screenhook.h; sourceTree = "<group>"; };
@@ -160,6 +172,14 @@
 		BF5600682AE7A6E7005846CA /* NSScriptCommands */ = {
 			isa = PBXGroup;
 			children = (
+				BFB9BA0A2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.h */,
+				BFB9BA0B2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m */,
+				BF2659D12AFF12D000489D9C /* currentSpaceScriptCommand.h */,
+				BF2659D22AFF12D000489D9C /* currentSpaceScriptCommand.m */,
+				BFB9BA072AFF42E100E66CB6 /* spacesIDsScriptCommand.h */,
+				BFB9BA082AFF42E100E66CB6 /* spacesIDsScriptCommand.m */,
+				BF2659D42AFF178600489D9C /* spacesScriptCommand.h */,
+				BF2659D52AFF178600489D9C /* spacesScriptCommand.m */,
 				BF5600692AE7A708005846CA /* updateFFSidebarShowing.h */,
 				BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */,
 			);
@@ -316,16 +336,20 @@
 				BF5600502AE775CF005846CA /* prefs.m in Sources */,
 				BF56004E2AE775CF005846CA /* globals.m in Sources */,
 				BF56004F2AE775CF005846CA /* app.m in Sources */,
+				BF2659D32AFF12D000489D9C /* currentSpaceScriptCommand.m in Sources */,
 				BFF1E7E42AFCB38100DCBBDB /* WindowManager.m in Sources */,
 				BF56004D2AE775CF005846CA /* Spaces.m in Sources */,
+				BFB9BA092AFF42E100E66CB6 /* spacesIDsScriptCommand.m in Sources */,
 				BF5600512AE775CF005846CA /* helperLib.m in Sources */,
 				BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */,
+				BFB9BA0C2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m in Sources */,
 				BF3B74022AE0EB3700D80555 /* main.m in Sources */,
 				BF5600522AE775CF005846CA /* prefsWindowController.m in Sources */,
 				BF56006B2AE7A708005846CA /* updateFFSidebarShowing.m in Sources */,
 				BF3B73FB2AE0EB3600D80555 /* AppDelegate.m in Sources */,
 				BFEA09D62AEBB5F3009450BF /* Windows.m in Sources */,
 				BFF1E7E12AFB795500DCBBDB /* missionControlSpaceLabels.m in Sources */,
+				BF2659D62AFF178600489D9C /* spacesScriptCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,5 +8,25 @@
                  <cocoa key="val" />
              </direct-parameter>
         </command>
+         <command name="currentSpace" code="ScHkCurS" description="The current space index.">
+             <cocoa class="currentSpaceScriptCommand" />
+             <result type="integer" description="(int) space index, where 0 is the first space" />
+        </command>
+         <command name="currentSpaceID" code="ScHkCSID" description="The current space's cgspaceid.">
+             <cocoa class="currentSpaceIDScriptCommand" />
+             <result type="integer" description="(int) cgsspaceid" />
+        </command>
+         <command name="spaces" code="ScHkSpcs" description="Array of space indexes.">
+             <cocoa class="spacesScriptCommand" />
+             <result description="Array of space indexes.">
+                 <type type="integer" list="yes" />
+             </result>
+         </command>
+         <command name="spaceIDs" code="ScHkSIDs" description="Array of cgspaceid's.">
+             <cocoa class="spacesIDsScriptCommand" />
+             <result description="Array of cgspaceid's.">
+                 <type type="integer" list="yes" />
+             </result>
+         </command>
      </suite>
  </dictionary>
