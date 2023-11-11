@@ -190,6 +190,9 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         // User clicked Cancel or closed the dialog
         NSLog(@"Dialog canceled");
     }
+    setTimeout(^{
+        [helperLib openMissionControl];
+    }, 100);
 }
 + (void) reshow {
     if (overlayController.window.isVisible) {

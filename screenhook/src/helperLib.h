@@ -56,5 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*) dictionaryStringOneLine : (NSDictionary*) dict : (BOOL) flattest;
 + (BOOL) isNaN : (NSString*) input;
 + (void) restartApp;
++ (void) openAppExpose;
++ (void) openDesktopExpose;
++ (void) openMissionControl;
 @end
 NS_ASSUME_NONNULL_END
