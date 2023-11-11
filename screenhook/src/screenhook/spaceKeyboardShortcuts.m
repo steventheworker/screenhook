@@ -20,7 +20,7 @@ void fallbackToKeys(int from, int to) {
         NSString* scptStr = [NSString stringWithFormat: @"tell application \"System Events\" to key code %d using {control down}", dx < 0 ? 123 : 124];
         setTimeout(^{
             [helperLib applescript: scptStr];
-        }, ([WindowManager exposeType] ? 750 : 100) * i + 100);
+        }, ([WindowManager exposeType] ? 750 : 100) * i + 333);
     }
 }
 
