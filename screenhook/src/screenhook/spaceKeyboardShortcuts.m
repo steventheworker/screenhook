@@ -35,7 +35,8 @@ void fallbackToKeys(int from, int to) {
     int targetSpace;
     switch (digit) { //so 1 = 0% of spaces (Space 1), 2-8 = (Space at index x/9 % of the way), 9 = 100% desktops (last Desktop)
         case 1:
-            targetSpace = 1;
+        case 2:
+            targetSpace = digit;
             break;
         case 9:
             targetSpace = (int) spaces.count;
