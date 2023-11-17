@@ -192,7 +192,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     }
     setTimeout(^{
         [helperLib openMissionControl];
-    }, 100);
+    }, 333);
 }
 + (void) reshow {
     if (overlayController.window.isVisible) {
