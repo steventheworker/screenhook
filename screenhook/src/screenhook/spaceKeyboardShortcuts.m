@@ -14,6 +14,29 @@
 extern void CGSManagedDisplaySetCurrentSpace(const /* CGSConnectionID */ int cid, /* CGSManagedDisplay */ CFStringRef display, /* CGSSpace */ uint64_t space);
 extern /* CGSManagedDisplay */ CFStringRef kCGSPackagesMainDisplayIdentifier;
 
+void createSpaceWindow(NSScreen* screen) {
+    //put invisible window on space (if DNE)
+    AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);
+    NSArray* windows = [helperLib elementDict: appEl : @{@"wins": (id)kAXWindowsAttribute}][@"wins"];
+    for (NSValue* elval in windows) {
+        AXUIElementRef el = elval.pointerValue;
+        NSDictionary* dict = [helperLib elementDict: el : @{@"id": (id)kAXIdentifierAttribute, @"pos": (id)kAXPositionAttribute}];
+        NSPoint pos = NSMakePoint([dict[@"pos"][@"x"] floatValue], [dict[@"pos"][@"y"] floatValue]);
+        if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, screen.frame)) return; // already exists on screen
+    }
+    //create spacewindow
+    NSWindow* spaceWindow = [[NSWindow alloc] initWithContentRect: NSMakeRect(0, 0, 300, 300)
+                                                        styleMask: (/*NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable */NSWindowStyleMaskBorderless)
+                                                          backing: NSBackingStoreBuffered
+                                                            defer: NO];
+    [spaceWindow setIdentifier: @"spacewindow"];
+    [spaceWindow setLevel: NSMainMenuWindowLevel]; //prevent show up in mission control (but floats on top)
+    [spaceWindow setBackgroundColor: /*NSColor.redColor*/ NSColor.clearColor];
+    [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 300, 300) display: YES]; //place on bottom left corner of screen
+    [spaceWindow setIgnoresMouseEvents: YES]; //pass clicks through (which it already does so, when using nscolor.clearcolor (For some reason))
+    [spaceWindow makeKeyAndOrderFront: nil]; //pop it up
+}
+
 void fallbackToKeys(int from, int to) {
     int dx = to - from;
     for (int i = 0; i < abs(dx); i++) {
@@ -26,7 +49,18 @@ void fallbackToKeys(int from, int to) {
 
 @implementation spaceKeyboardShortcuts
 + (void) init {
-    //onlaunch put invisible window on space
+    for (NSScreen* screen in NSScreen.screens) createSpaceWindow(screen);
+
+
+    AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);
+    NSArray* windows = [helperLib elementDict: appEl : @{@"wins": (id)kAXWindowsAttribute}][@"wins"];
+    AXUIElementRef el;
+    for (NSValue* elval in windows) {
+        el = elval.pointerValue;
+        NSDictionary* dict = [helperLib elementDict: el : @{@"id": (id)kAXIdentifierAttribute, @"pos": (id)kAXPositionAttribute}];
+        NSPoint pos = NSMakePoint([dict[@"pos"][@"x"] floatValue], [dict[@"pos"][@"y"] floatValue]);
+        if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, NSScreen.mainScreen.frame)) break;
+    }
 }
 + (void) keyCode: (int) keyCode {
     NSArray* spaces = [Spaces spaces];
@@ -52,6 +86,6 @@ void fallbackToKeys(int from, int to) {
     fallbackToKeys([Spaces currentSpaceIndex] - 1, targetSpaceIndex); //currentSpaceIndex starts at 1 instead of 0
 }
 + (void) spaceChanged: (NSNotification*) note {
-    //onspacechange put invisible window on space (if DNE)
+    createSpaceWindow(NSScreen.mainScreen);
 }
 @end
