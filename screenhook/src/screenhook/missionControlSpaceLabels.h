@@ -14,9 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) init;
 + (void) tick: (int) exposeType;
 + (void) render;
-+ (void) clearView;
-+ (void) addOverlayWindow;
-+ (void) removeOverlayWindow;
++ (void) clearViews;
++ (void) addOverlayWindows;
 + (void) labelClicked: (AXUIElementRef) el;
 + (void) reshow;
 + (void) mouseup;

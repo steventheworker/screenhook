@@ -12,19 +12,23 @@
 #import "../Spaces.h"
 #import "../WindowManager.h"
 
-NSWindowController* overlayController;
+NSMutableArray<NSWindowController*>* overlayControllers;
 NSMutableArray* spaceLabels;
 int windowWidth;
 int windowHeight;
 
 void showLabels(void) {
-    if (overlayController.window.isVisible) return;
-    [overlayController.window setIsVisible: YES];
+    for (NSWindowController* overlayController in overlayControllers) {
+        if (overlayController.window.isVisible) return;
+        [overlayController.window setIsVisible: YES];
+    }
     [missionControlSpaceLabels render];
 }
 void hideLabels(void) {
-    if (!overlayController.window.isVisible) return;
-    [overlayController.window setIsVisible: NO];
+    for (NSWindowController* overlayController in overlayControllers) {
+        if (!overlayController.window.isVisible) return;
+        [overlayController.window setIsVisible: NO];
+    }
 }
 
 void loadLabelsFromPrefs(void) {
@@ -51,75 +55,77 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 
 @implementation missionControlSpaceLabels : NSObject
 + (void) init {
+    overlayControllers = [NSMutableArray array];
     spaceLabels = [NSMutableArray array];
-    [self addOverlayWindow];
+    [self addOverlayWindows];
 }
 + (void) tick: (int) exposeType {
     if (exposeType) showLabels();
     else hideLabels();
 }
-+ (void) addOverlayWindow {
-    //create window from xib
-    overlayController = [[NSWindowController alloc] initWithWindowNibName: @"spaceLabelsWindow"];
-    [overlayController.window setOpaque: NO];
-    [overlayController.window setBackgroundColor: NSColor.clearColor];
-    [overlayController.window setLevel: NSPopUpMenuWindowLevel];
-    
-    NSScreen* screen = [helperLib primaryScreen];
-    windowWidth = screen.frame.size.width * 0.925;
-    windowHeight = 40;
-    [overlayController.window setFrame: NSMakeRect(overlayController.window.frame.origin.x, overlayController.window.frame.origin.y, windowWidth, windowHeight) display: NO];
-    [overlayController.window setFrameTopLeftPoint: NSMakePoint((screen.frame.size.width - windowWidth) / 2, screen.frame.size.height)];
-    
++ (void) addOverlayWindows {
     loadLabelsFromPrefs();
-}
-+ (void) removeOverlayWindow {
-    if (overlayController) {
-        [overlayController close];
-        overlayController = nil;
+    NSArray* screens = [NSScreen screens];
+    for (NSScreen* screen in screens) {
+        //create window from xib
+        NSWindowController* overlayController = [[NSWindowController alloc] initWithWindowNibName: @"spaceLabelsWindow"];
+        [overlayController.window setOpaque: NO];
+        [overlayController.window setBackgroundColor: NSColor.clearColor];
+        [overlayController.window setLevel: NSPopUpMenuWindowLevel];
+        
+        windowWidth = screen.frame.size.width * 0.925;
+        windowHeight = 40;
+        [overlayController.window setFrame: NSMakeRect(overlayController.window.frame.origin.x, overlayController.window.frame.origin.y, windowWidth, windowHeight) display: NO];
+        [overlayController.window setFrameTopLeftPoint: NSMakePoint(screen.frame.origin.x + ((screen.frame.size.width - windowWidth) / 2), screen.frame.origin.y + screen.frame.size.height)];
+        
+        [overlayControllers addObject: overlayController];
     }
 }
-+ (void) clearView {
-    [overlayController.window.contentView removeFromSuperview];
-    [overlayController.window setContentView: [[NSView alloc] init]];
++ (void) clearViews {
+    for (NSWindowController* overlayController in overlayControllers) {
+        [overlayController.window.contentView removeFromSuperview];
+        [overlayController.window setContentView: [[NSView alloc] init]];
+    }
 }
 + (void) render {
-    [self clearView];
-    NSView* view = overlayController.window.contentView;
-    int paddingY = 1;
-    NSView* labelsView = [[NSView alloc] initWithFrame: CGRectMake(0, paddingY, windowWidth, windowHeight - paddingY * 2)];
-    int y = 0;
-    int w = windowWidth / spaceLabels.count;
-    int h = windowHeight;
-    for (int i = 0; i < spaceLabels.count; i++) {
-        int x = i * w;
-        NSView* labelContainer = [[NSView alloc] initWithFrame: CGRectMake(x, y, w, h)];
-//        [labelContainer setWantsLayer: YES];
-//        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
-        int textHeightPixels = 16;
-        NSString* spaceNumberStr = [NSString stringWithFormat: @"%d", (i+1)];
-        float spaceNumberW = textHeightPixels * 0.6 * (spaceNumberStr.length * 1.2);
-        int spaceNumY = (h - textHeightPixels) + textHeightPixels * 0.6 + -5;
-        if ([spaceLabels[i] length] > 16) spaceNumY += 2; //if multi-line, shift spaceNumber up
-        NSTextView* spaceNumber = [[NSTextView alloc] initWithFrame: CGRectMake(w/2 - spaceNumberW/2, spaceNumY, spaceNumberW, textHeightPixels * 0.6)];
-        [spaceNumber setString: spaceNumberStr];
-        [spaceNumber setTextColor: NSColor.whiteColor];
-        [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
-        [spaceNumber setBackgroundColor: NSColor.clearColor];
-        
-        if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
-        NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
-        [label setString: spaceLabels[i]];
-        [label setTextColor: NSColor.whiteColor];
-        [label setAlignment: NSTextAlignmentCenter];
-        [label setBackgroundColor: NSColor.clearColor];
-        [label setIdentifier: [NSString stringWithFormat: @"%d", i]];
-
-        [labelContainer addSubview: label];
-        [labelContainer addSubview: spaceNumber];
-        [labelsView addSubview: labelContainer];
+    [self clearViews];
+    for (NSWindowController* overlayController in overlayControllers) {
+        NSView* view = overlayController.window.contentView;
+        int paddingY = 1;
+        NSView* labelsView = [[NSView alloc] initWithFrame: CGRectMake(0, paddingY, windowWidth, windowHeight - paddingY * 2)];
+        int y = 0;
+        int w = windowWidth / spaceLabels.count;
+        int h = windowHeight;
+        for (int i = 0; i < spaceLabels.count; i++) {
+            int x = i * w;
+            NSView* labelContainer = [[NSView alloc] initWithFrame: CGRectMake(x, y, w, h)];
+            //        [labelContainer setWantsLayer: YES];
+            //        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
+            int textHeightPixels = 16;
+            NSString* spaceNumberStr = [NSString stringWithFormat: @"%d", (i+1)];
+            float spaceNumberW = textHeightPixels * 0.6 * (spaceNumberStr.length * 1.2);
+            int spaceNumY = (h - textHeightPixels) + textHeightPixels * 0.6 + -5;
+            if ([spaceLabels[i] length] > 16) spaceNumY += 2; //if multi-line, shift spaceNumber up
+            NSTextView* spaceNumber = [[NSTextView alloc] initWithFrame: CGRectMake(w/2 - spaceNumberW/2, spaceNumY, spaceNumberW, textHeightPixels * 0.6)];
+            [spaceNumber setString: spaceNumberStr];
+            [spaceNumber setTextColor: NSColor.whiteColor];
+            [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
+            [spaceNumber setBackgroundColor: NSColor.clearColor];
+            
+            if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
+            NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
+            [label setString: spaceLabels[i]];
+            [label setTextColor: NSColor.whiteColor];
+            [label setAlignment: NSTextAlignmentCenter];
+            [label setBackgroundColor: NSColor.clearColor];
+            [label setIdentifier: [NSString stringWithFormat: @"%d", i]];
+            
+            [labelContainer addSubview: label];
+            [labelContainer addSubview: spaceNumber];
+            [labelsView addSubview: labelContainer];
+        }
+        [view addSubview: labelsView];
     }
-    [view addSubview: labelsView];
 }
 + (void) labelClicked: (AXUIElementRef) el {
     NSDictionary* elDict = [helperLib elementDict: el : @{
@@ -195,11 +201,10 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     }, 333);
 }
 + (void) reshow {
-    if (overlayController.window.isVisible) {
-        [self removeOverlayWindow]; //window won't be on top unless it's recreated
-        [self addOverlayWindow];
-        showLabels(); //reshow
-    }
+    for (NSWindowController* overlayController in overlayControllers) if (overlayController.window.isVisible) [overlayController close]; //window won't be on top unless it's recreated
+    overlayControllers = [NSMutableArray array];
+    [self addOverlayWindows];
+    showLabels(); //reshow
 }
 + (void) mouseup { //test for space changes (see if a space was added,removed (and reflect it into "spaceLabels"))
     setTimeout(^{
