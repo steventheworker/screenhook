@@ -54,7 +54,7 @@ int intervalTickT = DEFAULT_TICK_SPEED;
     
     //key events
     if ([eventString isEqual: @"keydown"]) {
-        if (modifiers[@"ctrl"] || modifiers[@"cmd"]) {
+        if ((modifiers[@"ctrl"] || modifiers[@"cmd"]) && modifiers.count == 1) {
             int keyCode = (int)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
             if ([@[@18, @19, @20, @21, @23, @22, @26, @28, @25] containsObject: @(keyCode)]) [spaceKeyboardShortcuts keyCode: keyCode];
             NSLog(@"keycode %d", keyCode);
