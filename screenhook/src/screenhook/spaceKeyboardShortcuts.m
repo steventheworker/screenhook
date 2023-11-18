@@ -11,9 +11,6 @@
 #import "../Spaces.h"
 #import "../WindowManager.h"
 
-extern void CGSManagedDisplaySetCurrentSpace(const /* CGSConnectionID */ int cid, /* CGSManagedDisplay */ CFStringRef display, /* CGSSpace */ uint64_t space);
-extern /* CGSManagedDisplay */ CFStringRef kCGSPackagesMainDisplayIdentifier;
-
 void createSpaceWindow(NSScreen* screen) {
     //put invisible window on space (if DNE)
     AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);
@@ -30,9 +27,8 @@ void createSpaceWindow(NSScreen* screen) {
                                                           backing: NSBackingStoreBuffered
                                                             defer: NO];
     [spaceWindow setIdentifier: @"spacewindow"];
-    [spaceWindow setLevel: NSMainMenuWindowLevel]; //prevent show up in mission control (but floats on top)
-    [spaceWindow setBackgroundColor: /*NSColor.redColor*/ NSColor.clearColor];
-    [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 300, 300) display: YES]; //place on bottom left corner of screen
+    [spaceWindow setBackgroundColor: NSColor.clearColor];
+    [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 0, 0) display: YES]; //place on bottom left corner of screen
     [spaceWindow setIgnoresMouseEvents: YES]; //pass clicks through (which it already does so, when using nscolor.clearcolor (For some reason))
     [spaceWindow makeKeyAndOrderFront: nil]; //pop it up
 }
@@ -52,15 +48,23 @@ void fallbackToKeys(int from, int to) {
     for (NSScreen* screen in NSScreen.screens) createSpaceWindow(screen);
 
 
-    AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);
-    NSArray* windows = [helperLib elementDict: appEl : @{@"wins": (id)kAXWindowsAttribute}][@"wins"];
-    AXUIElementRef el;
-    for (NSValue* elval in windows) {
-        el = elval.pointerValue;
-        NSDictionary* dict = [helperLib elementDict: el : @{@"id": (id)kAXIdentifierAttribute, @"pos": (id)kAXPositionAttribute}];
-        NSPoint pos = NSMakePoint([dict[@"pos"][@"x"] floatValue], [dict[@"pos"][@"y"] floatValue]);
-        if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, NSScreen.mainScreen.frame)) break;
-    }
+    
+//    //in 7 seconds switch to the space you were on when screenhook launched
+//    AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);
+//    NSArray* windows = [helperLib elementDict: appEl : @{@"wins": (id)kAXWindowsAttribute}][@"wins"];
+//    AXUIElementRef el;
+//    for (NSValue* elval in windows) {
+//        el = elval.pointerValue;
+//        NSDictionary* dict = [helperLib elementDict: el : @{@"id": (id)kAXIdentifierAttribute, @"pos": (id)kAXPositionAttribute}];
+//        NSPoint pos = NSMakePoint([dict[@"pos"][@"x"] floatValue], [dict[@"pos"][@"y"] floatValue]);
+//                if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, NSScreen.mainScreen.frame))         NSLog(@"BREAK ON %@", dict);
+//        if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, NSScreen.mainScreen.frame)) break;
+//    }
+//    setTimeout(^{
+//        NSLog(@"worfwoj oj%@", el);
+//        [NSApp activateIgnoringOtherApps: YES];
+//        AXUIElementPerformAction(el, kAXRaiseAction);
+//    }, 7000);
 }
 + (void) keyCode: (int) keyCode {
     NSArray* spaces = [Spaces spaces];

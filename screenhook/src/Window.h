@@ -1,16 +1,15 @@
 //
-//  Windows.h
+//  Window.h
 //  screenhook
 //
-//  Created by Steven G on 10/27/23.
+//  Created by Steven G on 11/17/23.
 //
 
 #import <Foundation/Foundation.h>
-#import <Cocoa/Cocoa.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface Windows : NSObject
+@interface Window : NSObject
 
 @end
 
