@@ -24,6 +24,7 @@ typedef enum {exposeClosed, DesktopExpose, AppExpose, MissionControl} exposeType
 + (void) observerCallback: (AXObserverRef) observer : (AXUIElementRef) elementRef : (CFStringRef) notification : (void*) refcon;
 + (void) windowObserverCallback: (AXObserverRef) observer : (AXUIElementRef) elementRef : (CFStringRef) notification : (void*) refcon;
 + (void) spaceChanged: (NSNotification*) note;
++ (void) updateSpaces;
 @end
 
 NS_ASSUME_NONNULL_END

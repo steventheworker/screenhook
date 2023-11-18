@@ -6,11 +6,28 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <Cocoa/Cocoa.h>
 NS_ASSUME_NONNULL_BEGIN
 
-@interface Window : NSObject
+@interface Window : NSObject {
+    AXUIElementRef el;
+    NSRunningApplication* app;
+    CGWindowID winNum;
+    AXObserverRef observer;
+    
+    NSString* title;
+    BOOL isFullscreen;
+    BOOL isMinimized;
+    NSPoint pos;
+    NSSize size;
 
+    int creationOrder;
+    int spaceId;
+    int spaceIndex;
+    BOOL isOnAllSpaces;
+}
++ (instancetype) init : (NSRunningApplication*) app : (AXUIElementRef) el : (CGWindowID) winNum : (AXObserverRef) observer;
+- (void) updatesWindowSpace;
 @end
 
 NS_ASSUME_NONNULL_END

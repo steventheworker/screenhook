@@ -9,7 +9,7 @@
 #import "globals.h"
 #import "helperLib.h"
 #import "Spaces.h"
-#import "Windows.h"
+#import "Window.h"
 
 const int ACTIVATION_MILLISECONDS = 30; //how long to wait to activate after [app unhide]
 
@@ -24,6 +24,7 @@ CFArrayRef lastVisibleWindows = nil;
 NSMutableDictionary* closedWindows; //key = appPID, value = @{kcgwindownumber1: winDict1, kcgwindownumber2: winDict2, ...}
 NSMutableDictionary<NSString*, NSValue*>* observers;
 NSArray* AppObserverNotifications;
+NSMutableArray* windows;
 
 void loadVisibleWindows(void) {
 //    NSLog(@"regen visible windows");
@@ -61,6 +62,7 @@ static void axObserverCallback(AXObserverRef observer, AXUIElementRef elementRef
 static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elementRef, CFStringRef notification, void *refcon) {[WindowManager windowObserverCallback: observer : elementRef : notification : refcon];}
 @implementation WindowManager
 + (void) init {
+    windows = [NSMutableArray array];
     [self initialDiscovery];
 }
 + (int) exposeType {return exposeType;}
@@ -272,16 +274,20 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
         }
     }
 }
+/* todo: find when should call this... */
++ (void) updateSpaces {    /* workaround: when Preferences > Mission Control > "Displays have separate Spaces" is unchecked,
+                            switching between displays doesn't trigger .activeSpaceDidChangeNotification; we get the latest manually */
+    [Spaces refreshCurrentSpaceId];
+    for (Window* win in windows) [win updatesWindowSpace];
+}
 + (void) spaceChanged: (NSNotification*) note {
     activationT = 100;
     //todo: iterate over appel (axuiapp element) and get the axwindows, add window observers
-    // create observers for running app's
+    // create observers for running apps
     for (NSRunningApplication* app in [[NSWorkspace sharedWorkspace] runningApplications]) [self observeApp: app];
     [Spaces refreshAllIdsAndIndexes];
     [Spaces updateCurrentSpace];
-//    // if UI was kept open during Space transition, the Spaces may be obsolete; we refresh them
-//    Windows.list.forEachAsync { $0.updatesWindowSpace() }
-//    // from macos 12.2 beta onwards, we can't get other-space windows; grabbing windows when switching spaces mitigates the issue
-//    Applications.manuallyUpdateWindows()
+
+    for (Window* win in windows) [win updatesWindowSpace];
 }
 @end

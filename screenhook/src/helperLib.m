@@ -212,7 +212,11 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXMinimizeButtonAttribute) {
             // Handle kAXMinimizeButtonAttribute
         } else if (attribute == (id)kAXMinimizedAttribute) {
-            // Handle kAXMinimizedAttribute
+            BOOL val;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXMinimizedAttribute, (void*)&val);
+            if (result == kAXErrorSuccess) {
+                dict[attributeName] = @(val);
+            } else dict[attributeName] = @NO;
         } else if (attribute == (id)kAXMinuteFieldAttribute) {
             // Handle kAXMinuteFieldAttribute
         } else if (attribute == (id)kAXMinValueAttribute) {
@@ -357,12 +361,27 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
             // Handle kAXYearFieldAttribute
         } else if (attribute == (id)kAXZoomButtonAttribute) {
             // Handle kAXZoomButtonAttribute
-        } else {
+        } else {//missing attributes
             if (attribute == (id)kAXPIDAttribute) { //fake kAXAttribute, otherwise no way to get pid with elementDict
                 pid_t axPID = -1;
                 AXUIElementGetPid(el, &axPID);
                 dict[attributeName] = @(axPID);
                 continue;
+            }
+            if (attribute == (id)kAXFullscreenAttribute) {
+                BOOL val;
+                AXError result = AXUIElementCopyAttributeValue(el, kAXFullscreenAttribute, (void*)&val);
+                if (result == kAXErrorSuccess) {
+                    dict[attributeName] = @(val);
+                } else dict[attributeName] = @NO;
+                continue;
+            }
+            if (attribute == (id)kAXStatusLabelAttribute) { //"badge" value / # of notifications
+                int val;
+                AXError result = AXUIElementCopyAttributeValue(el, kAXStatusLabelAttribute, (void*)&val);
+                if (result == kAXErrorSuccess) {
+                    dict[attributeName] = @(val);
+                } else dict[attributeName] = @0;
             }
             // Default case when attribute is not matched
             dict[attributeName] = @"";

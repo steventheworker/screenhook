@@ -34,6 +34,10 @@ NSString* uuidForScreen(NSScreen* screen) {
 + (int) CGSMainConnectID {return receivedCGSMainConnectID;}
 + (int) currentSpaceId {return currentSpaceId;}
 + (int) currentSpaceIndex {return currentSpaceIndex;}
++ (int) indexWithID: (int) ID {
+    for (int i = 0; i < idsAndIndexes.count; i++) if ([idsAndIndexes[i] intValue] == ID) return i;
+    return -1;
+}
 + (void) init: (int) cgsMainConnectionId {
     receivedCGSMainConnectID = cgsMainConnectionId;
     currentSpaceId = 1;

@@ -8,6 +8,14 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
+typedef NS_ENUM(NSInteger, CGSSpaceMask) {
+    CGSSpaceMaskCurrent = 5,
+    CGSSpaceMaskOther = 6,
+    CGSSpaceMaskAll = 7
+};
+extern NSArray* CGSCopySpacesForWindows(int cid, int mask, NSArray* wids); // private api fallback
+
+
 typedef NS_OPTIONS(NSInteger, CGSCopyWindowsOptions) {
     CGSCopyWindowsOptionsInvisible1 = 1 << 0,
     CGSCopyWindowsOptionsScreenSaverLevel1000 = 1 << 1,
@@ -133,9 +141,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (int) CGSMainConnectID;
 + (int) currentSpaceId;
 + (int) currentSpaceIndex;
++ (int) indexWithID: (int) ID;
 + (NSArray<NSNumber* /* CGSSpaceID */>*) spaces;
 + (NSArray<NSNumber* /* CGSSpaceID */>*) otherSpaces;
 + (NSArray<NSNumber* /* CGWindowID */>*) windowsInSpaces: (NSArray*) spaces : (BOOL) includeInvisible;
++ (void) refreshCurrentSpaceId;
 + (void) refreshAllIdsAndIndexes;
 + (void) updateCurrentSpace;
 @end
