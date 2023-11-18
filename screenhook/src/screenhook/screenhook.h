@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /* events */
 + (BOOL) processEvent: (CGEventTapProxy) proxy : (CGEventType) type : (CGEventRef) event : (void*) refcon : (NSString*) eventString;
++ (void) appLaunched: (NSNotification*) note;
++ (void) appTerminated: (NSNotification*) note;
 + (void) spaceChanged: (NSNotification*) note;
 @end
 

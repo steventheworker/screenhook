@@ -47,7 +47,15 @@ void fallbackToKeys(int from, int to) {
 + (void) init {
     for (NSScreen* screen in NSScreen.screens) createSpaceWindow(screen);
 
-
+    setTimeout(^{
+        NSArray* windows = [WindowManager windows];
+        NSLog(@"SCREENHOOK WINDOWS...");
+        for (Window* win in windows) {
+            if (win->app.processIdentifier == [[NSProcessInfo processInfo] processIdentifier]) {
+                NSLog(@"SCREENHOOK WINDOWS %@", win);
+            }
+        }
+    }, 30*1000);
     
 //    //in 7 seconds switch to the space you were on when screenhook launched
 //    AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);

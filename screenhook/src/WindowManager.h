@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import "Window.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,15 +16,18 @@ typedef enum {exposeClosed, DesktopExpose, AppExpose, MissionControl} exposeType
 
 @interface WindowManager : NSObject
 + (void) init;
++ (NSArray<Window*>*) windows;
 + (int) exposeType;
 + (int) exposeTick;
 
 + (int) initialDiscovery;
-+ (void) observeWindow: (AXUIElementRef) axWindow : (pid_t) appPID : (CGWindowID) winNum;
++ (void) observeWindow: (AXUIElementRef) axWindow : (NSRunningApplication*) app : (CGWindowID) winNum;
 + (void) observeApp: (NSRunningApplication*) app;
 + (void) observerCallback: (AXObserverRef) observer : (AXUIElementRef) elementRef : (CFStringRef) notification : (void*) refcon;
 + (void) windowObserverCallback: (AXObserverRef) observer : (AXUIElementRef) elementRef : (CFStringRef) notification : (void*) refcon;
 + (void) spaceChanged: (NSNotification*) note;
++ (void) appLaunched: (NSNotification*) note;
++ (void) appTerminated: (NSNotification*) note;
 + (void) updateSpaces;
 @end
 

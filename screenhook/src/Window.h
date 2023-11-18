@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Window : NSObject {
+    @public
     AXUIElementRef el;
     NSRunningApplication* app;
     CGWindowID winNum;

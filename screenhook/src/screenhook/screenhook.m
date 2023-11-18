@@ -62,6 +62,8 @@ int intervalTickT = DEFAULT_TICK_SPEED;
     }
     return YES;
 }
++ (void) appLaunched: (NSNotification*) note {}
++ (void) appTerminated: (NSNotification*) note {}
 + (void) spaceChanged: (NSNotification*) note {
     [missionControlSpaceLabels spaceChanged: note];
     [spaceKeyboardShortcuts spaceChanged: note];

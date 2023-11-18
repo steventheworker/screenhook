@@ -206,12 +206,12 @@
 			children = (
 				BF5600682AE7A6E7005846CA /* NSScriptCommands */,
 				BFF1E7E52AFCC8F200DCBBDB /* overlays */,
-				BFF1E7DC2AFB720200DCBBDB /* screenhook.h */,
-				BFF1E7DD2AFB720200DCBBDB /* screenhook.m */,
 				BFF1E7DF2AFB795500DCBBDB /* missionControlSpaceLabels.h */,
 				BFF1E7E02AFB795500DCBBDB /* missionControlSpaceLabels.m */,
 				BFB9BA0D2AFF48A100E66CB6 /* missionControlWindows.h */,
 				BFB9BA0E2AFF48A100E66CB6 /* missionControlWindows.m */,
+				BFF1E7DC2AFB720200DCBBDB /* screenhook.h */,
+				BFF1E7DD2AFB720200DCBBDB /* screenhook.m */,
 				BFB9BA102AFF4CB900E66CB6 /* spaceKeyboardShortcuts.h */,
 				BFB9BA112AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m */,
 			);

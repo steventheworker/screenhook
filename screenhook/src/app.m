@@ -72,6 +72,16 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
         [WindowManager spaceChanged: note];
         [screenhook spaceChanged: note];
     }];
+    // notify when app launched (so that observers can be added)
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName: NSWorkspaceDidLaunchApplicationNotification object: [NSWorkspace sharedWorkspace] queue: nil usingBlock: ^(NSNotification * _Nonnull note) {
+        [WindowManager appLaunched: note];
+        [screenhook appLaunched: note];
+    }]; // notify when app terminated
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName: NSWorkspaceDidTerminateApplicationNotification object: [NSWorkspace sharedWorkspace] queue: nil usingBlock: ^(NSNotification * _Nonnull note) {
+        [WindowManager appTerminated: note];
+        [screenhook appTerminated: note];
+    }];
+
     
     /* cgeventtap's */
     allMachPortRef = [helperLib listenMask: kCGEventMaskForAllEvents : (CGEventTapCallBack) eventTapCallback];
