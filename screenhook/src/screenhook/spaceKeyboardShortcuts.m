@@ -74,12 +74,11 @@ void fallbackToKeys(int from, int to) {
     return NO;
 }
 + (void) keyCode: (int) keyCode {
-    //find x to find list of current screen's spaceIds
-    [Spaces updateCurrentSpace]; //now current id/index points to correct space
-    //now we find the spaces (for the screen) in screen-space map (the one containing our current id)
+    [Spaces updateCurrentSpace]; //now current id/index points to correct screen/space
+    //find all spaces (for the screen) (in screen-space map (the one containing our current id))
     NSArray* spaces;
     NSNumber* tarSpace = @([Spaces currentSpaceId]);
-    int relativeSpaceIndex = 0;
+    int relativeSpaceIndex = 0; //get the spaceindex (relative to the screen's spaces)
     NSDictionary* screenmap = [Spaces screenSpacesMap];
     for (NSString* uuid in screenmap) {
         NSArray* spaceIds = screenmap[uuid];
