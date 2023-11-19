@@ -21,15 +21,6 @@ int receivedCGSMainConnectID;
      })
 */
 
-NSString* uuidForScreen(NSScreen* screen) {
-    CGDirectDisplayID displayID = [[screen deviceDescription][@"NSScreenNumber"] unsignedIntValue];
-    CFUUIDRef screenUUID = CGDisplayCreateUUIDFromDisplayID(displayID);
-    if (screenUUID != NULL) {
-        currentSpaceId = CGSManagedDisplayGetCurrentSpace((int)receivedCGSMainConnectID, CFUUIDCreateString(NULL, screenUUID));
-    }
-    return nil;
-}
-
 @implementation Spaces
 + (int) CGSMainConnectID {return receivedCGSMainConnectID;}
 + (int) currentSpaceId {return currentSpaceId;}
@@ -53,14 +44,14 @@ NSString* uuidForScreen(NSScreen* screen) {
     [screenSpacesMap removeAllObjects];
     [visibleSpaces removeAllObjects];
     int spaceIndex = 1;
-    NSDictionary* dict = (__bridge NSDictionary*)(CGSCopyManagedDisplaySpaces(receivedCGSMainConnectID));
-    for (NSDictionary* screen in dict) {
+    NSArray* ray = (__bridge NSArray*)(CGSCopyManagedDisplaySpaces(receivedCGSMainConnectID));
+    for (NSDictionary* screen in ray) {
         NSString* display = screen[@"Display Identifier"];
         if ([display isEqual: @"Main"]) {
             NSScreen* mainScreen = [NSScreen mainScreen];
             if (mainScreen) {
-                NSUUID* mainUuid = uuidForScreen(mainScreen);
-                if (mainUuid) display = mainUuid.UUIDString;
+                NSString* mainUuid = [self uuidForScreen: mainScreen];
+                if (mainUuid) display = mainUuid;
             }
         }
 //        (screen["Spaces"] as! [NSDictionary]).forEach { (space: NSDictionary) in
@@ -86,9 +77,8 @@ NSString* uuidForScreen(NSScreen* screen) {
 + (void) refreshCurrentSpaceId {
     NSScreen* mainScreen = [NSScreen mainScreen];
     if (mainScreen) { // it seems that in some rare scenarios, some of these values are nil; we wrap to avoid crashing
-        NSUUID* uuid = (NSUUID*)uuidForScreen(mainScreen);
-//        NSLog(@"UUID '%@'", uuid);
-        if (uuid) currentSpaceId = CGSManagedDisplayGetCurrentSpace(receivedCGSMainConnectID, [uuid.UUIDString UTF8String]);
+        NSString* uuid = [self uuidForScreen: mainScreen];
+        if (uuid) currentSpaceId = (int)CGSManagedDisplayGetCurrentSpace(receivedCGSMainConnectID, (__bridge CFStringRef)uuid);
     }
 }
 + (void) updateCurrentSpace {
@@ -102,7 +92,9 @@ NSString* uuidForScreen(NSScreen* screen) {
     }
 //    NSLog(@"Current space %d", (int)currentSpaceId);
 }
-+ (NSArray<NSNumber* /* CGSSpaceID */>*) spaces {return idsAndIndexes;}
++ (NSArray<NSNumber* /* CGSSpaceID */>*) spaces {return (NSArray*)idsAndIndexes;}
++ (NSArray<NSNumber* /* CGSSpaceID */>*) visibleSpaces {return (NSArray*)visibleSpaces;}
++ (NSMutableDictionary<NSString*, NSArray<NSNumber*/* CGSSpaceID */>*>*) screenSpacesMap {return screenSpacesMap;}
 + (NSArray<NSNumber* /* CGSSpaceID */>*) otherSpaces {
     NSMutableArray* filteredIds = [NSMutableArray array]; // return idsAndIndexes.filter { $0.0 != currentSpaceId }.map { $0.0 }
     for (NSArray* tuple in idsAndIndexes) if ([tuple[0] intValue] != currentSpaceId) [filteredIds addObject:tuple[0]];
@@ -115,9 +107,48 @@ NSString* uuidForScreen(NSScreen* screen) {
     if (includeInvisible) {//if includeInvisible {
         options |= (CGSCopyWindowsOptionsInvisible1 | CGSCopyWindowsOptionsInvisible2);// options = [options, .invisible1, .invisible2]
     }//}
-    return (__bridge NSArray*)CGSCopyWindowsWithOptionsAndTags(receivedCGSMainConnectID, 0, (__bridge CFArrayRef)spaces, options, &set_tags, &clear_tags);
+    return (__bridge NSArray*)CGSCopyWindowsWithOptionsAndTags(receivedCGSMainConnectID, 0, (__bridge CFArrayRef)spaces, (int)options, (void*)&set_tags, (void*)&clear_tags);
 //    return (NSArray*)CGSCopyWindowsWithOptionsAndTags(receivedCGSMainConnectID, 0, (CFArrayRef*)spaceIds, options.rawValue, &set_tags, &clear_tags);
     
 }
 + (BOOL) isSingleSpace {return idsAndIndexes.count == 1;}
++ (NSString*) uuidForScreen: (NSScreen*) screen {
+    NSNumber* screenNumber = screen.deviceDescription[@"NSScreenNumber"];
+    if (screenNumber != nil) {
+        CGDirectDisplayID displayID = [screenNumber unsignedIntValue];
+        CFUUIDRef screenUuid = CGDisplayCreateUUIDFromDisplayID(displayID);
+        if (screenUuid != nil) {
+            CFStringRef uuid = CFUUIDCreateString(nil, screenUuid);
+            return (__bridge NSString * _Nonnull)(uuid);
+        }
+    }
+    return nil;
+}
 @end
+
+/*
+
+// NSScreen.main docs are incorrect. It stopped returning the screen with the key window in macOS 10.9
+
+// see https://stackoverflow.com/a/56268826/2249756
+// There are a few cases where .main doesn't return the screen with the key window:
+//   * if the active screen shows a fullscreen app, it always returns screens[0]
+//   * if NSScreen.screensHaveSeparateSpaces == false, and key window is on another screen than screens[0], it still returns screens[0]
+// we find the screen with the key window ourselves manually
+ 
+static func active() -> NSScreen? {
+    if let app = Applications.find(NSWorkspace.shared.frontmostApplication?.processIdentifier) {
+        if let focusedWindow = app.focusedWindow {
+            return NSScreen.screens.first { focusedWindow.isOnScreen($0) }
+        }
+        return NSScreen.withActiveMenubar()
+    }
+    return nil
+}
+
+// there is only 1 active menubar. Other screens will show their menubar dimmed
+static func withActiveMenubar() -> NSScreen? {
+    return NSScreen.screens.first { CGSCopyActiveMenuBarDisplayIdentifier(cgsMainConnectionId) == $0.uuid() }
+}
+ 
+*/

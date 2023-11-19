@@ -21,15 +21,24 @@ void createSpaceWindow(NSScreen* screen) {
         NSPoint pos = NSMakePoint([dict[@"pos"][@"x"] floatValue], [dict[@"pos"][@"y"] floatValue]);
         if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, screen.frame)) return; // already exists on screen
     }
+
+    //get space index (win->title) for visible space on screen
+    int spaceIndex = 0;
+    NSString* screenuuid = [Spaces uuidForScreen: screen];
+    NSArray* screenSpaceIds = [Spaces screenSpacesMap][screenuuid];
+    NSArray* visibleSpaceIds = [Spaces visibleSpaces];
+    for (NSNumber* spaceId in visibleSpaceIds) {
+        if (![screenSpaceIds containsObject: spaceId]) continue;
+        spaceIndex = [Spaces indexWithID: spaceId.intValue];
+    }
+    
     //create spacewindow
     NSWindow* spaceWindow = [[NSWindow alloc] initWithContentRect: NSMakeRect(0, 0, 300, 300)
                                                         styleMask: (/*NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable */NSWindowStyleMaskBorderless)
                                                           backing: NSBackingStoreBuffered
                                                             defer: NO];
     [spaceWindow setIdentifier: @"spacewindow"];
-    //todo: what if creating for other screen? currentSpaceIndex may be the wrong thing to use
-    //use space map?????
-    [spaceWindow setTitle: [NSString stringWithFormat: @"%d", [Spaces currentSpaceIndex]]];
+    [spaceWindow setTitle: [NSString stringWithFormat: @"%d", spaceIndex]];
     [spaceWindow setBackgroundColor: NSColor.clearColor];
     [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 0, 0) display: YES]; //place on bottom left corner of screen
     [spaceWindow setIgnoresMouseEvents: YES]; //pass clicks through (which it already does so, when using nscolor.clearcolor (For some reason))
@@ -65,28 +74,52 @@ void fallbackToKeys(int from, int to) {
     return NO;
 }
 + (void) keyCode: (int) keyCode {
-    NSArray* spaces = [Spaces spaces];
+    //find x to find list of current screen's spaceIds
+    [Spaces updateCurrentSpace]; //now current id/index points to correct space
+    //now we find the spaces (for the screen) in screen-space map (the one containing our current id)
+    NSArray* spaces;
+    NSNumber* tarSpace = @([Spaces currentSpaceId]);
+    int relativeSpaceIndex = 0;
+    NSDictionary* screenmap = [Spaces screenSpacesMap];
+    for (NSString* uuid in screenmap) {
+        NSArray* spaceIds = screenmap[uuid];
+        relativeSpaceIndex = (int)[spaceIds indexOfObject: tarSpace];
+        if (relativeSpaceIndex != (int)NSNotFound) {
+            spaces = spaceIds;
+            break;
+        }
+    }
+    relativeSpaceIndex++; //space indexing starts from 1 (tarSpace is desktop 1 to n (relative to the screen))
+    
     NSDictionary* digits = @{@18: @1, @19: @2, @20: @3, @21: @4, @23: @5, @22: @6, @26: @7, @28: @8, @25: @9};
     int digit = [digits[@(keyCode)] intValue];
     int targetSpace;
     switch (digit) { //so 1 = 0% of spaces (Space 1), 2-8 = (Space at index x/9 % of the way), 9 = 100% desktops (last Desktop)
         case 1:
-        case 2:
             targetSpace = digit;
+            break;
+        case 2:
+            if (spaces.count >= 2) targetSpace = digit;
+            else targetSpace = 1; //there may not be a second space
             break;
         case 9:
             targetSpace = (int) spaces.count;
             break;
         default:
             targetSpace = roundf((float)digit/9 * (float)spaces.count);
+            if (targetSpace <= 2) targetSpace = 3;
             break;
     }
-    int targetSpaceIndex = targetSpace - 1;
+    int targetSpaceIndex = targetSpace - 1; //array index, start at 0
+    
+    //the above variables are a space you want to target WITHIN the screen's spaces
+    int realTargetSpaceId = [spaces[targetSpaceIndex] intValue];
+    int realTargetSpaceIndex = [Spaces indexWithID: realTargetSpaceId];
     
     //if space does not yet have invisible window to activate, see if window on space exists you have axref for and activate that
         //else fallback to trigger keyboard shortcuts (control+leftarrow/rightarrow)
-    if ([WindowManager exposeType] || ![self visitSpace: targetSpace]) //cannot go directly to space if no spacewindow created, or mission control is open
-        fallbackToKeys([Spaces currentSpaceIndex] - 1, targetSpaceIndex); //currentSpaceIndex starts at 1 instead of 0
+    if ([WindowManager exposeType] || ![self visitSpace: realTargetSpaceIndex]) //cannot go directly to space if no spacewindow created, or mission control is open
+        fallbackToKeys(relativeSpaceIndex - 1, targetSpaceIndex); //currentSpaceIndex starts at 1 instead of 0
 }
 + (void) spaceChanged: (NSNotification*) note {
     createSpaceWindow(NSScreen.mainScreen);
