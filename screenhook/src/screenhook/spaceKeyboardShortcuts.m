@@ -28,6 +28,7 @@ void createSpaceWindow(NSScreen* screen) {
                                                             defer: NO];
     [spaceWindow setIdentifier: @"spacewindow"];
     //todo: what if creating for other screen? currentSpaceIndex may be the wrong thing to use
+    //use space map?????
     [spaceWindow setTitle: [NSString stringWithFormat: @"%d", [Spaces currentSpaceIndex]]];
     [spaceWindow setBackgroundColor: NSColor.clearColor];
     [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 0, 0) display: YES]; //place on bottom left corner of screen
@@ -48,13 +49,8 @@ void fallbackToKeys(int from, int to) {
 @implementation spaceKeyboardShortcuts
 + (void) init {
     for (NSScreen* screen in NSScreen.screens) createSpaceWindow(screen);
-    
-    setTimeout(^{
-        NSLog(@"TRY VISIT!!!");
-        [spaceKeyboardShortcuts visitSpace: 2];
-    }, 120*1000);
 }
-+ (void) visitSpace: (int) spaceToVisit {
++ (BOOL) visitSpace: (int) spaceToVisit {
     NSArray* windows = [WindowManager windows];
     for (Window* win in windows) {
         if (win->app.processIdentifier == [[NSProcessInfo processInfo] processIdentifier]) { //screenhook window
@@ -62,8 +58,11 @@ void fallbackToKeys(int from, int to) {
             if (![dict[@"identifier"] isEqual: @"spacewindow"] || ![[NSString stringWithFormat: @"%d", spaceToVisit] isEqual: dict[@"title"]]) continue;
             [NSApp activateIgnoringOtherApps: YES];
             AXUIElementPerformAction(win->el, kAXRaiseAction);
+            setTimeout(^{[NSApp hide: nil];}, 666); // give focus back to prev. frontmost application
+            return YES;
         }
     }
+    return NO;
 }
 + (void) keyCode: (int) keyCode {
     NSArray* spaces = [Spaces spaces];
@@ -86,7 +85,8 @@ void fallbackToKeys(int from, int to) {
     
     //if space does not yet have invisible window to activate, see if window on space exists you have axref for and activate that
         //else fallback to trigger keyboard shortcuts (control+leftarrow/rightarrow)
-    fallbackToKeys([Spaces currentSpaceIndex] - 1, targetSpaceIndex); //currentSpaceIndex starts at 1 instead of 0
+    if ([WindowManager exposeType] || ![self visitSpace: targetSpace]) //cannot go directly to space if no spacewindow created, or mission control is open
+        fallbackToKeys([Spaces currentSpaceIndex] - 1, targetSpaceIndex); //currentSpaceIndex starts at 1 instead of 0
 }
 + (void) spaceChanged: (NSNotification*) note {
     createSpaceWindow(NSScreen.mainScreen);

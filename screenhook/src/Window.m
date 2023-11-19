@@ -53,12 +53,8 @@ int globalCreationCounter = 0;
     // you can use the Dock to focus one of the other tabs and it will teleport that tab in the current space, proving that it's a macOS bug
     // note: for some reason, it behaves differently if you minimize the tab group after moving it to another space
     NSArray* spaceIds = CGSCopySpacesForWindows([Spaces CGSMainConnectID], CGSSpaceMaskAll, @[@(self->winNum)]);
-    NSLog(@"BLOOD |F FWUF WFW %@", spaceIds);
-    NSLog(@"BLOOD |F FWUF WFW %@", spaceIds);
-    NSLog(@"BLOOD |F FWUF WFW %@", spaceIds);
     if (spaceIds.count == 1) {
         self->spaceId = [spaceIds[0] intValue];
-        NSLog(@"CRASH HERE2 %d", self->spaceId);
         self->spaceIndex = [Spaces indexWithID: self->spaceId];
         self->isOnAllSpaces = false;
     } else if (spaceIds.count > 1) {

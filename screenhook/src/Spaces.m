@@ -12,7 +12,7 @@ int receivedCGSMainConnectID;
 /*static UInt64 */ int currentSpaceIndex;
 /*static*/ NSMutableArray* visibleSpaces;
 /*static*/ NSMutableDictionary<NSString*, NSArray<NSNumber*>*>* screenSpacesMap;
-/*static*/ NSMutableArray* idsAndIndexes;
+/*static*/ NSMutableArray<NSArray<NSNumber*>*>* idsAndIndexes;
 
 /*
      NSWorkspace.shared.notificationCenter.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: nil, using: { _ in
@@ -35,7 +35,7 @@ NSString* uuidForScreen(NSScreen* screen) {
 + (int) currentSpaceId {return currentSpaceId;}
 + (int) currentSpaceIndex {return currentSpaceIndex;}
 + (int) indexWithID: (int) ID {
-    for (int i = 0; i < idsAndIndexes.count; i++) if ([idsAndIndexes[i] intValue] == ID) return i;
+    for (int i = 0; i < idsAndIndexes.count; i++) if ([idsAndIndexes[i][0] intValue] == ID) return [idsAndIndexes[i][1] intValue];
     return -1;
 }
 + (void) init: (int) cgsMainConnectionId {
