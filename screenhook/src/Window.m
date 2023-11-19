@@ -58,6 +58,7 @@ int globalCreationCounter = 0;
     NSLog(@"BLOOD |F FWUF WFW %@", spaceIds);
     if (spaceIds.count == 1) {
         self->spaceId = [spaceIds[0] intValue];
+        NSLog(@"CRASH HERE2 %d", self->spaceId);
         self->spaceIndex = [Spaces indexWithID: self->spaceId];
         self->isOnAllSpaces = false;
     } else if (spaceIds.count > 1) {

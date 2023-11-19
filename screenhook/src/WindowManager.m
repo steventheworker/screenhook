@@ -23,6 +23,7 @@ CFArrayRef lastVisibleWindows = nil;
 NSMutableDictionary* closedWindows; //key = appPID, value = @{kcgwindownumber1: winDict1, kcgwindownumber2: winDict2, ...}
 NSMutableDictionary<NSString*, NSValue*>* observers;
 NSArray* AppObserverNotifications;
+NSArray* WindowObserverNotifications;
 NSMutableArray* windows;
 
 void loadVisibleWindows(void) {
@@ -95,21 +96,8 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSApplicationDidBecomeActiveNotification object:NSApp];
      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSApplicationDidResignActiveNotification object:NSApp];
      [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:@"com.apple.HIToolbox.menuBarShownNotification" object:nil]; */
-    AppObserverNotifications = @[
-        (id)kAXApplicationActivatedNotification,
-        (id)kAXMainWindowChangedNotification,
-        (id)kAXFocusedWindowChangedNotification,
-        (id)kAXWindowCreatedNotification,
-        (id)kAXApplicationHiddenNotification,
-        (id)kAXApplicationShownNotification,
-//        (id)kAXUIElementDestroyedNotification, // below are handled by window notification's, above is same as AltTab's Application.swift
-//            (id)kAXTitleChangedNotification,
-//        (id)kAXWindowMiniaturizedNotification,
-//        (id)kAXWindowDeminiaturizedNotification,
-//            (id)kAXWindowResizedNotification,
-//            (id)kAXWindowMovedNotification,
-    ];
-    
+    AppObserverNotifications = @[(id)kAXApplicationActivatedNotification, (id)kAXMainWindowChangedNotification, (id)kAXFocusedWindowChangedNotification, (id)kAXWindowCreatedNotification, (id)kAXApplicationHiddenNotification, (id)kAXApplicationShownNotification];
+    WindowObserverNotifications = @[(id)kAXUIElementDestroyedNotification, (id)kAXTitleChangedNotification, (id)kAXWindowMiniaturizedNotification, (id)kAXWindowDeminiaturizedNotification, (id)kAXWindowResizedNotification, (id)kAXWindowMovedNotification];
     loadVisibleWindows();
     [self initialDiscovery];
 }
@@ -247,26 +235,24 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
 }
 + (void) observeWindow: (AXUIElementRef) axWindow : (NSRunningApplication*) app : (CGWindowID) winNum {
     for (Window* win in windows) if (win->winNum == winNum) return /*NSLog(@"observer already exists for window %d", winNum)*/;
+    if (winNum == 0) return; //finder desktop window (or windows created before login?) cannot be observed / not a "real" window
     // Create an observer
     AXObserverRef observer;
     AXError err = AXObserverCreate(app.processIdentifier, axWindowObserverCallback, &observer);
     if (err) return NSLog(@"err1 %@ - %d", [helperLib appWithPID: app.processIdentifier].localizedName, err);
     NSLog(@"%@", axWindow);
     // Add notifications to the observer
-    err = AXObserverAddNotification(observer, axWindow, kAXUIElementDestroyedNotification, (__bridge void * _Nullable)(self));
-    err = AXObserverAddNotification(observer, axWindow, kAXTitleChangedNotification, (__bridge void * _Nullable)(self));
-    err = AXObserverAddNotification(observer, axWindow, kAXWindowMiniaturizedNotification, (__bridge void * _Nullable)(self));
-    err = AXObserverAddNotification(observer, axWindow, kAXWindowDeminiaturizedNotification, (__bridge void * _Nullable)(self));
-    err = AXObserverAddNotification(observer, axWindow, kAXWindowResizedNotification, (__bridge void * _Nullable)(self));
-    err = AXObserverAddNotification(observer, axWindow, kAXWindowMovedNotification, (__bridge void * _Nullable)(self));
-    if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", @"x",  [helperLib appWithPID: app.processIdentifier].localizedName, err);return;}
+    for (NSString* notification in WindowObserverNotifications) {
+        err = AXObserverAddNotification(observer, axWindow, (__bridge CFStringRef)notification, (__bridge void * _Nullable)(self));
+        if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", notification, app.localizedName, err);}
+    }
     // Register the observer with the run loop
     CFRunLoopAddSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(observer), kCFRunLoopDefaultMode);
     NSLog(@"window observers added for %d", winNum);
     [windows addObject: [Window init: app : axWindow : winNum : observer]];
 }
 + (void) observeApp: (NSRunningApplication*) app {
-    if (app.activationPolicy != NSApplicationActivationPolicyRegular) return /* NSLog(@"skip %@", app.localizedName) */;
+    if (app.activationPolicy == NSApplicationActivationPolicyProhibited || [helperLib isBackgroundApp: app]) return /* NSLog(@"skip %@", app.localizedName) */;
     AXUIElementRef appel = AXUIElementCreateApplication(app.processIdentifier);
     if (!observers[[NSString stringWithFormat: @"%d", app.processIdentifier]]) {
         AXObserverRef observer;
@@ -274,7 +260,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
         if (err) return NSLog(@"err1 %@ - %d", app.localizedName, err);
         for (NSString* notification in AppObserverNotifications) {
             err = AXObserverAddNotification(observer, appel, (__bridge CFStringRef)notification, (__bridge void * _Nullable)(self));
-            if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", notification, app.localizedName, err);return;}
+            if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", notification, app.localizedName, err);}
         }
         CFRunLoopAddSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(observer), kCFRunLoopDefaultMode);
         NSLog(@"Observers created for '%@'", app.localizedName);
@@ -297,7 +283,11 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     for (int i = (int)windows.count - 1; i > -1; i--) {
         Window* win = windows[i];
         if (win->winNum == winNum) {
-            NSLog(@"CRASH HERE DUE TO EMPTY OBSERVER, BUT WHY EMPTY!!?? %@", win);
+            if (!win->observer) {
+                NSLog(@"\nWINDOW W/O OBSERVER - APP: %@\n", [helperLib appWithPID: appPID]);
+                [windows removeObjectAtIndex: i];
+                break;
+            }
             CFRunLoopRemoveSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(win->observer), kCFRunLoopDefaultMode);
             win->observer = nil;
             [windows removeObjectAtIndex: i];

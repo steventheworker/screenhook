@@ -13,6 +13,57 @@ extern void CoreDockSendNotification(CFStringRef /*notification*/ /*, void unkno
 
 const int DOCK_BOTTOM_PADDING = 6; //eg: if screen 1080px, dock pos.y is actually <= 1074px (for bottom dock, but same for left/right)
 NSDictionary* listenOnlyEvents = @{@"mousemove": @1}; //events that you probably shouldn't modify:    mousemove causes xcode to crash when selecting lines w/ kcgtapoptionDefault)
+NSDictionary* backgroundApps = @{
+    @"Rectangle": @1,
+    @"Userscripts (Personal) Safari Web Extension": @1,
+    @"WacomTouchDriver": @1,
+    @"ChatGPT Networking": @1,
+    @"ChatGPT Graphics and Media": @1,
+    @"ChatGPT Web Content": @1,
+    @"AdobeIPCBroker": @1,
+    @"AdGuard for Safari": @1,
+    @"WacomTabletDriver": @1,
+    @"SoftwareUpdateNotificationManager": @1,
+    @"BetterTouchToolAppleScriptRunner": @1,
+    /* macos background apps */
+    @"Control Center": @1,
+    @"Notification Center": @1,
+    @"UserNotificationCenter": @1,
+    @"Dock": @1,
+    @"DockHelper": @1,
+    @"Dock Extra": @1,
+    @"Wi-Fi": @1,
+    @"Universal Control": @1,
+    @"Siri": @1,
+    @"Core Sync": @1,
+    @"OSDUIHelper": @1,
+    @"Keychain Circle Notification": @1,
+    @"CoreLocationAgent": @1,
+    @"Safari Service Worker (twitter.com)": @1,
+    @"CoreServicesUIAgent": @1,
+    @"Xcode Networking": @1,
+    @"Safari Web Content (Prewarmed)": @1,
+    @"Mail Web Content": @1,
+    @"Mail Graphics and Media": @1,
+    @"Mail Networking": @1,
+    @"storeuid": @1,
+    @"Safari Graphics and Media": @1,
+    @"Safari Web Content": @1,
+    @"Safari Networking": @1,
+    @"PowerChime": @1,
+    @"Updater": @1,
+    @"Family": @1,
+    @"TabletDriver": @1,
+    @"AXVisualSupportAgent": @1,
+    @"SystemUIServer": @1,
+    @"Wallpaper": @1,
+    @"Core Sync Helper": @1,
+    @"AirPlayUIAgent": @1,
+    @"TextInputMenuAgent": @1,
+    @"Shortcuts Events": @1,
+    @"WindowManager": @1,
+    @"loginwindow": @1,
+};
 
 AXUIElementRef systemWideElement;
 AXUIElementRef dockAppRef;
@@ -732,6 +783,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     NSCharacterSet* inputCharacterSet = [NSCharacterSet characterSetWithCharactersInString: input];
     return !([numericCharacterSet isSupersetOfSet: inputCharacterSet]);
 }
++ (BOOL) isBackgroundApp: (NSRunningApplication*) app {return [backgroundApps[app.localizedName] intValue] == 1;}
 + (NSString*) dictionaryStringOneLine : (NSDictionary*) dict : (BOOL) flattest {
     return [[[[[[[[[[[dict description] stringByReplacingOccurrencesOfString: @"\n" withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"     " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"     " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"    " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"   " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @";" withString: @","] stringByReplacingOccurrencesOfString: @" = " withString: @": "] stringByReplacingOccurrencesOfString: @", }" withString: @"}"] stringByReplacingOccurrencesOfString: @"{ " withString: @"{"] stringByReplacingOccurrencesOfString: @" =" withString: @":"];
 }

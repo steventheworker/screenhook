@@ -27,6 +27,8 @@ void createSpaceWindow(NSScreen* screen) {
                                                           backing: NSBackingStoreBuffered
                                                             defer: NO];
     [spaceWindow setIdentifier: @"spacewindow"];
+    //todo: what if creating for other screen? currentSpaceIndex may be the wrong thing to use
+    [spaceWindow setTitle: [NSString stringWithFormat: @"%d", [Spaces currentSpaceIndex]]];
     [spaceWindow setBackgroundColor: NSColor.clearColor];
     [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 0, 0) display: YES]; //place on bottom left corner of screen
     [spaceWindow setIgnoresMouseEvents: YES]; //pass clicks through (which it already does so, when using nscolor.clearcolor (For some reason))
@@ -46,33 +48,22 @@ void fallbackToKeys(int from, int to) {
 @implementation spaceKeyboardShortcuts
 + (void) init {
     for (NSScreen* screen in NSScreen.screens) createSpaceWindow(screen);
-
-    setTimeout(^{
-        NSArray* windows = [WindowManager windows];
-        NSLog(@"SCREENHOOK WINDOWS...");
-        for (Window* win in windows) {
-            if (win->app.processIdentifier == [[NSProcessInfo processInfo] processIdentifier]) {
-                NSLog(@"SCREENHOOK WINDOWS %@", win);
-            }
-        }
-    }, 30*1000);
     
-//    //in 7 seconds switch to the space you were on when screenhook launched
-//    AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);
-//    NSArray* windows = [helperLib elementDict: appEl : @{@"wins": (id)kAXWindowsAttribute}][@"wins"];
-//    AXUIElementRef el;
-//    for (NSValue* elval in windows) {
-//        el = elval.pointerValue;
-//        NSDictionary* dict = [helperLib elementDict: el : @{@"id": (id)kAXIdentifierAttribute, @"pos": (id)kAXPositionAttribute}];
-//        NSPoint pos = NSMakePoint([dict[@"pos"][@"x"] floatValue], [dict[@"pos"][@"y"] floatValue]);
-//                if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, NSScreen.mainScreen.frame))         NSLog(@"BREAK ON %@", dict);
-//        if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, NSScreen.mainScreen.frame)) break;
-//    }
-//    setTimeout(^{
-//        NSLog(@"worfwoj oj%@", el);
-//        [NSApp activateIgnoringOtherApps: YES];
-//        AXUIElementPerformAction(el, kAXRaiseAction);
-//    }, 7000);
+    setTimeout(^{
+        NSLog(@"TRY VISIT!!!");
+        [spaceKeyboardShortcuts visitSpace: 2];
+    }, 120*1000);
+}
++ (void) visitSpace: (int) spaceToVisit {
+    NSArray* windows = [WindowManager windows];
+    for (Window* win in windows) {
+        if (win->app.processIdentifier == [[NSProcessInfo processInfo] processIdentifier]) { //screenhook window
+            NSDictionary* dict = [helperLib elementDict: win->el : @{@"identifier": (id)kAXIdentifierAttribute, @"title": (id)kAXTitleAttribute}];
+            if (![dict[@"identifier"] isEqual: @"spacewindow"] || ![[NSString stringWithFormat: @"%d", spaceToVisit] isEqual: dict[@"title"]]) continue;
+            [NSApp activateIgnoringOtherApps: YES];
+            AXUIElementPerformAction(win->el, kAXRaiseAction);
+        }
+    }
 }
 + (void) keyCode: (int) keyCode {
     NSArray* spaces = [Spaces spaces];

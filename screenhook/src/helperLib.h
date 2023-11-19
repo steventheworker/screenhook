@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*) appVersion;
 + (NSString*) dictionaryStringOneLine : (NSDictionary*) dict : (BOOL) flattest;
 + (BOOL) isNaN : (NSString*) input;
++ (BOOL) isBackgroundApp: (NSRunningApplication*) app;
 + (void) restartApp;
 + (void) openAppExpose;
 + (void) openDesktopExpose;
