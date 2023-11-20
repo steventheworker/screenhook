@@ -99,7 +99,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     AppObserverNotifications = @[(id)kAXApplicationActivatedNotification, (id)kAXMainWindowChangedNotification, (id)kAXFocusedWindowChangedNotification, (id)kAXWindowCreatedNotification, (id)kAXApplicationHiddenNotification, (id)kAXApplicationShownNotification];
     WindowObserverNotifications = @[(id)kAXUIElementDestroyedNotification, (id)kAXTitleChangedNotification, (id)kAXWindowMiniaturizedNotification, (id)kAXWindowDeminiaturizedNotification, (id)kAXWindowResizedNotification, (id)kAXWindowMovedNotification];
     loadVisibleWindows();
-    [self initialDiscovery];
+    [self initialDiscovery: ^{for (Window* win in windows) [win updatesWindowSpace];}]; //initial discovery sets all win's space info to active space, update to truly finish
 }
 + (NSArray<Window*>*) windows {return windows;}
 + (int) exposeType {return exposeType;}
@@ -108,7 +108,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     return getExposeType();
 }
 
-+ (void) initialDiscovery {
++ (void) initialDiscovery: (void(^)(void)) cb {
     //initial discovery
     [Spaces init: (cgsMainConnectionId = CGSMainConnectionID())];
     NSArray* otherSpaces = [Spaces otherSpaces];
@@ -130,7 +130,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
             BOOL finderWasHidden = finder.isHidden;
             if (finder.isHidden) [finder unhide]; //we'll observe finder after
             //            if (originallyFrontmost == finder)
-            for (NSRunningApplication *app in runningApps) {
+            for (NSRunningApplication* app in runningApps) {
                 if (app == finder) continue;
                 if (!app.isHidden) {
                     [originalVisibleApps addObject: app];
@@ -147,6 +147,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
                 setTimeout(^{//observe finder
                     [self observeApp: finder];
                     if (!finderWasHidden) [finder unhide]; //restore finder visibility
+                    cb();
                 }, 70);
             }, 70);
 //            setTimeout(^{[self activateApp: originallyFrontmost];}, 200); //restore frontmost
