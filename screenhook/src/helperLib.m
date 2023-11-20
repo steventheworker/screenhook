@@ -14,12 +14,13 @@ extern void CoreDockSendNotification(CFStringRef /*notification*/ /*, void unkno
 const int DOCK_BOTTOM_PADDING = 6; //eg: if screen 1080px, dock pos.y is actually <= 1074px (for bottom dock, but same for left/right)
 NSDictionary* listenOnlyEvents = @{@"mousemove": @1}; //events that you probably shouldn't modify:    mousemove causes xcode to crash when selecting lines w/ kcgtapoptionDefault)
 NSDictionary* backgroundApps = @{
+    /* third party apps*/
     @"Rectangle": @1,
     @"Userscripts (Personal) Safari Web Extension": @1,
     @"WacomTouchDriver": @1,
-    @"ChatGPT Networking": @1,
-    @"ChatGPT Graphics and Media": @1,
-    @"ChatGPT Web Content": @1,
+    @"MenubarX Networking": @1,
+    @"MenubarX Graphics and Media": @1,
+    @"MenubarX Web Content": @1,
     @"AdobeIPCBroker": @1,
     @"AdGuard for Safari": @1,
     @"WacomTabletDriver": @1,
@@ -783,7 +784,10 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     NSCharacterSet* inputCharacterSet = [NSCharacterSet characterSetWithCharactersInString: input];
     return !([numericCharacterSet isSupersetOfSet: inputCharacterSet]);
 }
-+ (BOOL) isBackgroundApp: (NSRunningApplication*) app {return [backgroundApps[app.localizedName] intValue] == 1;}
++ (BOOL) isBackgroundApp: (NSRunningApplication*) app {
+    if (app.activationPolicy != NSApplicationActivationPolicyRegular && [app.bundleIdentifier hasPrefix: @"com.apple.WebKit"]) return YES; //pwa background process, menubarx
+    return [backgroundApps[app.localizedName] intValue] == 1;
+}
 + (NSString*) dictionaryStringOneLine : (NSDictionary*) dict : (BOOL) flattest {
     return [[[[[[[[[[[dict description] stringByReplacingOccurrencesOfString: @"\n" withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"     " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"     " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"    " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @"   " withString: (flattest ? @"" : @" ")] stringByReplacingOccurrencesOfString: @";" withString: @","] stringByReplacingOccurrencesOfString: @" = " withString: @": "] stringByReplacingOccurrencesOfString: @", }" withString: @"}"] stringByReplacingOccurrencesOfString: @"{ " withString: @"{"] stringByReplacingOccurrencesOfString: @" =" withString: @":"];
 }

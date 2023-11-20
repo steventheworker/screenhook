@@ -57,7 +57,9 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         @"value": (id)kAXValueAttribute,
         @"identifier": (id)kAXIdentifierAttribute,
     }];
-    int spaceIndex = [helperLib isNaN: elDict[@"value"]] ? [elDict[@"identifier"] intValue] : [elDict[@"value"] intValue] - 1;
+    int spaceId = [elDict[@"identifier"] intValue];
+    int spaceIndex = [Spaces indexWithID: spaceId] - 1;
+        
     spaceLabels[spaceIndex] = newTitle;
     [prefs setArrayPref: @"spaceLabels" : spaceLabels];
 }
@@ -131,6 +133,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
             [spaceNumber setTextColor: NSColor.whiteColor];
             [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
             [spaceNumber setBackgroundColor: NSColor.clearColor];
+            [spaceNumber setIdentifier: [NSString stringWithFormat: @"%d", [screenSpaces[i] intValue]]];
             
             if ([labelsForMonitor[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
             NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
@@ -138,7 +141,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
             [label setTextColor: NSColor.whiteColor];
             [label setAlignment: NSTextAlignmentCenter];
             [label setBackgroundColor: NSColor.clearColor];
-            [label setIdentifier: [NSString stringWithFormat: @"%d", i]];
+            [label setIdentifier: [NSString stringWithFormat: @"%d", [screenSpaces[i] intValue]]];
             
             [labelContainer addSubview: label];
             [labelContainer addSubview: spaceNumber];
@@ -179,22 +182,16 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     });
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
-    NSString* spaceName;
-    NSString* spaceIndexStr;
-    if ([elDict[@"value"] length] > 2 || [helperLib isNaN: elDict[@"value"]]) { //clicked on the space title / label
-        spaceName = elDict[@"value"];
-        spaceIndexStr = [NSString stringWithFormat: @"%d", [elDict[@"identifier"] intValue] + 1];
-    } else { //clicked on the spacenumber
-        spaceIndexStr = elDict[@"value"];
-        spaceName = spaceLabels[[spaceIndexStr intValue] - 1];
-    }
-
+    int spaceId = [elDict[@"identifier"] intValue];
+    int spaceIndex = [Spaces indexWithID: spaceId];
+    NSString* spaceName = spaceLabels[spaceIndex - 1];
+    
     //Create an NSAlert instance - can't put in semaphore, "window creation must be in main thread" (paraphrasing)
     NSAlert* alert = [[NSAlert alloc] init];
 
     // Set the title and message
     [alert setMessageText:@"Title for space:"];
-    [alert setInformativeText: spaceIndexStr];
+    [alert setInformativeText: [NSString stringWithFormat: @"%d", spaceIndex]];
 
     // Create an NSTextField control
     NSTextField *inputField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
