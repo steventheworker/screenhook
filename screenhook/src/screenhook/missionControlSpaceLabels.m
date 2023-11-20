@@ -65,8 +65,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 }
 + (void) addOverlayWindows {
     loadLabelsFromPrefs();
-    NSArray* screens = [NSScreen screens];
-    for (NSScreen* screen in screens) {
+    for (NSScreen* screen in NSScreen.screens) {
         //create window from xib
         NSWindowController* overlayController = [[NSWindowController alloc] initWithWindowNibName: @"spaceLabelsWindow"];
         [overlayController.window setOpaque: NO];
@@ -77,7 +76,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         windowHeight = 40;
         [overlayController.window setFrame: NSMakeRect(overlayController.window.frame.origin.x, overlayController.window.frame.origin.y, windowWidth, windowHeight) display: NO];
         [overlayController.window setFrameTopLeftPoint: NSMakePoint(screen.frame.origin.x + ((screen.frame.size.width - windowWidth) / 2), screen.frame.origin.y + screen.frame.size.height)];
-        
+        [overlayController.window setIdentifier: [Spaces uuidForScreen: screen]];
         [overlayControllers addObject: overlayController];
     }
 }
@@ -90,14 +89,25 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 + (void) render {
     [self clearViews];
     for (NSWindowController* overlayController in overlayControllers) {
+        NSArray* screenSpaces = [Spaces screenSpacesMap][overlayController.window.identifier];
         NSView* view = overlayController.window.contentView;
         int paddingY = 1;
-        NSView* labelsView = [[NSView alloc] initWithFrame: CGRectMake(0, paddingY, windowWidth, windowHeight - paddingY * 2)];
-        int y = 0;
-        int w = windowWidth / spaceLabels.count;
-        int h = windowHeight;
-        for (int i = 0; i < spaceLabels.count; i++) {
+        NSSize windowSize = overlayController.window.frame.size;
+        NSView* labelsView = [[NSView alloc] initWithFrame: CGRectMake(0, paddingY, windowSize.width, windowSize.height - paddingY * 2)];
+        for (int i = 0; i < screenSpaces.count; i++) {
+            int y = 0;
+            int w = windowSize.width / screenSpaces.count;
+            int h = windowSize.height;
             int x = i * w;
+            if (screenSpaces.count >= 1 && screenSpaces.count <= 7) { //account for variable spacing (when less than 8 spaces)
+                //each preview is 8.1% of the window width (7.5% (.075) of the screen width) (window width is 0.925 of the screen width)     ---with 3.15% betweeen previews
+                w = (.1081*windowSize.width); //144/(windowWidth (.925 of screen))
+                int maxSpacing = .02504*windowSize.width;
+                int spacing = maxSpacing;
+                int allPreviewWidths = w*(int)screenSpaces.count + spacing*((int)screenSpaces.count-1);
+                int remainingWidth = windowSize.width - allPreviewWidths;
+                x = remainingWidth/2 + w*i + spacing*i;
+            }
             NSView* labelContainer = [[NSView alloc] initWithFrame: CGRectMake(x, y, w, h)];
             //        [labelContainer setWantsLayer: YES];
             //        [labelContainer.layer setBackgroundColor: NSColor.gridColor.CGColor];
