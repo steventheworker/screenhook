@@ -17,14 +17,14 @@ NSMutableArray* spaceLabels;
 int windowWidth;
 int windowHeight;
 
-void showLabels(void) {
+void showLabelWindows(void) {
     for (NSWindowController* overlayController in overlayControllers) {
         if (overlayController.window.isVisible) return;
         [overlayController.window setIsVisible: YES];
     }
     [missionControlSpaceLabels render];
 }
-void hideLabels(void) {
+void hideLabelWindows(void) {
     for (NSWindowController* overlayController in overlayControllers) {
         if (!overlayController.window.isVisible) return;
         [overlayController.window setIsVisible: NO];
@@ -43,6 +43,15 @@ void loadLabelsFromPrefs(void) {
         for (int i = (int) spaceLabels.count; i > numSpaces; i--) [spaceLabels removeLastObject];
     }
 }
+NSArray* spaceLabelsForMonitor(NSArray* screenSpaceIds) {
+    NSMutableArray* ret = [NSMutableArray array];
+    for (NSNumber* spaceId in screenSpaceIds) {
+        int i = [Spaces indexWithID: spaceId.intValue] - 1;
+        [ret addObject: spaceLabels[i]];
+    }
+    return ret;
+}
+
 void renameSpace(AXUIElementRef el, NSString* newTitle) {
     NSDictionary* elDict = [helperLib elementDict: el : @{
         @"value": (id)kAXValueAttribute,
@@ -60,8 +69,8 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     [self addOverlayWindows];
 }
 + (void) tick: (int) exposeType {
-    if (exposeType) showLabels();
-    else hideLabels();
+    if (exposeType) showLabelWindows();
+    else hideLabelWindows();
 }
 + (void) addOverlayWindows {
     loadLabelsFromPrefs();
@@ -94,6 +103,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         int paddingY = 1;
         NSSize windowSize = overlayController.window.frame.size;
         NSView* labelsView = [[NSView alloc] initWithFrame: CGRectMake(0, paddingY, windowSize.width, windowSize.height - paddingY * 2)];
+        NSArray* labelsForMonitor = spaceLabelsForMonitor(screenSpaces);
         for (int i = 0; i < screenSpaces.count; i++) {
             int y = 0;
             int w = windowSize.width / screenSpaces.count;
@@ -115,16 +125,16 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
             NSString* spaceNumberStr = [NSString stringWithFormat: @"%d", (i+1)];
             float spaceNumberW = textHeightPixels * 0.6 * (spaceNumberStr.length * 1.2);
             int spaceNumY = (h - textHeightPixels) + textHeightPixels * 0.6 + -5;
-            if ([spaceLabels[i] length] > 16) spaceNumY += 2; //if multi-line, shift spaceNumber up
+            if ([labelsForMonitor[i] length] > 16) spaceNumY += 2; //if multi-line, shift spaceNumber up
             NSTextView* spaceNumber = [[NSTextView alloc] initWithFrame: CGRectMake(w/2 - spaceNumberW/2, spaceNumY, spaceNumberW, textHeightPixels * 0.6)];
             [spaceNumber setString: spaceNumberStr];
             [spaceNumber setTextColor: NSColor.whiteColor];
             [spaceNumber setFont: [NSFont fontWithName: @"Helvetica" size: textHeightPixels * 0.6]];
             [spaceNumber setBackgroundColor: NSColor.clearColor];
             
-            if ([spaceLabels[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
+            if ([labelsForMonitor[i] length] > 16) textHeightPixels *= 1.8; //overflowing string ? double height... //todo: don't hardcode
             NSTextView* label = [[NSTextView alloc] initWithFrame: CGRectMake(0, (h - textHeightPixels) / 2, w, textHeightPixels)];
-            [label setString: spaceLabels[i]];
+            [label setString: labelsForMonitor[i]];
             [label setTextColor: NSColor.whiteColor];
             [label setAlignment: NSTextAlignmentCenter];
             [label setBackgroundColor: NSColor.clearColor];
@@ -214,7 +224,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     for (NSWindowController* overlayController in overlayControllers) if (overlayController.window.isVisible) [overlayController close]; //window won't be on top unless it's recreated
     overlayControllers = [NSMutableArray array];
     [self addOverlayWindows];
-    showLabels(); //reshow
+    showLabelWindows(); //reshow
 }
 + (void) mouseup { //test for space changes (see if a space was added,removed (and reflect it into "spaceLabels"))
     setTimeout(^{
