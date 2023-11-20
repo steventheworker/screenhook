@@ -20,7 +20,7 @@ typedef enum {exposeClosed, DesktopExpose, AppExpose, MissionControl} exposeType
 + (int) exposeType;
 + (int) exposeTick;
 
-+ (int) initialDiscovery;
++ (void) initialDiscovery;
 + (void) observeWindow: (AXUIElementRef) axWindow : (NSRunningApplication*) app : (CGWindowID) winNum;
 + (void) observeApp: (NSRunningApplication*) app;
 + (void) observerCallback: (AXObserverRef) observer : (AXUIElementRef) elementRef : (CFStringRef) notification : (void*) refcon;
