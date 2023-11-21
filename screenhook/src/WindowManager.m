@@ -126,34 +126,82 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
             
             //since these two private api's stopped working (supposedly on introduction of monterey), workaround: hidden apps show windows from all spaces, take advantage of this weird quirk
             //use hide hack to thoroughly observe apps (except finder), then do the hide trick again on just finder
-            NSArray<NSRunningApplication*>* runningApps = [NSWorkspace sharedWorkspace].runningApplications;
-            NSRunningApplication* originallyFrontmost = [[NSWorkspace sharedWorkspace] frontmostApplication];
-            NSMutableArray<NSRunningApplication*>* originalVisibleApps = [NSMutableArray array];
-            Application* finder = addNewApp([helperLib appWithBID: @"com.apple.finder"]);
-            BOOL finderWasHidden = finder->app.isHidden;
-            if (finder->app.isHidden) [finder->app unhide]; //we'll observe finder after
-            //            if (originallyFrontmost == finder)
-            for (NSRunningApplication* app in runningApps) {
-                if (app == finder->app) continue;
-                if (!app.isHidden) {
-                    [originalVisibleApps addObject: app];
-                    [app hide];
+            NSArray<NSRunningApplication*>* runningApps = NSWorkspace.sharedWorkspace.runningApplications;
+            NSMutableArray<NSRunningApplication*>* actualApps = [NSMutableArray array];
+            NSMutableArray<NSRunningApplication*>* dockApps = [NSMutableArray array];
+            for (NSRunningApplication* app in runningApps) if (![helperLib isBackgroundApp: app]) [actualApps addObject: app];
+            for (NSRunningApplication* app in runningApps) if (app.activationPolicy == NSApplicationActivationPolicyRegular) [dockApps addObject: app];
+            NSMutableArray<NSRunningApplication*>* unobservedDockApps = [NSMutableArray arrayWithArray: [dockApps copy]];
+            
+            for (int i = (int)actualApps.count-1; i > -1; i--) {
+                NSRunningApplication* app = actualApps[i];
+                if (app.isHidden) {
+                    [self observeApp: addNewApp(app)]; //we don't have to worry about these apps anymore
+                    [actualApps removeObject: app];
+                    [unobservedDockApps removeObject: app];
                 }
             }
-            setTimeout(^ {
-                NSLog(@"------------OBSERVE OTHER SPACES------------");
-                for (NSRunningApplication* app in [[NSWorkspace sharedWorkspace] runningApplications]) if (app.processIdentifier != finder->pid) [self observeApp: addNewApp(app)];
-                NSLog(@"------------OBSERVE OTHER SPACES------------");
-                for (NSRunningApplication *app in originalVisibleApps) [app unhide]; // CGSRemoveWindowsFromSpaces(cgsMainConnectionId, (__bridge CFArrayRef)(windowsOnlyOnOtherSpaces), (__bridge CFArrayRef)(@[@([Spaces currentSpaceId])]));
-                [finder->app hide];
-                setTimeout(^{ // *now* observe finder other space windows w/ hide
-                    [self observeApp: finder];
-                    if (!finderWasHidden) [finder->app unhide]; //restore finder visibility
-                    cb();
-                }, 70);
-            }, 70);
-//            setTimeout(^{[self activateApp: originallyFrontmost];}, 200); //restore frontmost
-            return;
+            
+            void (^observeOtherApps)(void) = ^{
+                for (NSRunningApplication* app in actualApps) {
+                    [app hide];
+                    setTimeout(^{
+                        [self observeApp: addNewApp(app)];
+                        [app unhide];
+                    }, 333);
+                }
+            };
+            
+            //observe dock apps
+            if (unobservedDockApps.count == 0) { /*all dock apps were already hidden */
+                observeOtherApps();
+            } else if (unobservedDockApps.count == 1) { //only 1 app showing => //we cannot hide it without unhiding another app first (or else a random app will unhide)
+                if (dockApps.count == 1) { //the only running app is finder (no other app to unhide => add a screenhook window, then hide finder)
+                    //add screenhook window
+                    //hide finder
+                    //observe finder
+                    //unhide finder
+                    //observeOtherApps();
+                } else {
+                    if (dockApps.count == 2) { //there is exactly 1 (hidden) app to unhide, hide the app, observe it, then re-hide the other app
+                        //...
+                        //observeOtherApps();
+                    } else if (dockApps.count >= 3) {
+                        //... can we re-use observeFrontmost block/loop???
+                        //observeOtherApps();
+                    }
+                }
+            } else if (unobservedDockApps.count >= 2) { //at least 2 visible apps, means we can hide/unhide any other app 1 by 1
+                [NSApp hide: nil];
+                //hide frontmost app
+                //observe frontmost app
+                //unhide frontmost app
+                NSMutableArray<NSRunningApplication*>* hideOrder = [NSMutableArray array];
+                __block void (^observeFrontmost)(void);
+                void (^finishedObservingDockApps)(void) = ^{
+                    for (int i = (int)hideOrder.count - 1; i > -1; i--) {
+                        setTimeout(^{
+                            [hideOrder[i] unhide];
+                            [hideOrder[i] activateWithOptions: NSApplicationActivateIgnoringOtherApps];
+                        }, 70*((int)hideOrder.count - 1 - i));
+                    }
+                    observeOtherApps();
+                };
+                observeFrontmost = ^{
+                    NSRunningApplication* frontmost = NSWorkspace.sharedWorkspace.frontmostApplication;
+                    if (unobservedDockApps.count == 1) [hideOrder.lastObject unhide];
+                    [frontmost hide];
+                    setTimeout(^{
+                        [self observeApp: addNewApp(frontmost)]; //we don't have to worry about this app anymore
+                        [actualApps removeObject: frontmost];
+                        [unobservedDockApps removeObject: frontmost];
+                        if (unobservedDockApps.count) observeFrontmost();
+                        else finishedObservingDockApps();
+                    }, 70);
+                    if (frontmost.activationPolicy == NSApplicationActivationPolicyRegular) [hideOrder addObject: frontmost]; //unhiding an accessory app not possible w/o making window the key window, so we ignore
+                };
+                observeFrontmost();
+            }
         }
     }
 }
