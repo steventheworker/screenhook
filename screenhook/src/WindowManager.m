@@ -46,7 +46,8 @@ int getExposeType(void) {
         if (!isOnscreen) continue;
         NSString* owner = [winDict objectForKey:@"kCGWindowOwnerName"];
         if ([owner isEqual: @"Dock"]) {
-            if ([winDict[(id)kCGWindowLayer] intValue] != 20) specialWinCount++; //windows with ownerName=Dock, if owner="Dock" && kCGWindowName != "Dock" => special dock window (exposé / mission control / desktop exposé)....        layer 20 is the dock window titled "Dock" (it doesn't exist w/ autohidden dock until you put mouse over area that reveal it, so just ignore it)         //todo: distinguish desktop exposé
+            int layer = [winDict[(id)kCGWindowLayer] intValue];
+            if (layer != 20 && layer != 500) specialWinCount++; //windows with ownerName=Dock, if owner="Dock" && kCGWindowName != "Dock" => special dock window (exposé / mission control / desktop exposé)....        layer 20 is the dock window titled "Dock" (it doesn't exist w/ autohidden dock until you put mouse over area that reveal it, so just ignore it)         //todo: distinguish desktop exposé           ...    layer 50 window = only exists when dragging anything from the dock (files, dock icons, etc.)
 //            NSLog(@"%@", winDict);
         }
     }
