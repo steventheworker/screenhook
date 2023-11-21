@@ -61,8 +61,14 @@ int intervalTickT = DEFAULT_TICK_SPEED;
     }
     return YES;
 }
-+ (void) appLaunched: (NSNotification*) note {}
-+ (void) appTerminated: (NSNotification*) note {}
++ (void) appLaunched: (NSNotification*) note {
+    NSRunningApplication* app = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
+    NSLog(@"launched '%@' - %@", app, app.bundleIdentifier);
+}
++ (void) appTerminated: (NSNotification*) note {
+    NSRunningApplication* app = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
+    NSLog(@"terminated '%@' - %@", app, app.bundleIdentifier);
+}
 + (void) spaceChanged: (NSNotification*) note {
     [missionControlSpaceLabels spaceChanged: note];
     [spaceKeyboardShortcuts spaceChanged: note];

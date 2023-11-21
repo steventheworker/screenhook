@@ -24,6 +24,7 @@
 		BF5600562AE796A5005846CA /* MenuIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = BF5600552AE796A4005846CA /* MenuIcon.png */; };
 		BF5600592AE79B9A005846CA /* screenhook.sdef in Resources */ = {isa = PBXBuildFile; fileRef = BF5600582AE79B9A005846CA /* screenhook.sdef */; };
 		BF56006B2AE7A708005846CA /* updateFFSidebarShowing.m in Sources */ = {isa = PBXBuildFile; fileRef = BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */; };
+		BF59FFD42B0B84C4002D6B77 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = BF59FFD32B0B84C4002D6B77 /* Application.m */; };
 		BFB9BA092AFF42E100E66CB6 /* spacesIDsScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA082AFF42E100E66CB6 /* spacesIDsScriptCommand.m */; };
 		BFB9BA0C2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA0B2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m */; };
 		BFB9BA0F2AFF48A100E66CB6 /* missionControlWindows.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA0E2AFF48A100E66CB6 /* missionControlWindows.m */; };
@@ -67,6 +68,8 @@
 		BF5600582AE79B9A005846CA /* screenhook.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = screenhook.sdef; sourceTree = "<group>"; };
 		BF5600692AE7A708005846CA /* updateFFSidebarShowing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = updateFFSidebarShowing.h; sourceTree = "<group>"; };
 		BF56006A2AE7A708005846CA /* updateFFSidebarShowing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = updateFFSidebarShowing.m; sourceTree = "<group>"; };
+		BF59FFD22B0B84C4002D6B77 /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
+		BF59FFD32B0B84C4002D6B77 /* Application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
 		BFB9BA072AFF42E100E66CB6 /* spacesIDsScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spacesIDsScriptCommand.h; sourceTree = "<group>"; };
 		BFB9BA082AFF42E100E66CB6 /* spacesIDsScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = spacesIDsScriptCommand.m; sourceTree = "<group>"; };
 		BFB9BA0A2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = currentSpaceIDScriptCommand.h; sourceTree = "<group>"; };
@@ -150,6 +153,8 @@
 				BF5600662AE7A640005846CA /* applescripts */,
 				BF5600412AE775CF005846CA /* app.h */,
 				BF5600462AE775CF005846CA /* app.m */,
+				BF59FFD22B0B84C4002D6B77 /* Application.h */,
+				BF59FFD32B0B84C4002D6B77 /* Application.m */,
 				BF5600452AE775CF005846CA /* globals.h */,
 				BF5600442AE775CF005846CA /* globals.m */,
 				BF5600472AE775CF005846CA /* helperLib.h */,
@@ -351,6 +356,7 @@
 				BFF1E7E42AFCB38100DCBBDB /* WindowManager.m in Sources */,
 				BF56004D2AE775CF005846CA /* Spaces.m in Sources */,
 				BFB9BA092AFF42E100E66CB6 /* spacesIDsScriptCommand.m in Sources */,
+				BF59FFD42B0B84C4002D6B77 /* Application.m in Sources */,
 				BF5600512AE775CF005846CA /* helperLib.m in Sources */,
 				BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */,
 				BFB9BA122AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m in Sources */,

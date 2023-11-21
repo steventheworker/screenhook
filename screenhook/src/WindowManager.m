@@ -20,11 +20,16 @@ int activationT = ACTIVATION_MILLISECONDS; //on spaceswitch: wait longer
 int exposeType = 0; //exposeTypes enum
 CFArrayRef visibleWindows = nil; //CGWindow's
 CFArrayRef lastVisibleWindows = nil;
-NSMutableDictionary* closedWindows; //key = appPID, value = @{kcgwindownumber1: winDict1, kcgwindownumber2: winDict2, ...}
-NSMutableDictionary<NSString*, NSValue*>* observers;
 NSArray* AppObserverNotifications;
 NSArray* WindowObserverNotifications;
-NSMutableArray* windows;
+NSMutableArray<Window*>* windows;
+NSMutableArray<Application*>* apps;
+
+Application* addNewApp(NSRunningApplication* runningApp) { //add to apps, return it
+    Application* ret = [Application init: runningApp];
+    [apps addObject: ret];
+    return ret;
+}
 
 void loadVisibleWindows(void) {
 //    NSLog(@"regen visible windows");
@@ -58,11 +63,10 @@ int getExposeType(void) {
     return exposeType;
 }
 
-void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, NSRunningApplication* app) {
+void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, Application* app) {
     BOOL foundNew = NO;
-    AXUIElementRef appel = AXUIElementCreateApplication(app.processIdentifier);
     //add window observers
-    NSArray* wins = [helperLib elementDict: appel : @{@"windows" : (id)kAXWindowsAttribute}][@"windows"];
+    NSArray* wins = [helperLib elementDict: app->el : @{@"windows" : (id)kAXWindowsAttribute}][@"windows"];
     for (NSValue* pointerVal in wins) {
         AXUIElementRef el;
         [pointerVal getValue: &el];
@@ -76,22 +80,20 @@ void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, NSRunningApplication
         [WindowManager observeWindow: windowElement : app : winNum];
     }
     if (foundNew) loadVisibleWindows();
-    if (focusedPID == app.processIdentifier) {
-        AXUIElementRef appel = AXUIElementCreateApplication(app.processIdentifier);
-        AXUIElementRef focusedWindow = [[helperLib elementDict: appel : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
+    if (focusedPID == app->pid) {
+        AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
         CGWindowID windowID;
         _AXUIElementGetWindow(focusedWindow, &windowID);
         focusedWindowID = windowID;
     }
 }
 
-static void axObserverCallback(AXObserverRef observer, AXUIElementRef elementRef, CFStringRef notification, void *refcon) {[WindowManager observerCallback: observer : elementRef : notification : refcon];}
+static void axObserverCallback(AXObserverRef observer, AXUIElementRef elementRef, CFStringRef notification, void *refcon) {[WindowManager appObserverCallback: observer : elementRef : notification : refcon];}
 static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elementRef, CFStringRef notification, void *refcon) {[WindowManager windowObserverCallback: observer : elementRef : notification : refcon];}
 @implementation WindowManager
 + (void) init {
-    observers = [NSMutableDictionary dictionary];
     windows = [NSMutableArray array];
-    closedWindows = [NSMutableDictionary dictionary];
+    apps = [NSMutableArray array];
     /* activationPolicy & other copied from command-tab (trackfrontapp)
      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSApplicationDidBecomeActiveNotification object:NSApp];
      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackFrontApp:) name:NSApplicationDidResignActiveNotification object:NSApp];
@@ -123,30 +125,30 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
             //            CGSAddWindowsToSpaces(cgsMainConnectionId, (__bridge CFArrayRef)(windowsOnlyOnOtherSpaces), (__bridge CFArrayRef)(@[@([Spaces currentSpaceId])]));
             
             //since these two private api's stopped working (supposedly on introduction of monterey), workaround: hidden apps show windows from all spaces, take advantage of this weird quirk
+            //use hide hack to thoroughly observe apps (except finder), then do the hide trick again on just finder
             NSArray<NSRunningApplication*>* runningApps = [NSWorkspace sharedWorkspace].runningApplications;
             NSRunningApplication* originallyFrontmost = [[NSWorkspace sharedWorkspace] frontmostApplication];
             NSMutableArray<NSRunningApplication*>* originalVisibleApps = [NSMutableArray array];
-            NSRunningApplication* finder = [helperLib appWithBID: @"com.apple.finder"];
-            BOOL finderWasHidden = finder.isHidden;
-            if (finder.isHidden) [finder unhide]; //we'll observe finder after
+            Application* finder = addNewApp([helperLib appWithBID: @"com.apple.finder"]);
+            BOOL finderWasHidden = finder->app.isHidden;
+            if (finder->app.isHidden) [finder->app unhide]; //we'll observe finder after
             //            if (originallyFrontmost == finder)
             for (NSRunningApplication* app in runningApps) {
-                if (app == finder) continue;
+                if (app == finder->app) continue;
                 if (!app.isHidden) {
                     [originalVisibleApps addObject: app];
                     [app hide];
                 }
             }
             setTimeout(^ {
-                //observe other apps
                 NSLog(@"------------OBSERVE OTHER SPACES------------");
-                for (NSRunningApplication* app in [[NSWorkspace sharedWorkspace] runningApplications]) [self observeApp: app];
+                for (NSRunningApplication* app in [[NSWorkspace sharedWorkspace] runningApplications]) if (app.processIdentifier != finder->pid) [self observeApp: addNewApp(app)];
                 NSLog(@"------------OBSERVE OTHER SPACES------------");
                 for (NSRunningApplication *app in originalVisibleApps) [app unhide]; // CGSRemoveWindowsFromSpaces(cgsMainConnectionId, (__bridge CFArrayRef)(windowsOnlyOnOtherSpaces), (__bridge CFArrayRef)(@[@([Spaces currentSpaceId])]));
-                [finder hide];
-                setTimeout(^{//observe finder
+                [finder->app hide];
+                setTimeout(^{ // *now* observe finder other space windows w/ hide
                     [self observeApp: finder];
-                    if (!finderWasHidden) [finder unhide]; //restore finder visibility
+                    if (!finderWasHidden) [finder->app unhide]; //restore finder visibility
                     cb();
                 }, 70);
             }, 70);
@@ -158,35 +160,20 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
 + (void) windowObserverCallback: (AXObserverRef) observer : (AXUIElementRef) el : (CFStringRef) notification : (void*) refcon {
     NSString* type = (__bridge NSString *)notification;
     int appPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
-    NSLog(@"observe window type %@", type);
+//    NSLog(@"observe window notification - %@", type);
     if ([type isEqual: @"AXUIElementDestroyed"]) { // window closed
-        NSLog(@"focusedpid %d apppid %d focusedwindowid", focusedPID, focusedWindowID);
-        if (focusedPID == appPID) {
-            //check if tooltip-like window is what actually closed
-            AXUIElementRef appel = AXUIElementCreateApplication(appPID);
-            AXUIElementRef focusedWindow = [[helperLib elementDict: appel : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
-            CGWindowID windowID;
-            _AXUIElementGetWindow(focusedWindow, &windowID);
-            if (focusedWindowID == windowID) return NSLog(@"window closed false positive (tooltip-like window)");
-
-            long int winCount = CFArrayGetCount(visibleWindows);
-            for (int i = 0; i < winCount; i++) {
-                NSDictionary* winDict = CFArrayGetValueAtIndex(visibleWindows, i);
-                if ([winDict[(id)kCGWindowNumber] intValue] == focusedWindowID) {
-                    NSLog(@"closed cgdict %@", winDict);
-                }
-            }
-
-            NSMutableDictionary* dictEntry = closedWindows[[NSString stringWithFormat: @"%d", appPID]];
-            if (!dictEntry) {
-                closedWindows[[NSString stringWithFormat: @"%d", appPID]] = [NSMutableDictionary dictionary];
-                dictEntry = closedWindows[[NSString stringWithFormat: @"%d", appPID]];
-            }
-            dictEntry[[NSString stringWithFormat: @"%d", focusedWindowID]] = @1;
-            NSLog(@"closed win %d", focusedWindowID);
-            //stop observing
-            [self stopObservingWindow: appPID : focusedWindowID];
-        } else NSLog(@"front window tracking went wrong");
+        Window* win;for (win in windows) if (CFEqual(el, win->el)) break; //find destroyed window by matching destroyed element
+        NSLog(@"closed %@ - '%@'", win->app->name, win->title);
+        [self stopObservingWindow: win];
+        
+        NSRunningApplication* front = [[NSWorkspace sharedWorkspace] frontmostApplication];
+        Application* app;for (app in apps) if (app->pid == front.processIdentifier) break;
+        AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
+        CGWindowID windowID;
+        _AXUIElementGetWindow(focusedWindow, &windowID);
+//        for (win in windows) if (win->winNum == windowID) break; //get new focused Window
+        focusedPID = app->pid;
+        focusedWindowID = windowID;
     } else {
         loadVisibleWindows();
         CGWindowID windowID;
@@ -195,6 +182,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
             focusedWindowID = windowID;
             focusedPID = appPID;
         } else {
+            NSLog(@"WINDOW NOT GIVING ITS ID..... pid %d note %@", appPID, notification);
 //            AXUIElementRef appel = AXUIElementCreateApplication(appPID);
 //            AXUIElementRef focusedWindow = [[helperLib elementDict: appel : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
 //            CGWindowID windowID;
@@ -205,71 +193,62 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
         NSLog(@"window observe winid %d - %@", windowID, notification);
     }
 }
-+ (void) observerCallback: (AXObserverRef) observer : (AXUIElementRef) el : (CFStringRef) note : (void*) refcon {
++ (void) appObserverCallback: (AXObserverRef) observer : (AXUIElementRef) el : (CFStringRef) note : (void*) refcon {
     NSString* type = (__bridge NSString *)note;
-    int appPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
+    pid_t frontPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
+    if ([type isEqual: @"AXApplicationHidden"]) frontPID = [[NSWorkspace sharedWorkspace]frontmostApplication].processIdentifier;
+    Application* app;for (app in apps) if (app->pid == frontPID) break;
     if ([type isEqual: @"AXApplicationActivated"] || [type isEqual: @"AXApplicationHidden"]) {
-        if ([type isEqual: @"AXApplicationHidden"]) appPID = [[NSWorkspace sharedWorkspace] frontmostApplication].processIdentifier;
-        AXUIElementRef appel = AXUIElementCreateApplication(appPID);
-        AXUIElementRef focusedWindow = [[helperLib elementDict: appel : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
+        AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
         CGWindowID windowID;
         _AXUIElementGetWindow(focusedWindow, &windowID);
         focusedWindowID = windowID;
-        focusedPID = appPID;
-        NSLog(@"focusedwindowid %d", focusedWindowID);
+        focusedPID = app->pid;
     } else {
-        CFRetain(el);
-        setTimeout(^{
-            loadVisibleWindows();
-            CGWindowID windowID;
-            _AXUIElementGetWindow(el, &windowID);
-            if (windowID) {
-                focusedWindowID = windowID;
-                focusedPID = appPID;
-            }
-//            NSLog(@"app observer - winid %d - %@", windowID, notification);
-            
-            if ([type isEqual: @"AXWindowCreated"]) [self observeWindow: el : [helperLib appWithPID: appPID] : windowID];
-        }, 333); // delay because: event order is focused, mainwindow, THEN destroy element is called (so the focusedWindow isn't accurate (when detecting which window closed), since it activates another window before destroying)
-        //todo wait less long (100ms worked, but not for scriptable AltTab)
+        loadVisibleWindows();
+        CGWindowID windowID;
+        _AXUIElementGetWindow(el, &windowID);
+        if (windowID) {
+            focusedWindowID = windowID;
+            focusedPID = app->pid;
+        }
+        if ([type isEqual: @"AXWindowCreated"]) [self observeWindow: el : app : windowID];
     }
 }
-+ (void) observeWindow: (AXUIElementRef) axWindow : (NSRunningApplication*) app : (CGWindowID) winNum {
++ (void) observeWindow: (AXUIElementRef) axWindow : (Application*) app : (CGWindowID) winNum {
     for (Window* win in windows) if (win->winNum == winNum) return /*NSLog(@"observer already exists for window %d", winNum)*/;
     if (winNum == 0) return; //finder desktop window (or windows created before login?) cannot be observed / not a "real" window
     // Create an observer
     AXObserverRef observer;
-    AXError err = AXObserverCreate(app.processIdentifier, axWindowObserverCallback, &observer);
-    if (err) return NSLog(@"err1 %@ - %d", [helperLib appWithPID: app.processIdentifier].localizedName, err);
-    NSLog(@"%@", axWindow);
+    AXError err = AXObserverCreate(app->pid, axWindowObserverCallback, &observer);
+    if (err) return NSLog(@"err1 %@ - %d", [helperLib appWithPID: app->pid].localizedName, err);
     // Add notifications to the observer
     for (NSString* notification in WindowObserverNotifications) {
         err = AXObserverAddNotification(observer, axWindow, (__bridge CFStringRef)notification, (__bridge void * _Nullable)(self));
-        if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", notification, app.localizedName, err);}
+        if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", notification, app->name, err);}
     }
     // Register the observer with the run loop
     CFRunLoopAddSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(observer), kCFRunLoopDefaultMode);
-    NSLog(@"window observers added for %d", winNum);
     [windows addObject: [Window init: app : axWindow : winNum : observer]];
+    NSLog(@"window observers added for %@ - '%@'", windows.lastObject->app->name, windows.lastObject->title);
 }
-+ (void) observeApp: (NSRunningApplication*) app {
-    if (app.activationPolicy == NSApplicationActivationPolicyProhibited || [helperLib isBackgroundApp: app]) return /* NSLog(@"skip %@", app.localizedName) */;
-    AXUIElementRef appel = AXUIElementCreateApplication(app.processIdentifier);
-    if (!observers[[NSString stringWithFormat: @"%d", app.processIdentifier]]) {
++ (void) observeApp: (Application*) app {
+    if (app->app.activationPolicy == NSApplicationActivationPolicyProhibited || [helperLib isBackgroundApp: app->app]) return /* NSLog(@"skip %@", app.localizedName) */;
+    if (!app->observer) {
         AXObserverRef observer;
-        AXError err = AXObserverCreate(app.processIdentifier, axObserverCallback, &observer);
-        if (err) return NSLog(@"err1 %@ - %d", app.localizedName, err);
+        AXError err = AXObserverCreate(app->pid, axObserverCallback, &observer);
+        if (err) return NSLog(@"err1 %@ - %d", app->name, err);
         for (NSString* notification in AppObserverNotifications) {
-            err = AXObserverAddNotification(observer, appel, (__bridge CFStringRef)notification, (__bridge void * _Nullable)(self));
-            if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", notification, app.localizedName, err);}
+            err = AXObserverAddNotification(observer, app->el, (__bridge CFStringRef)notification, (__bridge void * _Nullable)(self));
+            if (err) {NSLog(@"Error adding %@ notification for '%@' - %d", notification, app->name, err);}
         }
         CFRunLoopAddSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(observer), kCFRunLoopDefaultMode);
-        NSLog(@"Observers created for '%@'", app.localizedName);
-        observers[[NSString stringWithFormat: @"%d", app.processIdentifier]] = [NSValue valueWithPointer: observer];
+        NSLog(@"Observers created for '%@'", app->name);
+        [app setObserver: observer];
     }
     
     //add window observers
-    NSArray* windows = [helperLib elementDict: appel : @{@"windows" : (id)kAXWindowsAttribute}][@"windows"];
+    NSArray* windows = [helperLib elementDict: app->el : @{@"windows" : (id)kAXWindowsAttribute}][@"windows"];
     for (NSValue* pointerVal in windows) {
         AXUIElementRef el;
         [pointerVal getValue: &el];
@@ -280,41 +259,37 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
         [self observeWindow: windowElement : app : winNum];
     }
 }
-+ (void) stopObservingWindow: (pid_t) appPID : (CGWindowID) winNum {
++ (void) stopObservingWindow: (Window*) window {
+    if (!window) NSLog(@"??? NO WIN ??? (this shouldn't happen)");
     for (int i = (int)windows.count - 1; i > -1; i--) {
         Window* win = windows[i];
-        if (win->winNum == winNum) {
+        if (win->winNum == window->winNum) {
             if (!win->observer) {
-                NSLog(@"\nWINDOW W/O OBSERVER - APP: %@\n", [helperLib appWithPID: appPID]);
+                NSLog(@"\nWINDOW W/O OBSERVER - APP: %@ - '%@'\n", window->app->name, window->title);
                 [windows removeObjectAtIndex: i];
                 break;
             }
             CFRunLoopRemoveSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(win->observer), kCFRunLoopDefaultMode);
-            win->observer = nil;
+            [win destroy];
             [windows removeObjectAtIndex: i];
-            NSLog(@"Stopped observer '%d-%d'", appPID, winNum);
+            NSLog(@"Stopped observing window %@ - '%@'", window->app->name, window->title);
             break;
         }
     }
 }
-+ (void) stopObservingApp: (NSRunningApplication*) app {
-    NSString* appPID = [NSString stringWithFormat: @"%d", app.processIdentifier];
-    NSValue* observerValue = observers[appPID];
-    if (observerValue) {
-        AXObserverRef observer = [observerValue pointerValue];
-        CFRunLoopRemoveSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(observer), kCFRunLoopDefaultMode);
-        [observers removeObjectForKey: appPID];
-        NSLog(@"Stopped observing '%@'", app.localizedName);
++ (void) stopObservingApp: (Application*) app {
+    if (app->observer) {
+        CFRunLoopRemoveSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(app->observer), kCFRunLoopDefaultMode);
+        [app destroy];
     } else NSLog(@"err on stop observing");
     
     //remove all window observers
-    NSMutableDictionary* observersCopy = [observers mutableCopy]; //since cannot modify while enumerating
-    for (NSString* observerKey in observersCopy) {
-        if ([observerKey hasPrefix: [appPID stringByAppendingString: @"-"]]) {
-            NSString* winNum = [observerKey substringFromIndex: [appPID stringByAppendingString: @"-"].length];
-            [self stopObservingWindow: app.processIdentifier : winNum.intValue];
-        }
+    for (int i = (int)windows.count-1; i > -1; i--) {
+        Window* win = windows[i];
+        if (win->app->pid == app->pid) [self stopObservingWindow: win];
     }
+    [apps removeObject: app];
+    NSLog(@"stopped observing app %@", app->name);
 }
 /* todo: find when should call this... */
 + (void) updateSpaces {    /* workaround: when Preferences > Mission Control > "Displays have separate Spaces" is unchecked,
@@ -323,27 +298,29 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     for (Window* win in windows) [win updatesWindowSpace];
 }
 + (void) appLaunched: (NSNotification*) note {
-    NSRunningApplication* app = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
-    AXUIElementRef appel = AXUIElementCreateApplication(app.processIdentifier);
-    AXUIElementRef focusedWindow = [[helperLib elementDict: appel : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
+    Application* app = addNewApp((NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"]);
+    
+    //front app/window tracking
+    AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
     CGWindowID windowID;
     _AXUIElementGetWindow(focusedWindow, &windowID);
-    focusedPID = app.processIdentifier;
+    focusedPID = app->pid;
     focusedWindowID = windowID;
     CFArrayRef beforeWindows = CFArrayCreateCopy(kCFAllocatorDefault, visibleWindows);
     setTimeout(^{onLaunchTrackFrontmostWindow(beforeWindows, app);}, 2000); //some launch really slow
-    [self observeApp: (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"]];
+    
+    [self observeApp: app];
 }
 + (void) appTerminated: (NSNotification*) note {
-    NSRunningApplication* app = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
+    NSRunningApplication* runningApp = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
+    Application* app; for (app in apps) if (app->pid == runningApp.processIdentifier) break;
     [self stopObservingApp: app];
-    [closedWindows removeObjectForKey: [NSString stringWithFormat: @"%d", app.processIdentifier]];
 }
 + (void) spaceChanged: (NSNotification*) note {
     activationT = 100;
     //todo: iterate over appel (axuiapp element) and get the axwindows, add window observers
     // create observers for running apps
-    for (NSRunningApplication* app in [[NSWorkspace sharedWorkspace] runningApplications]) [self observeApp: app];
+    for (Application* app in apps) [self observeApp: app];
     [Spaces refreshAllIdsAndIndexes];
     [Spaces updateCurrentSpace];
 

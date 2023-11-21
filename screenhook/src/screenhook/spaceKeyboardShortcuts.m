@@ -62,7 +62,7 @@ void fallbackToKeys(int from, int to) {
 + (BOOL) visitSpace: (int) spaceToVisit {
     NSArray* windows = [WindowManager windows];
     for (Window* win in windows) {
-        if (win->app.processIdentifier == [[NSProcessInfo processInfo] processIdentifier]) { //screenhook window
+        if (win->app->pid == [[NSProcessInfo processInfo] processIdentifier]) { //screenhook window
             NSDictionary* dict = [helperLib elementDict: win->el : @{@"identifier": (id)kAXIdentifierAttribute, @"title": (id)kAXTitleAttribute}];
             if (![dict[@"identifier"] isEqual: @"spacewindow"] || ![[NSString stringWithFormat: @"%d", spaceToVisit] isEqual: dict[@"title"]]) continue;
             [NSApp activateIgnoringOtherApps: YES];

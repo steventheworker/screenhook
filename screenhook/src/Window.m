@@ -13,13 +13,21 @@ extern AXError CGSCopyWindowProperty(int cid, CGWindowID wid, CFStringRef prop, 
 
 int globalCreationCounter = 0;
 @implementation Window
-+ (instancetype) init : (NSRunningApplication*) app : (AXUIElementRef) el : (CGWindowID) winNum : (AXObserverRef) observer {
+- (void) destroy {
+    CFRelease(self->observer);
+    CFRelease(self->el);
+    self->observer = nil;
+    self->el = nil;
+}
++ (instancetype) init : (Application*) app : (AXUIElementRef) el : (CGWindowID) winNum : (AXObserverRef) observer {
     /*var lastFocusOrder = Int.zero */
     /* ^^^^ updated on focusedWindowChanged and applicationActivated*/
+    CFRetain(el);
+    CFRetain(observer);
 
     //args
     Window* win = [[self alloc] init];
-    win->observer = nil;
+    win->observer = observer;
     win->el = el;
     win->app = app;
     win->winNum = winNum;
@@ -35,7 +43,7 @@ int globalCreationCounter = 0;
     if (!win->title.length) {
         NSString* val;
         CGSCopyWindowProperty([Spaces CGSMainConnectID], winNum, CFSTR("kCGSWindowTitle"), &val);
-        win->title = val.length ? val : app.localizedName; // fallback to app.localizedName
+        win->title = val.length ? val : app->name; // fallback to app.localizedName
     }
     win->isFullscreen = [info[@"isFullscreen"] boolValue];
     win->isMinimized = [info[@"isMinimized"] boolValue];

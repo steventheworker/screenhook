@@ -7,12 +7,14 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import "Application.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Window : NSObject {
     @public
     AXUIElementRef el;
-    NSRunningApplication* app;
+    Application* app;
     CGWindowID winNum;
     AXObserverRef observer;
     
@@ -27,7 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
     int spaceIndex;
     BOOL isOnAllSpaces;
 }
-+ (instancetype) init : (NSRunningApplication*) app : (AXUIElementRef) el : (CGWindowID) winNum : (AXObserverRef) observer;
+- (void) destroy;
++ (instancetype) init : (Application*) app : (AXUIElementRef) el : (CGWindowID) winNum : (AXObserverRef) observer;
 - (void) updatesWindowSpace;
 @end
 
