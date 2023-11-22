@@ -26,6 +26,7 @@ NSDictionary* backgroundApps = @{
     @"WacomTabletDriver": @1,
     @"SoftwareUpdateNotificationManager": @1,
     @"BetterTouchToolAppleScriptRunner": @1,
+    @"Spotlight Search": @1,
     /* macos background apps */
     @"Control Center": @1,
     @"Notification Center": @1,
@@ -101,7 +102,9 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 
 @implementation helperLib
 /* AXUIElement  */
-+ (void) setSystemWideEl: (AXUIElementRef) el {systemWideElement = el;} //used in elementAtPoint, etc.
++ (void) setSystemWideEl: (AXUIElementRef) el { //used in elementAtPoint, etc. (Practically an init function)
+    systemWideElement = el;
+}
 + (AXUIElementRef) elementAtPoint: (CGPoint) pt {
     AXUIElementRef element = NULL;
     AXError result = AXUIElementCopyElementAtPosition(systemWideElement, pt.x, pt.y, &element);
@@ -558,17 +561,25 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 + (void) processScreens {
     NSLog(@"processing attach/detach of display");
 }
-+ (NSScreen*) primaryScreen {return [self screenAtPt: NSZeroPoint];}
-+ (CGPoint) CGPointFromNSPoint: (NSPoint) pt {
-    NSScreen* screen = [self screenAtPt: pt];
-    float menuScreenHeight = NSMaxY([screen frame]);
-    return CGPointMake(pt.x,  menuScreenHeight - pt.y);
++ (NSScreen*) primaryScreen {return [self screenAtNSPoint: NSZeroPoint];}
++ (NSPoint) NSPointFromCGPoint: (CGPoint) pt {
+    return NSPointFromCGPoint(pt);
+//    NSScreen* mainScreen = [NSScreen mainScreen];
+//    CGFloat mainScreenHeight = NSHeight([mainScreen frame]);
+//    return NSMakePoint(pt.x, mainScreenHeight - pt.y);
 }
-+ (NSScreen*) screenAtPt: (NSPoint) pt {
++ (CGPoint) CGPointFromNSPoint: (NSPoint) pt {
+    return NSPointToCGPoint(pt);
+//    NSScreen* screen = [self screenAtNSPoint: pt];
+//    float menuScreenHeight = NSMaxY([screen frame]);
+//    return CGPointMake(pt.x,  menuScreenHeight - pt.y);
+}
++ (NSScreen*) screenAtNSPoint: (NSPoint) pt {
     NSArray* screens = [NSScreen screens];
     for (NSScreen* screen in screens) if (NSPointInRect(pt, [screen frame])) return screen;
     return screens[0];
 }
++ (NSScreen*) screenAtCGPoint: (CGPoint)pt {return [self screenAtNSPoint: NSPointFromCGPoint(pt)];}
 
 /* trigger/simulate events */
 + (void) toggleDock { //fn+a
@@ -697,6 +708,18 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         @"size": (id)kAXSizeAttribute
     }];
     return CGRectMake([listDict[@"pos"][@"x"] floatValue], [listDict[@"pos"][@"y"] floatValue], [listDict[@"size"][@"width"] floatValue], [listDict[@"size"][@"height"] floatValue]);
+}
++ (CGPoint) normalizePointForDockGap: (CGPoint) pt : (NSString*) dockPos { //clicking the bottom 5px of the screen gives no PID, even though the dock icons are clickable... we pretend we clicked 5px higher
+    NSScreen* screen = [self screenAtCGPoint: pt];
+    if ([dockPos isEqual: @"bottom"]) {
+        float cutoff = screen.frame.size.height - 5.1;
+        return CGPointMake(pt.x, pt.y >= cutoff ? cutoff : pt.y);
+    } else if ([dockPos isEqual: @"left"]) {
+        return CGPointMake(pt.x <= 5 ? 5.1 : pt.x, pt.x);
+    } else if ([dockPos isEqual: @"right"]) {
+        float cutoff = screen.frame.size.width - 5.1;
+        return CGPointMake(pt.x >= cutoff ? cutoff : pt.x, pt.x);
+    } else return pt;
 }
 + (NSRunningApplication*) appWithBID: (NSString*) tarBID {
     NSArray* apps = [NSRunningApplication runningApplicationsWithBundleIdentifier: tarBID];

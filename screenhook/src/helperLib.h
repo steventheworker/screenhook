@@ -30,7 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) listenScreens;
 + (void) proc: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo;
 + (void) processScreens;
-+ (NSScreen*) screenAtPt: (NSPoint) pt;
++ (NSScreen*) screenAtCGPoint: (CGPoint) pt;
++ (NSScreen*) screenAtNSPoint: (NSPoint) pt;
++ (NSPoint) NSPointFromCGPoint: (CGPoint) pt;
 + (CGPoint) CGPointFromNSPoint: (NSPoint) pt;
 + (NSScreen*) primaryScreen;
 /* trigger/simulate events */
@@ -47,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*) dockPos;
 + (CGRect) dockRect;
 + (AXUIElementRef) dockAppElementFromDockChild: (AXUIElementRef) dockChild;
++ (CGPoint) normalizePointForDockGap: (CGPoint) pt : (NSString*) dockPos;
 + (NSRunningApplication*) appWithBID: (NSString*) tarBID;
 + (NSRunningApplication*) appWithPID: (pid_t) tarPID;
 + (void) activateWindow: (NSWindow*) window;

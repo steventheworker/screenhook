@@ -11,6 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface screenhook : NSObject
+@property (nonatomic, readwrite) NSString* dockPos;
+@property (nonatomic, readwrite) BOOL dockAutohide;
 + (void) init;
 + (void) tick;
 + (void) startTicking;

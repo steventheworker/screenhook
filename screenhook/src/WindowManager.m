@@ -105,6 +105,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     [self initialDiscovery: ^{for (Window* win in windows) [win updatesWindowSpace];}]; //initial discovery sets all win's space info to active space, update to truly finish
 }
 + (NSArray<Window*>*) windows {return windows;}
++ (Application*) appWithBID: (NSString*) bid {for (Application* app in apps) {if ([app->bid isEqual: bid]) return app;}return nil;}
 + (int) exposeType {return exposeType;}
 + (int) exposeTick {
 //    NSLog(@"exposeTick %d", getExposeType());
@@ -112,6 +113,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
 }
 
 + (void) initialDiscovery: (void(^)(void)) cb {
+    addNewApp([helperLib appWithBID: @"com.apple.dock"]); //we add dock manually since [helperLib isBackgroundApp: ] is true for it
     //initial discovery
     [Spaces init: (cgsMainConnectionId = CGSMainConnectionID())];
     NSArray* otherSpaces = [Spaces otherSpaces];
@@ -247,6 +249,10 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     pid_t frontPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
     if ([type isEqual: @"AXApplicationHidden"]) frontPID = [[NSWorkspace sharedWorkspace]frontmostApplication].processIdentifier;
     Application* app;for (app in apps) if (app->pid == frontPID) break;
+    if (!app || !app->el) {
+        NSLog(@"NO APP SO HERES EL %@", [helperLib elementDict: el : @{@"title": (id)kAXTitleAttribute}]);
+        Application* app;for (app in apps) if (app->el == el) NSLog(@"matched el app %@", app->name);
+    }
     if ([type isEqual: @"AXApplicationActivated"] || [type isEqual: @"AXApplicationHidden"]) {
         AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
         CGWindowID windowID;
@@ -347,23 +353,27 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     for (Window* win in windows) [win updatesWindowSpace];
 }
 + (void) appLaunched: (NSNotification*) note {
-    Application* app = addNewApp((NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"]);
-    
-    //front app/window tracking
-    AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
-    CGWindowID windowID;
-    _AXUIElementGetWindow(focusedWindow, &windowID);
-    focusedPID = app->pid;
-    focusedWindowID = windowID;
-    CFArrayRef beforeWindows = CFArrayCreateCopy(kCFAllocatorDefault, visibleWindows);
-    setTimeout(^{onLaunchTrackFrontmostWindow(beforeWindows, app);}, 2000); //some launch really slow
-    
-    [self observeApp: app];
+    NSRunningApplication* runningApp = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
+    if (![helperLib isBackgroundApp: runningApp]) {
+        Application* app = addNewApp(runningApp);
+        //front app/window tracking
+        AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
+        CGWindowID windowID;
+        _AXUIElementGetWindow(focusedWindow, &windowID);
+        focusedPID = app->pid;
+        focusedWindowID = windowID;
+        CFArrayRef beforeWindows = CFArrayCreateCopy(kCFAllocatorDefault, visibleWindows);
+        setTimeout(^{onLaunchTrackFrontmostWindow(beforeWindows, app);}, 2000); //some launch really slow
+        
+        [self observeApp: app];
+    }
 }
 + (void) appTerminated: (NSNotification*) note {
     NSRunningApplication* runningApp = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
-    Application* app; for (app in apps) if (app->pid == runningApp.processIdentifier) break;
-    [self stopObservingApp: app];
+    if (![helperLib isBackgroundApp: runningApp]) {
+        Application* app; for (app in apps) if (app->pid == runningApp.processIdentifier) break;
+        [self stopObservingApp: app];
+    }
 }
 + (void) spaceChanged: (NSNotification*) note {
     activationT = 100;
