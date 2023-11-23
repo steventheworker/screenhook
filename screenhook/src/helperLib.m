@@ -9,7 +9,7 @@
 #import "helperLib.h"
 #import <UserNotifications/UserNotifications.h>
 
-extern void CoreDockSendNotification(CFStringRef /*notification*/ /*, void unknown*/); //add show exposé, desktop exposé, mission control
+extern void CoreDockSendNotification(CFStringRef notification, void* unknown); //add show exposé, desktop exposé, mission control
 
 const int DOCK_BOTTOM_PADDING = 6; //eg: if screen 1080px, dock pos.y is actually <= 1074px (for bottom dock, but same for left/right)
 NSDictionary* listenOnlyEvents = @{@"mousemove": @1}; //events that you probably shouldn't modify:    mousemove causes xcode to crash when selecting lines w/ kcgtapoptionDefault)
@@ -870,8 +870,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     // Do the relaunch
     execl(execPtr, execPtr, NULL);
 }
-+ (void) openAppExpose {CoreDockSendNotification(CFSTR("com.apple.expose.front.awake"));}
-+ (void) openDesktopExpose {CoreDockSendNotification(CFSTR("com.apple.showdesktop.awake"));}
++ (void) openAppExpose {CoreDockSendNotification(CFSTR("com.apple.expose.front.awake"), nil);}
++ (void) openDesktopExpose {CoreDockSendNotification(CFSTR("com.apple.showdesktop.awake"), nil);}
 + (void) openMissionControl { //and immediately show the icons at the top
     void (^moveMouseTo)(float x, float y) = ^(float x, float y) {
         CGEventRef mouseMove = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, CGPointMake(x, y), kCGMouseButtonLeft);
@@ -879,7 +879,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     };
     NSPoint oldPt = [NSEvent mouseLocation];
     moveMouseTo(0, 0);
-    CoreDockSendNotification(CFSTR("com.apple.expose.awake"));
+    CoreDockSendNotification(CFSTR("com.apple.expose.awake"), nil);
     setTimeout(^{moveMouseTo(oldPt.x, oldPt.y);}, 10);
 }
 @end

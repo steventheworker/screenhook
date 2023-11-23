@@ -8,12 +8,14 @@
 #import "app.h"
 #import "globals.h"
 #import "helperLib.h"
+#import "gesture.h"
 #import "prefs.h"
 #import "prefsWindowController.h"
 #import "WindowManager.h"
 #import "screenhook/screenhook.h"
 
 CFMachPortRef allMachPortRef;
+GestureManager* gm;
 
 @implementation App
 + (instancetype) init: (NSWindow*) window : (NSMenu*) iconMenu : (AXUIElementRef) systemWideAccessibilityElement {
@@ -35,6 +37,7 @@ CFMachPortRef allMachPortRef;
     [app addMenuIcon: iconMenu]; // adds menu icon / references
     
     [app startListening];
+    gm = [[GestureManager alloc] init];
     [screenhook init];
     setTimeout(^{app->isSparkleUpdaterOpen = [helperLib isSparkleUpdaterOpen];}, 1000);
     return app;
@@ -53,11 +56,12 @@ CFMachPortRef allMachPortRef;
 static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon) {
     NSString* eventString = [helperLib eventKeyWithEventType: type];
     if (!([eventString isEqual: @"tabletProximityEventTabletID"] || [eventString isEqual: @"scrollWheelEventInstantMouser"] ||
-        [eventString isEqual: @"mousemove"]
+        [eventString isEqual: @"mousemove"] || [eventString isEqual: @"scrollwheel"]
     )) NSLog(@"ev: %@", eventString);
     else if ([eventString isEqual: @"default"]) NSLog(@"UNKNOWN EVENT TYPE %d", type);
     
     if ([eventString isEqual: @"tapdisabled"] && !CGEventTapIsEnabled(allMachPortRef)) CGEventTapEnable(allMachPortRef, true);
+    [gm allHandler: proxy : type : event : refcon];
     return [screenhook processEvent: proxy : type : event : refcon : eventString] ? event : nil;
 }
 - (void) startListening {

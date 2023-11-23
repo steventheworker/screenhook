@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BF2659D32AFF12D000489D9C /* currentSpaceScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2659D22AFF12D000489D9C /* currentSpaceScriptCommand.m */; };
 		BF2659D62AFF178600489D9C /* spacesScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2659D52AFF178600489D9C /* spacesScriptCommand.m */; };
+		BF2847562B0F0BA0001A254A /* gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2847552B0F0BA0001A254A /* gesture.m */; };
 		BF3B310C2B087289005A2693 /* Window.m in Sources */ = {isa = PBXBuildFile; fileRef = BF3B310B2B087289005A2693 /* Window.m */; };
 		BF3B73FB2AE0EB3600D80555 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF3B73FA2AE0EB3600D80555 /* AppDelegate.m */; };
 		BF3B73FD2AE0EB3700D80555 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF3B73FC2AE0EB3700D80555 /* Assets.xcassets */; };
@@ -42,6 +43,8 @@
 		BF2659D22AFF12D000489D9C /* currentSpaceScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = currentSpaceScriptCommand.m; sourceTree = "<group>"; };
 		BF2659D42AFF178600489D9C /* spacesScriptCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spacesScriptCommand.h; sourceTree = "<group>"; };
 		BF2659D52AFF178600489D9C /* spacesScriptCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = spacesScriptCommand.m; sourceTree = "<group>"; };
+		BF2847542B0F0BA0001A254A /* gesture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gesture.h; sourceTree = "<group>"; };
+		BF2847552B0F0BA0001A254A /* gesture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gesture.m; sourceTree = "<group>"; };
 		BF3B310A2B087289005A2693 /* Window.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
 		BF3B310B2B087289005A2693 /* Window.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Window.m; sourceTree = "<group>"; };
 		BF3B73F62AE0EB3600D80555 /* screenhook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = screenhook.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -172,6 +175,8 @@
 				BF3B310B2B087289005A2693 /* Window.m */,
 				BFF1E7E22AFCB38100DCBBDB /* WindowManager.h */,
 				BFF1E7E32AFCB38100DCBBDB /* WindowManager.m */,
+				BF2847542B0F0BA0001A254A /* gesture.h */,
+				BF2847552B0F0BA0001A254A /* gesture.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -364,6 +369,7 @@
 				BF59FFD42B0B84C4002D6B77 /* Application.m in Sources */,
 				BF5600512AE775CF005846CA /* helperLib.m in Sources */,
 				BF59FFDA2B0DF01A002D6B77 /* SpotlightSearch.m in Sources */,
+				BF2847562B0F0BA0001A254A /* gesture.m in Sources */,
 				BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */,
 				BFB9BA122AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m in Sources */,
 				BFB9BA0C2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m in Sources */,
