@@ -11,7 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface spaceKeyboardShortcuts : NSObject
 + (void) init;
-+ (BOOL) visitSpace: (int) spaceToVisit;
++ (BOOL) visitSpace: (int) spaceIndex;
++ (void) prevSpace;
++ (void) nextSpace;
 + (void) keyCode: (int) keyCode;
 + (void) spaceChanged: (NSNotification*) note;
 @end

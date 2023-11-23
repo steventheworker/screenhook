@@ -45,16 +45,18 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     [self startupScript];
 }
 + (void) startupScript {
-    [GestureManager on: @"2 finger tap" : ^BOOL(GestureManager* gm) {
-        CGEventRef rightMouseDownEvent = CGEventCreateMouseEvent(
-            NULL,
-            kCGEventRightMouseDown,
-            [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]],
-            kCGMouseButtonRight
-        );
+    //opinionated things, things that need to be added to prefs
+    [GestureManager on: @"2 finger tap" : ^BOOL(GestureManager* gm) { //2 finger tap -> right click
+        CGEventRef rightMouseDownEvent = CGEventCreateMouseEvent(NULL, kCGEventRightMouseDown, [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]], kCGMouseButtonRight);
         CGEventPost(kCGHIDEventTap, rightMouseDownEvent);
         return YES;
     }];
+    [GestureManager on: @"3 finger swipe left" : ^BOOL(GestureManager* gm) {[spaceKeyboardShortcuts nextSpace];return YES;}];
+    [GestureManager on: @"3 finger swipe right" : ^BOOL(GestureManager* gm) {[spaceKeyboardShortcuts prevSpace];return YES;}];
+    [GestureManager on: @"4 finger swipe left" : ^BOOL(GestureManager* gm) {[spaceKeyboardShortcuts nextSpace];return YES;}];
+    [GestureManager on: @"4 finger swipe right" : ^BOOL(GestureManager* gm) {[spaceKeyboardShortcuts prevSpace];return YES;}];
+    [GestureManager on: @"3 finger swipe down" : ^BOOL(GestureManager* gm) {[helperLib openAppExpose];return YES;}];
+    [GestureManager on: @"3 finger swipe up" : ^BOOL(GestureManager* gm) {[helperLib openMissionControl];return YES;}];
 }
 + (void) tick {
     int exposeType = [WindowManager exposeTick]; //check exposé type, loads new shared windows (Cgwindow's)

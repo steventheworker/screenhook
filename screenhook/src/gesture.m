@@ -31,8 +31,7 @@ BOOL processCallbacks(NSString* ev) {
 void twoFingerSwipeFromLeftEdge(void) {
     if (twoFingerSwipeFromLeftEdgeTriggered) return;
     twoFingerSwipeFromLeftEdgeTriggered = YES;
-    
-//    [app twoFingerSwipeFromLeftEdge];
+    processCallbacks(@"two finger swipe from left edge");
 }
 /*
  3 fingers
@@ -40,28 +39,22 @@ void twoFingerSwipeFromLeftEdge(void) {
 void threeFingerSwipeLeft(void) {
     if ([triggeredGestures[@"3"][@"left"] boolValue]) return;
     setTriggeredGesture(@"3", @"left");
-    
-//    if (!_gm->isClickSwipe) [helperLib nextSpace];
+    if (!_gm->isClickSwipe) processCallbacks(@"3 finger swipe left");
 }
 void threeFingerSwipeRight(void) {
     if ([triggeredGestures[@"3"][@"right"] boolValue]) return;
     setTriggeredGesture(@"3", @"right");
-    
-//    if (!_gm->isClickSwipe) [helperLib previousSpace];
+    if (!_gm->isClickSwipe) processCallbacks(@"3 finger swipe right");
 }
 void threeFingerSwipeUp(void) {
     if ([triggeredGestures[@"3"][@"up"] boolValue]) return;
     setTriggeredGesture(@"3", @"up");
-    
-    if (!_gm->isClickSwipe) { // mission control immediately
-        [helperLib openMissionControl];
-    }
+    if (!_gm->isClickSwipe) processCallbacks(@"three finger swipe up");
 }
 void threeFingerSwipeDown(void) {
     if ([triggeredGestures[@"3"][@"down"] boolValue]) return;
     setTriggeredGesture(@"3", @"down");
-    
-    if (!_gm->isClickSwipe) [helperLib openAppExpose];
+    if (!_gm->isClickSwipe) processCallbacks(@"three finger swipe down");
 }
 /*
  4 fingers
@@ -69,23 +62,19 @@ void threeFingerSwipeDown(void) {
 void fourFingerSwipeLeft(void) {
     if ([triggeredGestures[@"4"][@"left"] boolValue]) return;
     setTriggeredGesture(@"4", @"left");
-    
-//    if (!_gm->isClickSwipe) [helperLib nextSpace];
+    if (!_gm->isClickSwipe) processCallbacks(@"4 finger swipe right");
 }
 void fourFingerSwipeRight(void) {
     if ([triggeredGestures[@"4"][@"right"] boolValue]) return;
     setTriggeredGesture(@"4", @"right");
-    
-//    if (!_gm->isClickSwipe) [helperLib previousSpace];
+    if (!_gm->isClickSwipe) processCallbacks(@"4 finger swipe right");
 }
 
 /*
  taps
 */
 //2 finger tap
-void twoFingerTap(void) {
-    processCallbacks(@"2 finger tap");
-}
+void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
 
 @implementation GestureManager
 - (instancetype) init {

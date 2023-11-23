@@ -59,12 +59,12 @@ void fallbackToKeys(int from, int to) {
 + (void) init {
     for (NSScreen* screen in NSScreen.screens) createSpaceWindow(screen);
 }
-+ (BOOL) visitSpace: (int) spaceToVisit {
++ (BOOL) visitSpace: (int) spaceIndex {
     NSArray* windows = [WindowManager windows];
     for (Window* win in windows) {
         if (win->app->pid == [[NSProcessInfo processInfo] processIdentifier]) { //screenhook window
             NSDictionary* dict = [helperLib elementDict: win->el : @{@"identifier": (id)kAXIdentifierAttribute, @"title": (id)kAXTitleAttribute}];
-            if (![dict[@"identifier"] isEqual: @"spacewindow"] || ![[NSString stringWithFormat: @"%d", spaceToVisit] isEqual: dict[@"title"]]) continue;
+            if (![dict[@"identifier"] isEqual: @"spacewindow"] || ![[NSString stringWithFormat: @"%d", spaceIndex] isEqual: dict[@"title"]]) continue;
             [NSApp activateIgnoringOtherApps: YES];
             AXUIElementPerformAction(win->el, kAXRaiseAction);
             setTimeout(^{[NSApp hide: nil];}, 666); // give focus back to prev. frontmost application
@@ -72,6 +72,45 @@ void fallbackToKeys(int from, int to) {
         }
     }
     return NO;
+}
++ (void) prevSpace { //prev space on monitor under mouse
+    [Spaces updateCurrentSpace]; //now current id/index points to correct screen/space
+    CGPoint mouseLoc = [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]];
+    NSScreen* mouseScreen = [helperLib screenAtCGPoint: mouseLoc];
+    NSArray* visibleSpaces = [Spaces visibleSpaces];
+    NSMutableArray* visibleIndexes = [NSMutableArray array];
+    for (NSNumber* spaceId in visibleSpaces) [visibleIndexes addObject: @([Spaces indexWithID: spaceId.intValue])];
+    NSWindow* win;for (win in NSApp.windows) {
+        if (![win.identifier isEqual: @"spacewindow"] || ![visibleIndexes containsObject: @(win.title.intValue)]) continue;
+        NSScreen* winScreen = [helperLib screenAtCGPoint: CGPointMake(win.frame.origin.x, win.frame.origin.y)];
+        if (winScreen == mouseScreen) break; //found space win
+    }
+    int spaceIndex = win.title.intValue;
+    NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
+    int relativeIndex = (int)[screenSpaceIds indexOfObject: visibleSpaces[ [visibleIndexes indexOfObject: @(spaceIndex)] ]];
+    if (relativeIndex - 1 < 0) return;
+    if ([WindowManager exposeType] || ![self visitSpace: spaceIndex - 1]) //cannot go directly to space if no spacewindow created, or mission control is open
+        fallbackToKeys(relativeIndex, relativeIndex - 1);
+}
++ (void) nextSpace { //next space on monitor under mouse
+    [Spaces updateCurrentSpace]; //now current id/index points to correct screen/space
+    CGPoint mouseLoc = [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]];
+    NSScreen* mouseScreen = [helperLib screenAtCGPoint: mouseLoc];
+    NSArray* visibleSpaces = [Spaces visibleSpaces];
+    NSMutableArray* visibleIndexes = [NSMutableArray array];
+    for (NSNumber* spaceId in visibleSpaces) [visibleIndexes addObject: @([Spaces indexWithID: spaceId.intValue])];
+    NSWindow* win;for (win in NSApp.windows) {
+        if (![win.identifier isEqual: @"spacewindow"] || ![visibleIndexes containsObject: @(win.title.intValue)]) continue;
+        NSScreen* winScreen = [helperLib screenAtCGPoint: CGPointMake(win.frame.origin.x, win.frame.origin.y)];
+        if (winScreen == mouseScreen) break; //found space win
+    }
+    int spaceIndex = win.title.intValue;
+    NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
+    int relativeIndex = (int)[screenSpaceIds indexOfObject: visibleSpaces[ [visibleIndexes indexOfObject: @(spaceIndex)] ]];
+    if (relativeIndex + 1 > screenSpaceIds.count - 1) return;
+    if ([WindowManager exposeType] || ![self visitSpace: spaceIndex + 1]) //cannot go directly to space if no spacewindow created, or mission control is open
+        fallbackToKeys(relativeIndex, relativeIndex + 1);
+
 }
 + (void) keyCode: (int) keyCode {
     [Spaces updateCurrentSpace]; //now current id/index points to correct screen/space
@@ -88,7 +127,7 @@ void fallbackToKeys(int from, int to) {
             break;
         }
     }
-    relativeSpaceIndex++; //space indexing starts from 1 (tarSpace is desktop 1 to n (relative to the screen))
+    relativeSpaceIndex += 1; //space indexing starts from 1 (tarSpace is desktop 1 to n (relative to the screen))
     
     NSDictionary* digits = @{@18: @1, @19: @2, @20: @3, @21: @4, @23: @5, @22: @6, @26: @7, @28: @8, @25: @9};
     int digit = [digits[@(keyCode)] intValue];
