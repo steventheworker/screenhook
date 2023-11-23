@@ -31,7 +31,7 @@ BOOL processCallbacks(NSString* ev) {
 void twoFingerSwipeFromLeftEdge(void) {
     if (twoFingerSwipeFromLeftEdgeTriggered) return;
     twoFingerSwipeFromLeftEdgeTriggered = YES;
-    processCallbacks(@"two finger swipe from left edge");
+    processCallbacks(@"2 finger swipe from left edge");
 }
 /*
  3 fingers
@@ -49,12 +49,12 @@ void threeFingerSwipeRight(void) {
 void threeFingerSwipeUp(void) {
     if ([triggeredGestures[@"3"][@"up"] boolValue]) return;
     setTriggeredGesture(@"3", @"up");
-    if (!_gm->isClickSwipe) processCallbacks(@"three finger swipe up");
+    if (!_gm->isClickSwipe) processCallbacks(@"3 finger swipe up");
 }
 void threeFingerSwipeDown(void) {
     if ([triggeredGestures[@"3"][@"down"] boolValue]) return;
     setTriggeredGesture(@"3", @"down");
-    if (!_gm->isClickSwipe) processCallbacks(@"three finger swipe down");
+    if (!_gm->isClickSwipe) processCallbacks(@"3 finger swipe down");
 }
 /*
  4 fingers
