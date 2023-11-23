@@ -11,9 +11,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface GestureManager : NSObject {
+    @public
     NSMutableArray<NSSet<NSTouch*>*>* gesture; // array of NSSet<NSTouch*>* touches
     int touchCount;
-    @public BOOL isClickSwipe;
+    BOOL isClickSwipe;
+    NSMutableDictionary<NSString*, NSMutableArray<BOOL (^)(GestureManager*)>*>* callbackMap;
+    
 }
 - (instancetype) init;
 - (void) recognizeMultiFingerTap;
@@ -24,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) resetTriggeredGestures;
 - (void) setIsClickSwipe;
 - (CGEventTapCallBack) allHandler: (CGEventTapProxy) proxy : (CGEventType) type : (CGEventRef) event : (void*) refcon;
-+ (void) on: (NSString*) ev : (void (^)(BOOL granted))handler;
-- (void) on: (NSString*) ev : (void (^)(BOOL granted))handler;
++ (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler;
+- (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler;
 @end
 
 NS_ASSUME_NONNULL_END

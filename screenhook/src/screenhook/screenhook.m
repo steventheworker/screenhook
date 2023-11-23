@@ -8,6 +8,7 @@
 #import "screenhook.h"
 #import "../globals.h"
 #import "../helperLib.h"
+#import "../gesture.h"
 #import "../prefs.h"
 #import "../../AppDelegate.h"
 #import "../Spaces.h"
@@ -40,6 +41,20 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     [missionControlSpaceLabels init];
     [spaceKeyboardShortcuts init];
     [self startTicking];
+    
+    [self startupScript];
+}
++ (void) startupScript {
+    [GestureManager on: @"2 finger tap" : ^BOOL(GestureManager* gm) {
+        CGEventRef rightMouseDownEvent = CGEventCreateMouseEvent(
+            NULL,
+            kCGEventRightMouseDown,
+            [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]],
+            kCGMouseButtonRight
+        );
+        CGEventPost(kCGHIDEventTap, rightMouseDownEvent);
+        return YES;
+    }];
 }
 + (void) tick {
     int exposeType = [WindowManager exposeTick]; //check exposé type, loads new shared windows (Cgwindow's)

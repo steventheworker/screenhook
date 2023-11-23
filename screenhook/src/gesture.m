@@ -18,6 +18,12 @@ void setTriggeredGesture(NSString* touchCount, NSString* swipeDirection) {
     [_gm resetTriggeredGestures];
     triggeredGestures[touchCount][swipeDirection] = @1;
 }
+BOOL processCallbacks(NSString* ev) {
+    BOOL callbackResult = YES; // yes, send the event (unless a callback returns NO (and nonnull))
+    NSArray* callbacks = _gm->callbackMap[ev];
+    for (BOOL(^callback)(GestureManager* gm) in callbacks) if (callback(_gm)) callbackResult = NO;
+    return callbackResult;
+}
 /* Gesture Handlers */
 /*
  2 fingers
@@ -78,28 +84,22 @@ void fourFingerSwipeRight(void) {
 */
 //2 finger tap
 void twoFingerTap(void) {
-    CGEventRef rightMouseDownEvent = CGEventCreateMouseEvent(
-        NULL,
-        kCGEventRightMouseDown,
-        [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]],
-        kCGMouseButtonRight
-    );
-    CGEventPost(kCGHIDEventTap, rightMouseDownEvent);
+    processCallbacks(@"2 finger tap");
 }
 
 @implementation GestureManager
+- (instancetype) init {
+    [self endRecognition];
+    _gm = self;
+    //    isClickSwipe = NO;
+    return self;
+}
 - (void) endRecognition {
     gesture = [NSMutableArray new];
     touchCount = 0;
     twoFingerSwipeFromLeftEdgeTriggered = NO;
     isClickSwipe = NO;
     [self resetTriggeredGestures];
-}
-- (instancetype) init {
-    [self endRecognition];
-    _gm = self;
-//    isClickSwipe = NO;
-    return self;
 }
 - (void) recognizeMultiFingerTap {
     int maxTouch = 0;
@@ -252,6 +252,10 @@ void twoFingerTap(void) {
     
     return (CGEventTapCallBack) event;
 }
-+ (void) on: (NSString*) ev : (void (^)(BOOL granted))handler {return [_gm on: ev : handler];}
-- (void) on: (NSString*) ev : (void (^)(BOOL granted))handler {}
++ (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler {return [_gm on: ev : handler];}
+- (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler {
+    if (!callbackMap) callbackMap = [NSMutableDictionary dictionary];
+    if (!callbackMap[ev]) callbackMap[ev] = [NSMutableArray array];
+    [callbackMap[ev] addObject: handler];
+}
 @end
