@@ -88,7 +88,7 @@ void fourFingerSwipeRight(void) {
     return self;
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
-    NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
+    NSEvent* nsEvent = [NSEvent eventWithCGEvent: event];
     if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseCancelled) [self endRecognition];
 //    if ([nsEvent phase] == NSEventPhaseBegan) {    isClickSwipe = NO;}
     if ((int) [touches count] == 0) {} else { // sometimes touches are 0 for no reason (...but i think it's just during NSEventPhaseEnded / NSEventPhaseStarted)
@@ -99,20 +99,20 @@ void fourFingerSwipeRight(void) {
     }
 }
 - (void) detectSwipeGesture { // called before recognizeGesture to make sure it has a swipeDirection
-    NSArray *touches1 = [[gesture objectAtIndex:0 ] allObjects];
+    NSArray *touches1 = [[gesture objectAtIndex: 0 ] allObjects];
     NSArray *touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
     int numTouches = (int) [touches1 count];
     if (numTouches < 2) return;
 
     // Sort touches1 & touches2 array based on Y-coordinate (for some reason more accurate than X)
-    touches1 = [touches1 sortedArrayUsingComparator:^NSComparisonResult(NSTouch *touch1, NSTouch *touch2) {
+    touches1 = [touches1 sortedArrayUsingComparator: ^NSComparisonResult(NSTouch *touch1, NSTouch *touch2) {
         CGFloat x1 = touch1.normalizedPosition.y;
         CGFloat x2 = touch2.normalizedPosition.y;
         if (x1 < x2) return NSOrderedAscending;
         else if (x1 > x2) return NSOrderedDescending;
         else return NSOrderedSame;
     }];
-    touches2 = [touches2 sortedArrayUsingComparator:^NSComparisonResult(NSTouch *touch1, NSTouch *touch2) {
+    touches2 = [touches2 sortedArrayUsingComparator: ^NSComparisonResult(NSTouch *touch1, NSTouch *touch2) {
         CGFloat x1 = touch1.normalizedPosition.y;
         CGFloat x2 = touch2.normalizedPosition.y;
         if (x1 < x2) return NSOrderedAscending;
@@ -128,8 +128,8 @@ void fourFingerSwipeRight(void) {
     int isSwipeDown = 0;
 
     for (NSInteger i = 0; i < numTouches; i++) {
-        NSTouch *touchI = [touches1 objectAtIndex:i];
-        NSTouch *touchF = [touches2 objectAtIndex:i];
+        NSTouch *touchI = [touches1 objectAtIndex: i];
+        NSTouch *touchF = [touches2 objectAtIndex: i];
         
         CGFloat dX = touchF.normalizedPosition.x - touchI.normalizedPosition.x;
         CGFloat dY = touchF.normalizedPosition.y - touchI.normalizedPosition.y;
