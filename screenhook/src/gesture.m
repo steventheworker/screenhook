@@ -73,6 +73,20 @@ void fourFingerSwipeRight(void) {
 //    if (!_gm->isClickSwipe) [helperLib previousSpace];
 }
 
+/*
+ taps
+*/
+//2 finger tap
+void twoFingerTap(void) {
+    CGEventRef rightMouseDownEvent = CGEventCreateMouseEvent(
+        NULL,
+        kCGEventRightMouseDown,
+        [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]],
+        kCGMouseButtonRight
+    );
+    CGEventPost(kCGHIDEventTap, rightMouseDownEvent);
+}
+
 @implementation GestureManager
 - (void) endRecognition {
     gesture = [NSMutableArray new];
@@ -87,9 +101,30 @@ void fourFingerSwipeRight(void) {
 //    isClickSwipe = NO;
     return self;
 }
+- (void) recognizeMultiFingerTap {
+    int maxTouch = 0;
+    for (NSSet<NSTouch*>* touches in gesture) {
+        if (touches.count > maxTouch) maxTouch = (int)touches.count;
+        //if touch times too far apart, not a tap
+        //if next touches.count goes down, goes up (and down and up and...), then goes to 0???
+    }
+    if (maxTouch == 2) {
+        twoFingerTap(/*[gesture.lastObject allObjects].lastObject.normalizedPosition*/);
+    } else if (maxTouch == 3) {
+        
+    } else if (maxTouch == 4) {
+        
+    } else if (maxTouch == 5) {
+        
+    }
+    NSLog(@"tap %d", maxTouch);
+}
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent: event];
-    if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseCancelled) [self endRecognition];
+    if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseCancelled) {
+        [self recognizeMultiFingerTap];
+        [self endRecognition];
+    }
 //    if ([nsEvent phase] == NSEventPhaseBegan) {    isClickSwipe = NO;}
     if ((int) [touches count] == 0) {} else { // sometimes touches are 0 for no reason (...but i think it's just during NSEventPhaseEnded / NSEventPhaseStarted)
         if ((int) [touches count] != touchCount) [self endRecognition]; // going from 2 to 3 to 4 to 5 fingers is different (ie. stop comparing touch states with different finger counts to decide the gesture)

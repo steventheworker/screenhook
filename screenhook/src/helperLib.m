@@ -574,8 +574,11 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 }
 + (CGPoint) CGPointFromNSPoint: (NSPoint) pt { // NSPointToCGPoint(pt); only changes output type...
     NSScreen* screen = [self screenAtNSPoint: pt];
+    NSScreen* primaryScreen = [self primaryScreen];
+    float offsetTop = primaryScreen.frame.size.height - (screen.frame.origin.y + screen.frame.size.height);
+    if (primaryScreen == screen) offsetTop = 0;
     float menuScreenHeight = NSMaxY([screen frame]);
-    return CGPointMake(pt.x,  menuScreenHeight - pt.y);
+    return CGPointMake(pt.x, menuScreenHeight - pt.y + offsetTop);
 }
 + (NSScreen*) screenAtNSPoint: (NSPoint) pt {
     NSArray* screens = [NSScreen screens];

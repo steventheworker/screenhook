@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
     int touchCount;
     @public BOOL isClickSwipe;
 }
+- (instancetype) init;
+- (void) recognizeMultiFingerTap;
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type;
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type;
 - (void) endRecognition;
