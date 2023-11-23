@@ -30,10 +30,10 @@ int spotlightType = 0; //spotlight = 1, alfred = 2, ...
     if (!downStarted) return YES;
     downStarted = NO;
     if ([elDict[@"title"] isEqual: @"Spotlight Search"] && !wasSpotlightOpenOnDown) {
-        setTimeout(^{
+//        setTimeout(^{
             if (spotlightType == 2) [helperLib applescript: @"do shell script \"osascript -e 'tell application \\\"Alfred 5\\\" to search' &> /dev/null & echo $!\""];
             else [helperLib applescript: @"tell application \"System Events\" to keystroke \" \" using {command down}"];
-        }, spotlightType == 2 ? 100 : 200); // system events is slower than app telling Alfred
+//        }, spotlightType == 2 ? 100 : 200); // system events is slower than app telling Alfred
     }
     return NO;
 }

@@ -20,6 +20,7 @@ int activationT = ACTIVATION_MILLISECONDS; //on spaceswitch: wait longer
 int exposeType = 0; //exposeTypes enum
 CFArrayRef visibleWindows = nil; //CGWindow's
 CFArrayRef lastVisibleWindows = nil;
+BOOL initialDiscoveryFinished = NO;
 NSArray* AppObserverNotifications;
 NSArray* WindowObserverNotifications;
 NSMutableArray<Window*>* windows;
@@ -102,7 +103,10 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     AppObserverNotifications = @[(id)kAXApplicationActivatedNotification, (id)kAXMainWindowChangedNotification, (id)kAXFocusedWindowChangedNotification, (id)kAXWindowCreatedNotification, (id)kAXApplicationHiddenNotification, (id)kAXApplicationShownNotification];
     WindowObserverNotifications = @[(id)kAXUIElementDestroyedNotification, (id)kAXTitleChangedNotification, (id)kAXWindowMiniaturizedNotification, (id)kAXWindowDeminiaturizedNotification, (id)kAXWindowResizedNotification, (id)kAXWindowMovedNotification];
     loadVisibleWindows();
-    [self initialDiscovery: ^{for (Window* win in windows) [win updatesWindowSpace];}]; //initial discovery sets all win's space info to active space, update to truly finish
+    [self initialDiscovery: ^{
+        for (Window* win in windows) [win updatesWindowSpace]; //initial discovery sets all win's space info to active space, update to truly finish
+        initialDiscoveryFinished = YES;
+    }];
 }
 + (NSArray<Window*>*) windows {return windows;}
 + (Application*) appWithBID: (NSString*) bid {for (Application* app in apps) {if ([app->bid isEqual: bid]) return app;}return nil;}
@@ -245,14 +249,11 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     }
 }
 + (void) appObserverCallback: (AXObserverRef) observer : (AXUIElementRef) el : (CFStringRef) note : (void*) refcon {
+    if (!initialDiscoveryFinished) return; // on hide, (Application*) app may not exist for new frontmost app
     NSString* type = (__bridge NSString *)note;
     pid_t frontPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
     if ([type isEqual: @"AXApplicationHidden"]) frontPID = [[NSWorkspace sharedWorkspace]frontmostApplication].processIdentifier;
     Application* app;for (app in apps) if (app->pid == frontPID) break;
-    if (!app || !app->el) {
-        NSLog(@"NO APP SO HERES EL %@", [helperLib elementDict: el : @{@"title": (id)kAXTitleAttribute}]);
-        Application* app;for (app in apps) if (app->el == el) NSLog(@"matched el app %@", app->name);
-    }
     if ([type isEqual: @"AXApplicationActivated"] || [type isEqual: @"AXApplicationHidden"]) {
         AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
         CGWindowID windowID;

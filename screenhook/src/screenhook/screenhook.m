@@ -26,7 +26,7 @@ AXUIElementRef cursorEl;
 NSDictionary* cursorDict;
 NSDictionary* mousedownDict;
 
-NSString* dockPos = @"bottom";
+int dockPos = DockBottom; //for some reason, setting a string in processEvents (when detecting click of AxMenuItem) causes dock to be blocked from accessibility... but int's work fine..........
 BOOL dockAutohide = NO;
 AXUIElementRef dockContextMenuClickee; //the dock separator element that was right clicked
 
@@ -65,7 +65,6 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
             @"subrole": (id)kAXSubroleAttribute,
             @"role": (id)kAXRoleAttribute
         }];
-        NSLog(@"%@", cursorDict);
         BOOL dockClick = [cursorDict[@"pid"] intValue] == [WindowManager appWithBID: @"com.apple.dock"]->pid;
         setTimeout(^{mousedownDict = cursorDict;}, 0);
         
@@ -78,29 +77,16 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
         }
         if ([cursorDict[@"role"] isEqual: @"AXMenuItem"]) { //context menu item is being selected/triggered
             if (dockContextMenuClickee && type == kCGEventLeftMouseUp) {
-                NSArray* children = [helperLib elementDict: dockContextMenuClickee : @{@"children": (id)kAXChildrenAttribute}][@"children"];
-                if (children.count) {
-                    children = [helperLib elementDict: (__bridge AXUIElementRef)(children[0]) : @{@"children": (id)kAXChildrenAttribute}][@"children"];
+                __block NSArray* children = [helperLib elementDict: dockContextMenuClickee : @{@"children": (id)kAXChildrenAttribute}][@"children"];
+                if (children.count) { //there is a menu!
+                    children = [helperLib elementDict: (__bridge AXUIElementRef)(children[0]) : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //menu items
                     if (CFEqual((__bridge AXUIElementRef)children[0], cursorEl)) dockAutohide = !dockAutohide; //the first menu item is "Turn Hiding On/Off"
                     else {
                         children = [helperLib elementDict: (__bridge AXUIElementRef)(children[2]) : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //Position on screen items menu
                         children = [helperLib elementDict: (__bridge AXUIElementRef)(children[0]) : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //Position on screen items menu children
-                        NSLog(@"%d", children.count);
-//                        if (CFEqual((__bridge AXUIElementRef)children[0], cursorEl)) dockPos = @"left";
-//                        if (CFEqual((__bridge AXUIElementRef)children[1], cursorEl)) dockPos = @"bottom";
-//                        if (CFEqual((__bridge AXUIElementRef)children[2], cursorEl)) dockPos = @"right";
-                        for (int i = 0; i < (int)children.count; i++) {
-                            AXUIElementRef el = (__bridge AXUIElementRef)(children[i]);
-                            if (!CFEqual(el, cursorEl)) continue;
-                            if (i == 0) {
-                                
-                            } else if (i == 1) {
-                                
-                            } else if ( i == 2) {
-                                
-                            }
-                        }
-                        NSLog(@"%@", dockPos);
+                        if (CFEqual((__bridge AXUIElementRef)children[0], cursorEl)) dockPos = DockLeft;
+                        if (CFEqual((__bridge AXUIElementRef)children[1], cursorEl)) dockPos = DockBottom;
+                        if (CFEqual((__bridge AXUIElementRef)children[2], cursorEl)) dockPos = DockRight;
                     }
                 }
             }

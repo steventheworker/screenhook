@@ -561,25 +561,41 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 + (void) processScreens {
     NSLog(@"processing attach/detach of display");
 }
+/* cg/ns points: nspoint, cgpoint both share the same x. key difference: nspoint y of 0 == bottom of the screen */
 + (NSScreen*) primaryScreen {return [self screenAtNSPoint: NSZeroPoint];}
-+ (NSPoint) NSPointFromCGPoint: (CGPoint) pt {
-    return NSPointFromCGPoint(pt);
-//    NSScreen* mainScreen = [NSScreen mainScreen];
-//    CGFloat mainScreenHeight = NSHeight([mainScreen frame]);
-//    return NSMakePoint(pt.x, mainScreenHeight - pt.y);
++ (NSPoint) NSPointFromCGPoint: (CGPoint) pt { // NSPointFromCGPoint(pt); only changes output type...
+    NSScreen* screen = [self screenAtCGPoint: pt];
+    NSScreen* primary = [self primaryScreen];
+    float screentopoffset = screen.frame.origin.y;
+    float screenbottomoffset = primary.frame.size.height - (screen.frame.size.height + screentopoffset);
+    if (screen == primary) {screenbottomoffset = 0;screentopoffset = 0;}
+    float y = screen.frame.size.height + screenbottomoffset - (pt.y - screentopoffset);
+    return NSMakePoint(pt.x, y);
 }
-+ (CGPoint) CGPointFromNSPoint: (NSPoint) pt {
-    return NSPointToCGPoint(pt);
-//    NSScreen* screen = [self screenAtNSPoint: pt];
-//    float menuScreenHeight = NSMaxY([screen frame]);
-//    return CGPointMake(pt.x,  menuScreenHeight - pt.y);
++ (CGPoint) CGPointFromNSPoint: (NSPoint) pt { // NSPointToCGPoint(pt); only changes output type...
+    NSScreen* screen = [self screenAtNSPoint: pt];
+    float menuScreenHeight = NSMaxY([screen frame]);
+    return CGPointMake(pt.x,  menuScreenHeight - pt.y);
 }
 + (NSScreen*) screenAtNSPoint: (NSPoint) pt {
     NSArray* screens = [NSScreen screens];
     for (NSScreen* screen in screens) if (NSPointInRect(pt, [screen frame])) return screen;
     return screens[0];
 }
-+ (NSScreen*) screenAtCGPoint: (CGPoint)pt {return [self screenAtNSPoint: NSPointFromCGPoint(pt)];}
++ (NSScreen*) screenAtCGPoint: (CGPoint) pt {
+    NSArray* screens = [NSScreen screens];
+    NSScreen* primaryScreen = [self primaryScreen];
+    for (NSScreen* screen in screens) {
+        float offsetLeft, offsetTop, offsetBottom;
+        offsetLeft = screen.frame.origin.x;
+        offsetTop = primaryScreen.frame.size.height - (screen.frame.origin.y + screen.frame.size.height);
+        offsetBottom = screen.frame.origin.y; //unused since cgpoint starts at the top
+        if (screen == primaryScreen) {offsetTop = 0;offsetBottom = 0;offsetLeft = 0;}
+        if (pt.x >= offsetLeft && pt.x <= offsetLeft + screen.frame.size.width &&
+            pt.y >= offsetTop && pt.y <= offsetTop + screen.frame.size.height) return screen;
+    }
+    return screens[0];
+}
 
 /* trigger/simulate events */
 + (void) toggleDock { //fn+a
@@ -664,10 +680,11 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return [[[defaults persistentDomainForName:@"com.apple.dock"] valueForKey:@"autohide"] intValue] > 0;
 }
-+ (NSString*) dockPos {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
++ (int) dockPos {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     NSString* pos = [[defaults persistentDomainForName:@"com.apple.dock"] valueForKey:@"orientation"];
-    return pos ? pos : @"bottom";
+    NSArray* dockPosStrings = @[@"left", @"bottom", @"right"];
+    return (int)[dockPosStrings indexOfObject: pos ? pos : @"bottom"];
 }
 + (AXUIElementRef) dockAppElementFromDockChild: (AXUIElementRef) dockChild {
     NSDictionary* recursiveDict = @{
@@ -689,9 +706,9 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         usleep(100 * 1000); // 100ms
         NSScreen* focusedScreen = [NSScreen mainScreen];
         CGPoint testPoint;
-        if ([[self dockPos] isEqual: @"bottom"]) testPoint = CGPointMake(focusedScreen.frame.size.width / 2, focusedScreen.frame.size.height - DOCK_BOTTOM_PADDING);
+        if ([self dockPos] == DockBottom) testPoint = CGPointMake(focusedScreen.frame.size.width / 2, focusedScreen.frame.size.height - DOCK_BOTTOM_PADDING);
         else {
-            float x = ([[self dockPos] isEqual: @"left"]) ? DOCK_BOTTOM_PADDING : focusedScreen.frame.size.width - DOCK_BOTTOM_PADDING - 5; //right dock for some reason has 5 more pixels padding...
+            float x = [self dockPos] == DockLeft ? DOCK_BOTTOM_PADDING : focusedScreen.frame.size.width - DOCK_BOTTOM_PADDING - 5; //right dock for some reason has 5 more pixels padding...
             testPoint = CGPointMake(x, focusedScreen.frame.size.height / 2);
         }
         dockAppRef = [self dockAppElementFromDockChild: [helperLib elementAtPoint: testPoint]];
@@ -709,16 +726,25 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     }];
     return CGRectMake([listDict[@"pos"][@"x"] floatValue], [listDict[@"pos"][@"y"] floatValue], [listDict[@"size"][@"width"] floatValue], [listDict[@"size"][@"height"] floatValue]);
 }
-+ (CGPoint) normalizePointForDockGap: (CGPoint) pt : (NSString*) dockPos { //clicking the bottom 5px of the screen gives no PID, even though the dock icons are clickable... we pretend we clicked 5px higher
++ (CGPoint) normalizePointForDockGap: (CGPoint) pt : (int) dockPos { //clicking the bottom 5px gap of the screen gives no PID, even though the dock icons are clickable... we pretend we clicked 5px higher
     NSScreen* screen = [self screenAtCGPoint: pt];
-    if ([dockPos isEqual: @"bottom"]) {
-        float cutoff = screen.frame.size.height - 5.1;
+    NSScreen* primaryScreen = [self primaryScreen];
+    
+    float offsetLeft, offsetTop, offsetBottom;
+    offsetLeft = screen.frame.origin.x;
+    offsetTop = primaryScreen.frame.size.height - (screen.frame.origin.y + screen.frame.size.height);
+    offsetBottom = screen.frame.origin.y; //unused since cgpoint starts at the top
+    if (screen == primaryScreen) {offsetTop = 0;offsetBottom = 0;offsetLeft = 0;}
+
+    if (dockPos == DockBottom) {
+        float cutoff = offsetTop + screen.frame.size.height - 5.1;
         return CGPointMake(pt.x, pt.y >= cutoff ? cutoff : pt.y);
-    } else if ([dockPos isEqual: @"left"]) {
-        return CGPointMake(pt.x <= 5 ? 5.1 : pt.x, pt.x);
-    } else if ([dockPos isEqual: @"right"]) {
-        float cutoff = screen.frame.size.width - 5.1;
-        return CGPointMake(pt.x >= cutoff ? cutoff : pt.x, pt.x);
+    } else if (dockPos == DockLeft) {
+        float cutoff = offsetLeft + 14.1;
+        return CGPointMake(pt.x <= cutoff ? cutoff : pt.x, pt.y);
+    } else if (dockPos == DockRight) {
+        float cutoff = offsetLeft + screen.frame.size.width - 14.1;
+        return CGPointMake(pt.x >= cutoff ? cutoff : pt.x, pt.y);
     } else return pt;
 }
 + (NSRunningApplication*) appWithBID: (NSString*) tarBID {
