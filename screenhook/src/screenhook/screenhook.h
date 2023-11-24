@@ -22,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) appLaunched: (NSNotification*) note;
 + (void) appTerminated: (NSNotification*) note;
 + (void) spaceChanged: (NSNotification*) note;
++ (void) spaceadded: (int) spaceIndex;
++ (void) spaceremoved: (int) spaceIndex;
++ (void) spacemoved: (int) monitorStartIndex : (NSArray*) newIndexing;
++ (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo;
 @end
 
 NS_ASSUME_NONNULL_END

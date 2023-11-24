@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
 + (void) mouseup;
 + (void) spaceChanged: (NSNotification*) note;
++ (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo;
 @end
 
 NS_ASSUME_NONNULL_END

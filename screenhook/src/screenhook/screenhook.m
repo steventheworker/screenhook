@@ -37,9 +37,10 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     dockPos = [helperLib dockPos];
     dockAutohide = [helperLib dockAutohide];
     
-    [WindowManager init];
+    [WindowManager init: ^{
+        [spaceKeyboardShortcuts init];
+    }];
     [missionControlSpaceLabels init];
-    [spaceKeyboardShortcuts init];
     [self startTicking];
     
     [self startupScript];
@@ -143,5 +144,20 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
 + (void) spaceChanged: (NSNotification*) note {
     [missionControlSpaceLabels spaceChanged: note];
     [spaceKeyboardShortcuts spaceChanged: note];
+}
++ (void) spaceadded: (int) spaceIndex { // event from missionControlSpaceLabels
+    [spaceKeyboardShortcuts spaceadded: spaceIndex]; //update spacewindow's
+}
++ (void) spaceremoved: (int) spaceIndex { // event from missionControlSpaceLabels
+    [spaceKeyboardShortcuts spaceremoved: spaceIndex]; //update spacewindow's
+}
++ (void) spacemoved: (int) monitorStartIndex : (NSArray*) newIndexing { // event from missionControlSpaceLabels
+    [spaceKeyboardShortcuts spacemoved: monitorStartIndex : newIndexing]; //update spacewindow's
+}
++ (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
+    NSLog(@"process screens");
+    NSLog(@"%u %u", display, flags); //display = screen index?, flags=attach/detach?
+    [missionControlSpaceLabels processScreens: display : flags : userInfo]; //update spacelabel's
+    [spaceKeyboardShortcuts processScreens: display : flags : userInfo]; //update spacewindow's
 }
 @end

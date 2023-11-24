@@ -26,7 +26,11 @@ int receivedCGSMainConnectID;
 + (int) currentSpaceId {return currentSpaceId;}
 + (int) currentSpaceIndex {return currentSpaceIndex;}
 + (int) indexWithID: (int) ID {
-    for (int i = 0; i < idsAndIndexes.count; i++) if ([idsAndIndexes[i][0] intValue] == ID) return [idsAndIndexes[i][1] intValue];
+    for (int i = 0; i < idsAndIndexes.count; i++) if (idsAndIndexes[i][0].intValue == ID) return idsAndIndexes[i][1].intValue;
+    return -1;
+}
++ (int) IDWithIndex: (int)index {
+    for (int i = 0; i < idsAndIndexes.count; i++) if (idsAndIndexes[i][1].intValue == index) return idsAndIndexes[i][0].intValue;
     return -1;
 }
 + (void) init: (int) cgsMainConnectionId {

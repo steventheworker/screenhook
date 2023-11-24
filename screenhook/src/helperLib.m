@@ -94,6 +94,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     return processEvent(proxy, type, event, refcon) ? event : nil;
 }
 //screens - listening to monitors attach / detach
+NSMutableArray* displayReconfigCallbacks;
 void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo) {
     if (flags && kCGDisplayAddFlag && kCGDisplayRemoveFlag) {} else return;
     [helperLib proc: display : flags : userInfo];
@@ -553,13 +554,15 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
 }
 
 /* screens*/
-+ (void) listenScreens {CGDisplayRegisterReconfigurationCallback((CGDisplayReconfigurationCallBack) proc, (void*) nil);}
-+ (void) proc: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
-    NSLog(@"%u %u", display, flags); //display = screen index?, flags=attach/detach?
-    [self processScreens];
++ (void) listenScreens: (void(^)(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo)) callback {
+    if (!displayReconfigCallbacks.count) displayReconfigCallbacks = [NSMutableArray array];
+    [displayReconfigCallbacks addObject: callback];
+    if (displayReconfigCallbacks.count > 1) return;
+    CGDisplayRegisterReconfigurationCallback((CGDisplayReconfigurationCallBack)proc, (void*) nil);
 }
-+ (void) processScreens {
-    NSLog(@"processing attach/detach of display");
++ (void) proc: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
+    for (void(^callback)(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo)
+         in displayReconfigCallbacks) callback(display, flags, userInfo);
 }
 /* cg/ns points: nspoint, cgpoint both share the same x. key difference: nspoint y of 0 == bottom of the screen */
 + (NSScreen*) primaryScreen {return [self screenAtNSPoint: NSZeroPoint];}
@@ -599,6 +602,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     }
     return screens[0];
 }
++ (NSScreen*) screenWithMouse {return [self screenAtNSPoint: [NSEvent mouseLocation]];}
 
 /* trigger/simulate events */
 + (void) toggleDock { //fn+a

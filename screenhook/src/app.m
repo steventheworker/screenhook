@@ -38,6 +38,7 @@ GestureManager* gm;
     
     [app startListening];
     gm = [[GestureManager alloc] init];
+    [helperLib listenScreens: ^(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo){[app processScreens: display : flags : userInfo];}];
     [screenhook init];
     setTimeout(^{app->isSparkleUpdaterOpen = [helperLib isSparkleUpdaterOpen];}, 1000);
     return app;
@@ -131,6 +132,9 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     for (NSWindow* cur in windows) if (cur.isVisible) {if (cur.level == NSStatusWindowLevel) continue; else return;}
     // raise main window
     [self openPrefs];
+}
+- (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
+    [screenhook processScreens: display : flags : userInfo];
 }
 
 

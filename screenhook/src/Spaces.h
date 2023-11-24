@@ -43,6 +43,8 @@ typedef NS_OPTIONS(NSInteger, CGSCopyWindowsTags) {
 typedef int CGSConnection;
 typedef int CGSWindow;
 typedef int CGSValue;
+// XXX: Undocumented private API to move the given windows (CGWindowIDs) to the given space
+void CGSMoveWindowsToManagedSpace(int cid, CFArrayRef _Nullable windowIds, int spaceId);
 // returns an array of window IDs (as UInt32) for the space(s) provided as `spaces`
 // the elements of the array are ordered by the z-index order of the windows in each space, with some exceptions where spaces mix
 // * macOS 10.10+
@@ -142,6 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (int) currentSpaceId;
 + (int) currentSpaceIndex;
 + (int) indexWithID: (int) ID;
++ (int) IDWithIndex: (int) index;
 + (NSArray<NSNumber* /* CGSSpaceID */>*) spaces;
 + (NSArray<NSNumber* /* CGSSpaceID */>*) visibleSpaces;
 + (NSMutableDictionary<NSString*, NSArray<NSNumber*/* CGSSpaceID */>*>*) screenSpacesMap;

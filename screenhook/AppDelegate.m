@@ -23,8 +23,6 @@ AXUIElementRef systemWideEl = nil;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     _updaterController = [[SPUStandardUpdaterController alloc] initWithStartingUpdater: YES updaterDelegate: nil userDriverDelegate: nil];
     [helperLib setSystemWideEl: (systemWideEl = AXUIElementCreateSystemWide())];
-    [helperLib listenScreens];
-    [helperLib processScreens];
     app = [App init: _window : iconMenu : systemWideEl];
 }
 @end

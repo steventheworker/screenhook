@@ -29,11 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) stopListening;
 + (NSString*) eventKeyWithEventType: (CGEventType) type;
 /* screens*/
-+ (void) listenScreens;
++ (void) listenScreens: (void(^)(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* userInfo)) callback;
 + (void) proc: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo;
-+ (void) processScreens;
 + (NSScreen*) screenAtCGPoint: (CGPoint) pt;
 + (NSScreen*) screenAtNSPoint: (NSPoint) pt;
++ (NSScreen*) screenWithMouse;
 + (NSPoint) NSPointFromCGPoint: (CGPoint) pt;
 + (CGPoint) CGPointFromNSPoint: (NSPoint) pt;
 + (NSScreen*) primaryScreen;

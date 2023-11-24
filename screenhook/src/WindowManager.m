@@ -93,7 +93,7 @@ void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, Application* app) {
 static void axObserverCallback(AXObserverRef observer, AXUIElementRef elementRef, CFStringRef notification, void *refcon) {[WindowManager appObserverCallback: observer : elementRef : notification : refcon];}
 static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elementRef, CFStringRef notification, void *refcon) {[WindowManager windowObserverCallback: observer : elementRef : notification : refcon];}
 @implementation WindowManager
-+ (void) init {
++ (void) init: (void(^)(void)) cb {
     windows = [NSMutableArray array];
     apps = [NSMutableArray array];
     /* activationPolicy & other copied from command-tab (trackfrontapp)
@@ -106,6 +106,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     [self initialDiscovery: ^{
         for (Window* win in windows) [win updatesWindowSpace]; //initial discovery sets all win's space info to active space, update to truly finish
         initialDiscoveryFinished = YES;
+        cb();
     }];
 }
 + (NSArray<Window*>*) windows {return windows;}
@@ -157,6 +158,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
                         [app unhide];
                     }, 333);
                 }
+                setTimeout(^{cb();}, 334);
             };
             
             //observe dock apps

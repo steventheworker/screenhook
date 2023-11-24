@@ -11,6 +11,7 @@
 #import "../prefs.h"
 #import "../Spaces.h"
 #import "../WindowManager.h"
+#import "screenhook.h"
 
 NSMutableArray<NSWindowController*>* overlayControllers;
 NSMutableArray* spaceLabels;
@@ -241,7 +242,9 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
             NSArray* screenSpaces2 = screenSpacesMap2[screenUUID];
             if (screenSpaces2.count > screenSpaces1.count) {
                 //space added (space can only be added to end)
-                [spaceLabels insertObject: @"Untitled" atIndex: [Spaces indexWithID: [screenSpaces1[screenSpaces1.count - 1] intValue]]];
+                int lastIndex = [Spaces indexWithID: [screenSpaces1[screenSpaces1.count - 1] intValue]];
+                [screenhook spaceadded: lastIndex + 1];
+                [spaceLabels insertObject: @"Untitled" atIndex: lastIndex];
                 [prefs setArrayPref: @"spaceLabels" : spaceLabels];
             } else if (screenSpaces2.count < screenSpaces1.count) {
                 //space removed (any index could be removed)
@@ -252,6 +255,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
                 int spaceIndex; //index to remove
                 if (i == 0) spaceIndex = [Spaces indexWithID: [screenSpaces1[1] intValue]] - 1;
                 else spaceIndex = [Spaces indexWithID: [screenSpaces1[0] intValue]] - 1 + i;
+                [screenhook spaceremoved: spaceIndex + 1];
                 [spaceLabels removeObjectAtIndex: spaceIndex];
                 [prefs setArrayPref: @"spaceLabels" : spaceLabels];
             } else {
@@ -264,9 +268,10 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
                 BOOL didSpacesChange = NO; //if newIndexing is sorted (ie: 0,1,2,..,n), nothing changed
                 for (int i = 0; i < (int)newIndexing.count; i++) if (i != [newIndexing[i] intValue]) {didSpacesChange = YES;break;}
                 if (!didSpacesChange) continue;
+                int monitorStartIndex = [Spaces indexWithID: [screenSpaces2[0] intValue]] - 1;
+                [screenhook spacemoved: monitorStartIndex + 1 : newIndexing];
                 //reflect the new indexing on the space labels
                 NSArray* labelsCopy = spaceLabels.copy;
-                int monitorStartIndex = [Spaces indexWithID: [screenSpaces2[0] intValue]] - 1;
                 for (int i = 0; i < newIndexing.count; i++) spaceLabels[i + monitorStartIndex] = labelsCopy[monitorStartIndex + [newIndexing[i] intValue]];
                 [prefs setArrayPref: @"spaceLabels" : spaceLabels];
             }
@@ -276,5 +281,8 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 }
 + (void) spaceChanged: (NSNotification*) note {
     [self reshow];
+}
++ (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
+    
 }
 @end

@@ -16,7 +16,7 @@ extern AXError _AXUIElementGetWindow(AXUIElementRef element, CGWindowID *identif
 typedef enum {exposeClosed, DesktopExpose, AppExpose, MissionControl} exposeTypes;
 
 @interface WindowManager : NSObject
-+ (void) init;
++ (void) init: (void(^)(void)) cb;
 + (NSArray<Window*>*) windows;
 + (Application*) appWithBID: (NSString*) bid;
 + (int) exposeType;
