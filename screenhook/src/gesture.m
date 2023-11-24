@@ -9,6 +9,7 @@
 #import "globals.h"
 #import "helperLib.h"
 
+const float TAP_FUZZINESS = 0.008; //  dx/dy >= fuzz (for any finger in a touch) then  it's not a tap
 GestureManager* _gm; //reference to the main (and likely the only) instance of the gesture manager
 BOOL twoFingerSwipeFromLeftEdgeTriggered = NO; //has gesture fired yet?
 NSMutableDictionary* triggeredGestures; // prevents re-firing swipe (3-5 finger) gestures
@@ -91,22 +92,46 @@ void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
     [self resetTriggeredGestures];
 }
 - (void) recognizeMultiFingerTap {
-    int maxTouch = 0;
-    for (NSSet<NSTouch*>* touches in gesture) {
-        if (touches.count > maxTouch) maxTouch = (int)touches.count;
-        //if touch times too far apart, not a tap
-        //if next touches.count goes down, goes up (and down and up and...), then goes to 0???
+    int maxTouchCount = 0;
+    int maxTouchIndex = 0;
+    NSSet<NSTouch*>* maxTouches; //considered as start of x finger tap
+    int i = 0;for (NSSet<NSTouch*>* touches in gesture) {
+        if (touches.count > maxTouchCount) {
+            maxTouchCount = (int)touches.count;
+            maxTouchIndex = i;
+        }
+        maxTouches = gesture[maxTouchIndex];
+        i++;
     }
-    if (maxTouch == 2) {
-        twoFingerTap(/*[gesture.lastObject allObjects].lastObject.normalizedPosition*/);
-    } else if (maxTouch == 3) {
-        
-    } else if (maxTouch == 4) {
-        
-    } else if (maxTouch == 5) {
-        
+    
+    int isTap = YES;
+    i = 0;for (NSSet<NSTouch*>* touches in gesture) {
+        for (NSTouch* touch in touches) {        //¿if less touches than maxtouches, don't run block?
+            NSTouch* maxTouch;for (maxTouch in maxTouches) if (maxTouch.identity == touch.identity) break; //find corresponding touch in maxTouches (the start of the x finger tap)
+            NSPoint startPos = maxTouch.normalizedPosition;
+            NSPoint curPos = touch.normalizedPosition;
+            float dx = curPos.x - startPos.x;
+            float dy = curPos.y - startPos.y;
+            if (fabs(dx) > TAP_FUZZINESS || fabs(dy) > TAP_FUZZINESS) {isTap = NO;NSLog(@"dx %f dy %f", dx, dy);}
+        }
+
     }
-    NSLog(@"tap %d", maxTouch);
+    
+    if (!isTap) return NSLog(@"not a tap");
+    switch(maxTouchCount) {
+        case 1:
+        case 3:
+        case 4:
+        case 5:
+        default:
+            break;
+        
+        case 2:
+            twoFingerTap(/*[gesture.lastObject allObjects].lastObject.normalizedPosition*/);
+            break;
+    }
+    
+    NSLog(@"%d-tap", maxTouchCount);
 }
 - (void) updateTouches: (NSSet<NSTouch*>*) touches : (CGEventRef) event : (CGEventType) type {
     NSEvent* nsEvent = [NSEvent eventWithCGEvent: event];
@@ -223,7 +248,9 @@ void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
     NSEventType eventType = [nsEvent type];
     
     if (eventType == NSEventTypeGesture) {
-        [self updateTouches: [nsEvent touchesMatchingPhase: NSTouchPhaseTouching inView: nil] : event : type];
+//        NSSet<NSTouch*>* touches = [nsEvent touchesMatchingPhase: NSTouchPhaseAny inView: nil];
+//        NSLog(@"%d - any %@ touching %@", (int)eventType, touches, [nsEvent touchesMatchingPhase: NSTouchPhaseTouching inView: nil]);
+        [self updateTouches: [nsEvent touchesMatchingPhase: /* NSTouchPhaseTouching */NSTouchPhaseAny inView: nil] : event : type];
         //gestures always use NSEventTypeScrollWheel (unless: if gesture set in Settings->trackpad => NSEventTypeMagnify; else if drag style is 3 finger drag => NSEventTypeLeftMouseDragged)
     } else if (eventType == NSEventTypeScrollWheel || eventType == NSEventTypeLeftMouseDragged || eventType == NSEventTypeMagnify) {
         [self recognizeGesture: event : type];
