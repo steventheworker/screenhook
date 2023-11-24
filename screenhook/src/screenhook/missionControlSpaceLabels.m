@@ -226,15 +226,51 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 + (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
     if (NSRunningApplication.currentApplication.processIdentifier == [cursorDict[@"pid"] intValue] && cursorPos.y <= 100) { //space labels are at the top, w/o cursorPos check, interacting w/ screenhook windows in mission control is disabled!
         [self labelClicked: cursorEl];
-        return NO;
+        return NO; //preventDefault
     }
     return YES;
 }
-+ (void) mouseup { //test for space changes (see if a space was added,removed (and reflect it into "spaceLabels"))
++ (void) mouseup {
+    NSDictionary* screenSpacesMap1 = [[Spaces screenSpacesMap] copy];
+    //check for any space changes
     setTimeout(^{
         [Spaces refreshAllIdsAndIndexes];
-        NSLog(@"%lu", (unsigned long)[Spaces spaces].count);
-        //a window dragndropped into another space hides the window, reshow here, since haven't found way to detect window changing space/dragdrop
+        NSDictionary* screenSpacesMap2 = [Spaces screenSpacesMap];
+        for (NSString* screenUUID in screenSpacesMap1) {
+            NSArray* screenSpaces1 = screenSpacesMap1[screenUUID];
+            NSArray* screenSpaces2 = screenSpacesMap2[screenUUID];
+            if (screenSpaces2.count > screenSpaces1.count) {
+                //space added (space can only be added to end)
+                [spaceLabels insertObject: @"Untitled" atIndex: [Spaces indexWithID: [screenSpaces1[screenSpaces1.count - 1] intValue]]];
+                [prefs setArrayPref: @"spaceLabels" : spaceLabels];
+            } else if (screenSpaces2.count < screenSpaces1.count) {
+                //space removed (any index could be removed)
+                int i = 0;for (NSNumber* spaceId in screenSpaces1) { //i = relative index (to screenSpaces) for removed space
+                    if (![screenSpaces2 containsObject: spaceId]) break; //found the removed spaceId
+                    i++;
+                }
+                int spaceIndex; //index to remove
+                if (i == 0) spaceIndex = [Spaces indexWithID: [screenSpaces1[1] intValue]] - 1;
+                else spaceIndex = [Spaces indexWithID: [screenSpaces1[0] intValue]] - 1 + i;
+                [spaceLabels removeObjectAtIndex: spaceIndex];
+                [prefs setArrayPref: @"spaceLabels" : spaceLabels];
+            } else {
+                //space dropped into index
+                NSMutableArray* newIndexing = [NSMutableArray array];
+                for (NSNumber* newValue in screenSpaces2) {
+                    int i;for (i = 0; i < screenSpaces1.count; i++) if (screenSpaces1[i] == newValue) break;
+                    [newIndexing addObject: @(i)];
+                }
+                BOOL didSpacesChange = NO; //if newIndexing is sorted (ie: 0,1,2,..,n), nothing changed
+                for (int i = 0; i < (int)newIndexing.count; i++) if (i != [newIndexing[i] intValue]) {didSpacesChange = YES;break;}
+                if (!didSpacesChange) continue;
+                //reflect the new indexing on the space labels
+                NSArray* labelsCopy = spaceLabels.copy;
+                int monitorStartIndex = [Spaces indexWithID: [screenSpaces2[0] intValue]] - 1;
+                for (int i = 0; i < newIndexing.count; i++) spaceLabels[i + monitorStartIndex] = labelsCopy[monitorStartIndex + [newIndexing[i] intValue]];
+                [prefs setArrayPref: @"spaceLabels" : spaceLabels];
+            }
+        }
         [self reshow];
     }, 100);
 }
