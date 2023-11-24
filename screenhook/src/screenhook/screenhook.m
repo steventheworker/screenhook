@@ -72,7 +72,7 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     /*
         mouse events
      */
-    if ([eventString isEqual: @"mousedown"] || [eventString isEqual: @"mouseup"]) { //core block
+    if ([eventString isEqual: @"mousedown"] || [eventString isEqual: @"mouseup"]) { //core mousedown/mouseup
         cursorPos = CGEventGetLocation(event);
         cursorEl = [helperLib elementAtPoint: [helperLib normalizePointForDockGap: cursorPos : dockPos]];
         cursorDict = [helperLib elementDict: cursorEl : @{
@@ -85,6 +85,7 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
         BOOL dockClick = [cursorDict[@"pid"] intValue] == [WindowManager appWithBID: @"com.apple.dock"]->pid;
         setTimeout(^{mousedownDict = cursorDict;}, 0);
         
+        //live onchange of dock settings (dockPos, dockautohide)
         if (dockClick) {
             if ([cursorDict[@"subrole"] isEqual: @"AXSeparatorDockItem"] &&
                 (type == kCGEventRightMouseDown || (type == kCGEventOtherMouseUp && [mousedownDict[@"subrole"] isEqual: @"AXSeparatorDockItem"]))
@@ -108,14 +109,10 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
                 }
             }
         }
+        /* end core mousedown/mouseup */
     }
     //change space labels
-    if ([eventString isEqual: @"mousedown"] && [WindowManager exposeType]) {
-        if (NSRunningApplication.currentApplication.processIdentifier == [cursorDict[@"pid"] intValue] && cursorPos.y <= 100) { //space labels are at the top, w/o cursorPos check, interacting w/ screenhook windows in mission control is disabled!
-            [missionControlSpaceLabels labelClicked: cursorEl];
-            return NO;
-        }
-    }
+    if ([eventString isEqual: @"mousedown"] && [WindowManager exposeType]) return [missionControlSpaceLabels mousedown: cursorEl : cursorDict : cursorPos];
     if ([eventString isEqual: @"mouseup"] && [WindowManager exposeType]) [missionControlSpaceLabels mouseup]; //reshow everytime, since dragging window into other space hides labels window (and can't detect moving window to another space...?)
     
     //spotlight search

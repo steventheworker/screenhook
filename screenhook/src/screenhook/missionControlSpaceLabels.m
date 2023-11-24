@@ -223,6 +223,13 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     [self addOverlayWindows];
     showLabelWindows(); //reshow
 }
++ (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
+    if (NSRunningApplication.currentApplication.processIdentifier == [cursorDict[@"pid"] intValue] && cursorPos.y <= 100) { //space labels are at the top, w/o cursorPos check, interacting w/ screenhook windows in mission control is disabled!
+        [self labelClicked: cursorEl];
+        return NO;
+    }
+    return YES;
+}
 + (void) mouseup { //test for space changes (see if a space was added,removed (and reflect it into "spaceLabels"))
     setTimeout(^{
         [Spaces refreshAllIdsAndIndexes];

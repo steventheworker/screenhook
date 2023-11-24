@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) addOverlayWindows;
 + (void) labelClicked: (AXUIElementRef) el;
 + (void) reshow;
++ (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
 + (void) mouseup;
 + (void) spaceChanged: (NSNotification*) note;
 @end
