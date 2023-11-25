@@ -150,13 +150,11 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     
     return YES;
 }
-+ (void) appLaunched: (NSNotification*) note {
-    NSRunningApplication* app = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
-    NSLog(@"launched '%@' - %@", app, app.bundleIdentifier);
++ (void) appLaunched: (NSRunningApplication*) runningApp {
+    NSLog(@"launched '%@' - %@", runningApp, runningApp.bundleIdentifier);
 }
-+ (void) appTerminated: (NSNotification*) note {
-    NSRunningApplication* app = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
-    NSLog(@"terminated '%@' - %@", app, app.bundleIdentifier);
++ (void) appTerminated: (NSRunningApplication*) runningApp {
+    NSLog(@"terminated '%@' - %@", runningApp, runningApp.bundleIdentifier);
 }
 + (void) spaceChanged: (NSNotification*) note {
     [missionControlSpaceLabels spaceChanged: note];

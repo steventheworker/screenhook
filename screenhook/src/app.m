@@ -16,6 +16,7 @@
 
 CFMachPortRef allMachPortRef;
 GestureManager* gm;
+NSSet<NSRunningApplication*>* previousValueOfRunningApps;
 
 @implementation App
 + (instancetype) init: (NSWindow*) window : (NSMenu*) iconMenu : (AXUIElementRef) systemWideAccessibilityElement {
@@ -77,16 +78,9 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
         [WindowManager spaceChanged: note];
         [screenhook spaceChanged: note];
     }];
-    // notify when app launched (so that observers can be added)
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName: NSWorkspaceDidLaunchApplicationNotification object: [NSWorkspace sharedWorkspace] queue: nil usingBlock: ^(NSNotification * _Nonnull note) {
-        [WindowManager appLaunched: note];
-        [screenhook appLaunched: note];
-    }]; // notify when app terminated
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName: NSWorkspaceDidTerminateApplicationNotification object: [NSWorkspace sharedWorkspace] queue: nil usingBlock: ^(NSNotification * _Nonnull note) {
-        [WindowManager appTerminated: note];
-        [screenhook appTerminated: note];
-    }];
-
+    // notify when app launched/terminated (so that observers can be added/removed)
+    previousValueOfRunningApps = [NSSet setWithArray: NSWorkspace.sharedWorkspace.runningApplications];
+    [NSWorkspace.sharedWorkspace addObserver: self forKeyPath: @"runningApplications" options: /*NSKeyValueObservingOptionOld | */ NSKeyValueObservingOptionNew context: NULL];
     
     /* cgeventtap's */
     allMachPortRef = [helperLib listenMask: kCGEventMaskForAllEvents : (CGEventTapCallBack) eventTapCallback];
@@ -118,6 +112,25 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 ////        if (![DockExpose mousemove: proxy : type : event : refcon : el : elDict : self->cursorPos]) return NO;
 //        return YES;
 //    }];
+}
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    //observe any nsrunningapps list change (ie: forKeyPath: @"runningApplications)
+    NSSet<NSRunningApplication*>* workspaceApps = [NSSet setWithArray: NSWorkspace.sharedWorkspace.runningApplications];
+    NSMutableSet<NSRunningApplication*>* diff = [workspaceApps mutableCopy];
+    [diff minusSet: previousValueOfRunningApps];
+    for (NSRunningApplication* app in diff) [self appLaunched: app];
+    NSMutableSet<NSRunningApplication*>* terminatedApps = [previousValueOfRunningApps mutableCopy];
+    [terminatedApps minusSet: workspaceApps];
+    for (NSRunningApplication* app in terminatedApps) [self appTerminated: app];
+    previousValueOfRunningApps = workspaceApps;
+}
+- (void) appLaunched: (NSRunningApplication*) app {
+    [WindowManager appLaunched: app];
+    [screenhook appLaunched: app];
+}
+- (void) appTerminated: (NSRunningApplication*) app {
+    [WindowManager appTerminated: app];
+    [screenhook appTerminated: app];
 }
 - (void) windowWillClose: (NSNotification*) notification { // notify when one of our app windows closes
     setTimeout(^{

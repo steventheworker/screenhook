@@ -355,8 +355,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     [Spaces refreshCurrentSpaceId];
     for (Window* win in windows) [win updatesWindowSpace];
 }
-+ (void) appLaunched: (NSNotification*) note {
-    NSRunningApplication* runningApp = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
++ (void) appLaunched: (NSRunningApplication*) runningApp {
     if (![helperLib isBackgroundApp: runningApp]) {
         Application* app = addNewApp(runningApp);
         //front app/window tracking
@@ -371,8 +370,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
         [self observeApp: app];
     }
 }
-+ (void) appTerminated: (NSNotification*) note {
-    NSRunningApplication* runningApp = (NSRunningApplication*)note.userInfo[@"NSWorkspaceApplicationKey"];
++ (void) appTerminated: (NSRunningApplication*) runningApp {
     if (![helperLib isBackgroundApp: runningApp]) {
         Application* app; for (app in apps) if (app->pid == runningApp.processIdentifier) break;
         [self stopObservingApp: app];
