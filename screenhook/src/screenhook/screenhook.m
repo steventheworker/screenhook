@@ -52,6 +52,23 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
         CGEventPost(kCGHIDEventTap, rightMouseDownEvent);
         return YES;
     }];
+    //autoscroll lock
+    [GestureManager on: @"3 finger tap" : ^BOOL(GestureManager* gm) { //2 finger tap -> right click
+        if ([helperLib modifierKeys].count == 3) {
+            CGPoint cursorPos = [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]];
+            BOOL hasWindows = NO;
+            for (Window* win in WindowManager.windows) if ([win->app->name isEqual: @"AutoScroll"]) hasWindows = YES;
+            if (!hasWindows) {
+                CGEventRef middleClick = CGEventCreateMouseEvent(NULL, kCGEventOtherMouseDown, cursorPos, kCGMouseButtonCenter);
+                CGEventPost(kCGHIDEventTap, middleClick);
+            } else {
+                CGEventRef middleClickRelease = CGEventCreateMouseEvent(NULL, kCGEventOtherMouseUp, cursorPos, kCGMouseButtonCenter);
+                CGEventPost(kCGHIDEventTap, middleClickRelease);
+            }
+        }
+        return YES;
+    }];
+    
     [GestureManager on: @"3 finger swipe left" : ^BOOL(GestureManager* gm) {[spaceKeyboardShortcuts nextSpace];return YES;}];
     [GestureManager on: @"3 finger swipe right" : ^BOOL(GestureManager* gm) {[spaceKeyboardShortcuts prevSpace];return YES;}];
     [GestureManager on: @"4 finger swipe left" : ^BOOL(GestureManager* gm) {[spaceKeyboardShortcuts nextSpace];return YES;}];

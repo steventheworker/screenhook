@@ -76,6 +76,9 @@ void fourFingerSwipeRight(void) {
 */
 //2 finger tap
 void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
+void threeFingerTap(void) {processCallbacks(@"3 finger tap");}
+void fourFingerTap(void) {processCallbacks(@"4 finger tap");}
+void fiveFingerTap(void) {processCallbacks(@"5 finger tap");}
 
 @implementation GestureManager
 - (instancetype) init {
@@ -106,8 +109,10 @@ void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
     
     int isTap = YES;
     i = 0;for (NSSet<NSTouch*>* touches in gesture) {
-        for (NSTouch* touch in touches) {        //¿if less touches than maxtouches, don't run block?
-            NSTouch* maxTouch;for (maxTouch in maxTouches) if (maxTouch.identity == touch.identity) break; //find corresponding touch in maxTouches (the start of the x finger tap)
+        for (NSTouch* touch in touches) {
+            NSTouch* maxTouch;
+            for (NSTouch* t in maxTouches) if (t.identity == touch.identity) maxTouch = t; //find corresponding touch in maxTouches (the start of the x finger tap)
+            if (!maxTouch) {NSLog(@"NO MAX TOUCH");continue;}
             NSPoint startPos = maxTouch.normalizedPosition;
             NSPoint curPos = touch.normalizedPosition;
             float dx = curPos.x - startPos.x;
@@ -118,16 +123,15 @@ void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
     }
     
     if (!isTap) return NSLog(@"not a tap");
+    touchCount = touchCount > maxTouchCount ? touchCount : maxTouchCount;
     switch(maxTouchCount) {
+        case 2: twoFingerTap();break;
+        case 3: threeFingerTap();break;
+        case 4: fourFingerTap();break;
+        case 5: fiveFingerTap();break;
+            
         case 1:
-        case 3:
-        case 4:
-        case 5:
         default:
-            break;
-        
-        case 2:
-            twoFingerTap(/*[gesture.lastObject allObjects].lastObject.normalizedPosition*/);
             break;
     }
     
@@ -216,13 +220,26 @@ void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
     }
 }
 - (void) recognizeGesture: (CGEventRef) event : (CGEventType) type { //handler for NSEventTypeScrollWheel | NSEventTypeLeftMouseDragged | NSEventTypeMagnify
-//    NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
-//    NSEventType eventType = [nsEvent type];
-//    // phase DNE on mousedragged
-//    if (eventType != NSEventTypeLeftMouseDragged) if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseBegan) return; // probably not the right time to detect gesture during these phases
-//    if (touchCount <= 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
-//    NSArray* touches1 = [[gesture objectAtIndex: 0] allObjects];
-//    NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
+    NSEvent* nsEvent = [NSEvent eventWithCGEvent:event];
+    NSEventType eventType = [nsEvent type];
+    // phase DNE on mousedragged
+    //    if (eventType != NSEventTypeLeftMouseDragged) if ([nsEvent phase] == NSEventPhaseEnded || [nsEvent phase] == NSEventPhaseBegan) return; // probably not the right time to detect gesture during these phases
+    if (touchCount <= 1) return; // 1 finger gestures not supported, helps make sure only trackpad monitored
+    if (eventType != NSEventTypeLeftMouseDragged) {
+        if ([nsEvent phase] == NSEventPhaseEnded) NSLog(@"ev type %lu phaseended", (unsigned long)eventType);
+    }
+    int maxTouchCount = 0;
+    int maxTouchIndex = 0;
+    NSSet<NSTouch*>* maxTouches; //considered as start of x finger tap
+    int i = 0;for (NSSet<NSTouch*>* touches in gesture) {
+        if (touches.count > maxTouchCount) {
+            maxTouchCount = (int)touches.count;
+            maxTouchIndex = i;
+        }
+        maxTouches = gesture[maxTouchIndex];
+        i++;
+    }
+    NSLog(@"et %lu maxtouch %d", (unsigned long)eventType, maxTouchCount);
 }
 - (void) resetTriggeredGestures {
     triggeredGestures = [NSMutableDictionary dictionaryWithDictionary: @{
