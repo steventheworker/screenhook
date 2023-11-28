@@ -336,7 +336,8 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     }
 }
 + (void) stopObservingApp: (Application*) app {
-    if (app && app->observer) {
+    if (!app) return NSLog(@"no Application* object");;
+    if (app->observer) {
         CFRunLoopRemoveSource([[NSRunLoop currentRunLoop] getCFRunLoop], AXObserverGetRunLoopSource(app->observer), kCFRunLoopDefaultMode);
         [app destroy];
     } else NSLog(@"err on stop observing");
