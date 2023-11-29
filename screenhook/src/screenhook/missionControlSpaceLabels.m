@@ -283,13 +283,19 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     [self reshow];
 }
 + (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
+    //dict<string> monitorNewSpaceLabel = eg: @{@"uuid": @"monitor2 newspace1label", …};     ...NEW PREF: monitorNewSpaceLabelDict
     if (flags & kCGDisplayAddFlag) {
+        //insert added screens monitorNewSpaceLabel into spaceLabels
         
+        
+        //re-render if mission control open
+        [self reshow];
     } else if (flags & kCGDisplayRemoveFlag) {
-        NSArray* screenSpaces = [Spaces screenSpacesMap][uuid];
-        int firstSpaceIndex = [Spaces indexWithID: screenSpaces.firstObject]; //the first spaceIndex of the removed screen no longer exists (merged into primary monitor's space 1)
-        //remove it
-        //decrement all spaceIndex's after it, change their uuid to be that of the primary monitor
+        //remove removed screens label from spaceLabels, update its monitorNewSpaceLabel[uuid]
+        
+        
+        //re-render if mission control open
+        [self reshow];
     }
 }
 @end
