@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) spaceadded: (int) spaceIndex;
 + (void) spaceremoved: (int) spaceIndex;
 + (void) spacemoved: (int) monitorStartIndex : (NSArray*) newIndexing;
-+ (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo;
++ (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid;
 @end
 
 NS_ASSUME_NONNULL_END

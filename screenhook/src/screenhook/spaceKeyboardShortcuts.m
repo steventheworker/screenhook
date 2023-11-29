@@ -210,7 +210,11 @@ void fallbackToKeys(int from, int to) {
     for (int i = 0; i < newIndexing.count; i++)
         [wins[i] setTitle: winTitles[[newIndexing[i] intValue]]];
 }
-+ (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
-    
++ (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
+    if (flags & kCGDisplayAddFlag) {
+        
+    } else if (flags & kCGDisplayRemoveFlag) {
+        
+    }
 }
 @end

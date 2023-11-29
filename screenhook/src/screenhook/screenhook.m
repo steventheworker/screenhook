@@ -170,9 +170,33 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     [spaceKeyboardShortcuts spacemoved: monitorStartIndex : newIndexing]; //update spacewindow's
 }
 + (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
-    NSLog(@"process screens");
-    NSLog(@"%u %u", display, flags); //display = screen index?, flags=attach/detach?
-    [missionControlSpaceLabels processScreens: display : flags : userInfo]; //update spacelabel's
-    [spaceKeyboardShortcuts processScreens: display : flags : userInfo]; //update spacewindow's
+    //    kCGDisplayBeginConfigurationFlag      = (1 << 0),
+    //    kCGDisplayMovedFlag                   = (1 << 1),
+    //    kCGDisplaySetMainFlag                 = (1 << 2),
+    //    kCGDisplaySetModeFlag                 = (1 << 3),
+    //    kCGDisplayAddFlag                     = (1 << 4),
+    //    kCGDisplayRemoveFlag                  = (1 << 5),
+    //    kCGDisplayEnabledFlag                 = (1 << 8),
+    //    kCGDisplayDisabledFlag                = (1 << 9),
+    //    kCGDisplayMirrorFlag                  = (1 << 10),
+    //    kCGDisplayUnMirrorFlag                = (1 << 11),
+    //    kCGDisplayDesktopShapeChangedFlag     = (1 << 12)
+    NSScreen* screen = [Spaces screenWithDisplayID: display];
+    NSString* uuid;
+    if (flags & kCGDisplayRemoveFlag) { //get uuid by elimination w/ cached screenMap (since
+        NSScreen* screen = [Spaces screenWithDisplayID: display];
+        NSDictionary* screenSpacesMap = [Spaces screenSpacesMap]; //cache of the old screenSpacesMap
+        NSMutableArray* mapUUIDs = [NSMutableArray arrayWithArray: screenSpacesMap.allKeys];
+        for (NSScreen* scr in NSScreen.screens) [mapUUIDs removeObject: [Spaces uuidForScreen: scr]]; //filter out uuid's that still exist
+        uuid = mapUUIDs.firstObject; //should be the only object left
+    } else uuid = [Spaces uuidForScreen: screen];
+    
+    [missionControlSpaceLabels processScreens: screen : flags : uuid]; //update spacelabel's
+    [spaceKeyboardShortcuts processScreens: screen : flags : uuid]; //update spacewindow's
+    
+    if ((flags & kCGDisplayAddFlag) || (flags & kCGDisplayRemoveFlag)) { //now, update screenMap
+        [Spaces refreshAllIdsAndIndexes];
+        [Spaces updateCurrentSpace];
+    }
 }
 @end

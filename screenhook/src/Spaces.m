@@ -13,6 +13,7 @@ int receivedCGSMainConnectID;
 /*static*/ NSMutableArray* visibleSpaces;
 /*static*/ NSMutableDictionary<NSString*, NSArray<NSNumber*>*>* screenSpacesMap;
 /*static*/ NSMutableArray<NSArray<NSNumber*>*>* idsAndIndexes;
+NSArray<NSScreen*>* cachedScreens;
 
 /*
      NSWorkspace.shared.notificationCenter.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: nil, using: { _ in
@@ -44,6 +45,7 @@ int receivedCGSMainConnectID;
     [self updateCurrentSpace];
 }
 + (void) refreshAllIdsAndIndexes {
+    cachedScreens = NSScreen.screens;
     [idsAndIndexes removeAllObjects];
     [screenSpacesMap removeAllObjects];
     [visibleSpaces removeAllObjects];
@@ -125,6 +127,17 @@ int receivedCGSMainConnectID;
             CFStringRef uuid = CFUUIDCreateString(nil, screenUuid);
             return (__bridge NSString * _Nonnull)(uuid);
         }
+    }
+    return nil;
+}
++ (NSScreen*) screenWithDisplayID: (CGDirectDisplayID) displayID {
+    for (NSScreen* screen in NSScreen.screens) {
+        uint32_t screenID = [screen.deviceDescription[@"NSScreenNumber"] intValue];
+        if (screenID == displayID) return screen;
+    }
+    for (NSScreen* screen in cachedScreens) { //find a removed screen
+        uint32_t screenID = [screen.deviceDescription[@"NSScreenNumber"] intValue];
+        if (screenID == displayID) return screen;
     }
     return nil;
 }

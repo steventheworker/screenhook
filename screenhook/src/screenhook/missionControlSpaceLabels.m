@@ -282,7 +282,11 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 + (void) spaceChanged: (NSNotification*) note {
     [self reshow];
 }
-+ (void) processScreens: (CGDirectDisplayID) display : (CGDisplayChangeSummaryFlags) flags : (void*) userInfo {
-    
++ (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
+    if (flags & kCGDisplayAddFlag) {
+        
+    } else if (flags & kCGDisplayRemoveFlag) {
+        
+    }
 }
 @end
