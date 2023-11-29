@@ -198,6 +198,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
                 };
                 observeFrontmost = ^{
                     NSRunningApplication* frontmost = NSWorkspace.sharedWorkspace.frontmostApplication;
+                    if (![unobservedDockApps containsObject: frontmost]) frontmost = unobservedDockApps.firstObject;
                     if (unobservedDockApps.count == 1) [hideOrder.lastObject unhide];
                     [frontmost hide];
                     setTimeout(^{
