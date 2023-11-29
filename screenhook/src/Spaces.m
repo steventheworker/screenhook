@@ -6,6 +6,7 @@
 //
 
 #import "Spaces.h"
+#import "helperLib.h"
 
 int receivedCGSMainConnectID;
 /*static UInt64 */ int currentSpaceId;
@@ -14,6 +15,7 @@ int receivedCGSMainConnectID;
 /*static*/ NSMutableDictionary<NSString*, NSArray<NSNumber*>*>* screenSpacesMap;
 /*static*/ NSMutableArray<NSArray<NSNumber*>*>* idsAndIndexes;
 NSArray<NSScreen*>* cachedScreens;
+NSScreen* cachedPrimaryScreen;
 
 /*
      NSWorkspace.shared.notificationCenter.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: nil, using: { _ in
@@ -46,6 +48,7 @@ NSArray<NSScreen*>* cachedScreens;
 }
 + (void) refreshAllIdsAndIndexes {
     cachedScreens = NSScreen.screens;
+    cachedPrimaryScreen = [helperLib primaryScreen];
     [idsAndIndexes removeAllObjects];
     [screenSpacesMap removeAllObjects];
     [visibleSpaces removeAllObjects];
@@ -141,6 +144,7 @@ NSArray<NSScreen*>* cachedScreens;
     }
     return nil;
 }
++ (NSScreen*) cachedPrimaryScreen {return cachedPrimaryScreen;} //the primaryScreen, when the last screenSpacesMap/etc. was updated
 @end
 
 /*

@@ -286,7 +286,10 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     if (flags & kCGDisplayAddFlag) {
         
     } else if (flags & kCGDisplayRemoveFlag) {
-        
+        NSArray* screenSpaces = [Spaces screenSpacesMap][uuid];
+        int firstSpaceIndex = [Spaces indexWithID: screenSpaces.firstObject]; //the first spaceIndex of the removed screen no longer exists (merged into primary monitor's space 1)
+        //remove it
+        //decrement all spaceIndex's after it, change their uuid to be that of the primary monitor
     }
 }
 @end

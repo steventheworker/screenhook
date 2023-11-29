@@ -12,6 +12,10 @@
 #import "../WindowManager.h"
 
 NSWindow* createSpaceWindow(int spaceIndex, NSScreen* screen) {
+    for (NSWindow* win in NSApp.windows) if ([win.identifier isEqual: @"spacewindow"] && win.title.intValue == spaceIndex) {
+        NSLog(@"spacewindow w/ index %d already exists", spaceIndex);
+        return nil;
+    }
     NSWindow* spaceWindow = [[NSWindow alloc] initWithContentRect: NSMakeRect(0, 0, /* 300 */ 0, /* 300 */ 0)
                                                         styleMask: (/*NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable */NSWindowStyleMaskBorderless)
                                                           backing: NSBackingStoreBuffered
@@ -22,32 +26,9 @@ NSWindow* createSpaceWindow(int spaceIndex, NSScreen* screen) {
     [spaceWindow setBackgroundColor: NSColor.clearColor];
     [spaceWindow setIgnoresMouseEvents: YES]; //pass clicks through (which it already does so, when using nscolor.clearcolor (For some reason))
     [spaceWindow makeKeyAndOrderFront: nil]; //pop it up
+//    [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 0, 0) display: YES]; //place on bottom left corner of screen
     CFBridgingRetain(spaceWindow);
     return spaceWindow;
-}
-void createSpaceWindowForScreen(NSScreen* screen) {
-    //put invisible window on space (if DNE)
-    AXUIElementRef appEl = AXUIElementCreateApplication([[NSRunningApplication currentApplication] processIdentifier]);
-    NSArray* windows = [helperLib elementDict: appEl : @{@"wins": (id)kAXWindowsAttribute}][@"wins"];
-    for (NSValue* elval in windows) {
-        AXUIElementRef el = elval.pointerValue;
-        NSDictionary* dict = [helperLib elementDict: el : @{@"id": (id)kAXIdentifierAttribute, @"pos": (id)kAXPositionAttribute}];
-        NSPoint pos = NSMakePoint([dict[@"pos"][@"x"] floatValue], [dict[@"pos"][@"y"] floatValue]);
-        if ([@"spacewindow" isEqual: dict[@"id"]] && NSPointInRect(pos, screen.frame)) return; // already exists on screen
-    }
-
-    //get space index (win->title) for visible space on screen
-    int spaceIndex = 0;
-    NSString* screenuuid = [Spaces uuidForScreen: screen];
-    NSArray* screenSpaceIds = [Spaces screenSpacesMap][screenuuid];
-    NSArray* visibleSpaceIds = [Spaces visibleSpaces];
-    for (NSNumber* spaceId in visibleSpaceIds) {
-        if (![screenSpaceIds containsObject: spaceId]) continue;
-        spaceIndex = [Spaces indexWithID: spaceId.intValue];
-    }
-    
-    NSWindow* spaceWindow = createSpaceWindow(spaceIndex, screen);
-    [spaceWindow setFrame: NSMakeRect(screen.frame.origin.x, screen.frame.origin.y, 0, 0) display: YES]; //place on bottom left corner of screen
 }
 
 void fallbackToKeys(int from, int to) {
@@ -175,7 +156,15 @@ void fallbackToKeys(int from, int to) {
         fallbackToKeys(relativeSpaceIndex - 1, targetSpaceIndex); //currentSpaceIndex starts at 1 instead of 0
 }
 + (void) spaceChanged: (NSNotification*) note {
-    createSpaceWindowForScreen(NSScreen.mainScreen);
+    int spaceIndex = 0; //get space index (win->title) for screen that changed space's new visible space
+    NSString* screenuuid = [Spaces uuidForScreen: NSScreen.mainScreen];
+    NSArray* screenSpaceIds = [Spaces screenSpacesMap][screenuuid];
+    NSArray* visibleSpaceIds = [Spaces visibleSpaces];
+    for (NSNumber* spaceId in visibleSpaceIds) {
+        if (![screenSpaceIds containsObject: spaceId]) continue;
+        spaceIndex = [Spaces indexWithID: spaceId.intValue];
+    }
+    createSpaceWindow(spaceIndex, NSScreen.mainScreen);
 }
 + (void) spaceadded: (int) spaceIndex { // event from missionControlSpaceLabels
     for (NSWindow* win in NSApp.windows) {
@@ -212,9 +201,43 @@ void fallbackToKeys(int from, int to) {
 }
 + (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
     if (flags & kCGDisplayAddFlag) {
-        
+        NSDictionary* screenSpacesMap1 = [Spaces screenSpacesMap];
+        NSString* primaryUUID = [Spaces uuidForScreen: [Spaces cachedPrimaryScreen]];
+        NSArray* primaryScreenSpaces1 = screenSpacesMap1[primaryUUID];
+        setTimeout(^{//wait for screenSpacesMap to update
+            NSDictionary* screenSpacesMap2 = [Spaces screenSpacesMap];
+            NSArray* screenSpaces = screenSpacesMap2[uuid]; //every space after the 1st on the added screen came from the primary screen (the 1st was just created)
+            NSArray* primaryScreenSpaces2 = screenSpacesMap2[primaryUUID];
+            int newScreenStartIndex = [screenSpaces.firstObject intValue];
+            int numSpacesMoved = (int)screenSpaces.count - 1; // 1st space wasn't moved (was creasted)
+            int movedStartIndex = 0;
+            for (NSNumber* spaceId in primaryScreenSpaces1) {
+                movedStartIndex++;
+                if (![primaryScreenSpaces2 containsObject: spaceId]) break;
+            }
+            for (NSWindow* win in NSApp.windows) { //update moved spacewindow spaceIndex's/title's
+                if (![win.identifier isEqual: @"spacewindow"]) continue;
+                if (win.title.intValue >= movedStartIndex && win.title.intValue < movedStartIndex + numSpacesMoved) {
+                    int newSpaceIndex = newScreenStartIndex + ((win.title.intValue - movedStartIndex) + 1);
+                    [win setTitle: [NSString stringWithFormat: @"%d", newSpaceIndex]];
+                }
+            }
+            createSpaceWindow([Spaces indexWithID: newScreenStartIndex], screen);
+        }, 0);
     } else if (flags & kCGDisplayRemoveFlag) {
-        
+        NSDictionary* screenSpacesMap = [Spaces screenSpacesMap];
+        NSArray* primaryScreenSpaces = screenSpacesMap[[Spaces uuidForScreen: [Spaces cachedPrimaryScreen]]];
+        NSArray* screenSpaces = screenSpacesMap[uuid];
+        int firstSpaceIndex = [Spaces indexWithID: [screenSpaces.firstObject intValue]]; //the first spaceIndex of the removed screen no longer exists (merged into primary monitor's space 1)
+        int primaryMonitorLastIndex = [Spaces indexWithID: [primaryScreenSpaces.lastObject intValue]];
+        for (NSWindow* win in NSApp.windows) {
+            if (![win.identifier isEqual: @"spacewindow"]) continue;
+            if (win.title.intValue == firstSpaceIndex) [win close]; //remove first spaceIndex of remoed screen
+            if (win.title.intValue > firstSpaceIndex && win.title.intValue < firstSpaceIndex + screenSpaces.count) { //update the rest of the spaces from removed screen's spaceIndex's
+                int newSpaceIndex = primaryMonitorLastIndex + (win.title.intValue - firstSpaceIndex);
+                [win setTitle: [NSString stringWithFormat: @"%d", newSpaceIndex]];
+            }
+        }
     }
 }
 @end

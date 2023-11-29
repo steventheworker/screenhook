@@ -184,7 +184,6 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     NSScreen* screen = [Spaces screenWithDisplayID: display];
     NSString* uuid;
     if (flags & kCGDisplayRemoveFlag) { //get uuid by elimination w/ cached screenMap (since
-        NSScreen* screen = [Spaces screenWithDisplayID: display];
         NSDictionary* screenSpacesMap = [Spaces screenSpacesMap]; //cache of the old screenSpacesMap
         NSMutableArray* mapUUIDs = [NSMutableArray arrayWithArray: screenSpacesMap.allKeys];
         for (NSScreen* scr in NSScreen.screens) [mapUUIDs removeObject: [Spaces uuidForScreen: scr]]; //filter out uuid's that still exist
