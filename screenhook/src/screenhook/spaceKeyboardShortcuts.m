@@ -12,7 +12,7 @@
 #import "../WindowManager.h"
 
 NSWindow* createSpaceWindow(int spaceIndex, NSScreen* screen) {
-    NSWindow* spaceWindow = [[NSWindow alloc] initWithContentRect: NSMakeRect(0, 0, 300, 300)
+    NSWindow* spaceWindow = [[NSWindow alloc] initWithContentRect: NSMakeRect(0, 0, /* 300 */ 0, /* 300 */ 0)
                                                         styleMask: (/*NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable */NSWindowStyleMaskBorderless)
                                                           backing: NSBackingStoreBuffered
                                                             defer: NO
