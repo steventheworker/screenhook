@@ -31,8 +31,14 @@ int dockPos = DockBottom; //for some reason, setting a string in processEvents (
 BOOL dockAutohide = NO;
 AXUIElementRef dockContextMenuClickee; //the dock separator element that was right clicked
 
+//probably move into it's own ft. file
+const float ARROWREPEAT_T = 0.333; //seconds
+NSDate* lastArrowExecT;
+
 @implementation screenhook
 + (void) init {
+    lastArrowExecT = [NSDate date];
+    
     cursorPos = CGPointMake(0, 0);
     dockPos = [helperLib dockPos];
     dockAutohide = [helperLib dockAutohide];
@@ -140,14 +146,42 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     /*
         key events
      */
-    //spaceKeyboardShortcuts
-    if ([eventString isEqual: @"keydown"]) {
-        if ((modifiers[@"ctrl"] || modifiers[@"cmd"]) && modifiers.count == 1) {
-            int keyCode = (int)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
+    if ([eventString isEqual: @"keydown"] || [eventString isEqual: @"keyup"]) {
+        int keyCode = (int)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
+        
+        //spaceKeyboardShortcuts
+        if ([eventString isEqual: @"keydown"] && (modifiers[@"ctrl"] || modifiers[@"cmd"]) && modifiers.count == 1)
             if ([@[@18, @19, @20, @21, @23, @22, @26, @28, @25] containsObject: @(keyCode)]) [spaceKeyboardShortcuts keyCode: keyCode];
+
+        //ctrl+left-arrow
+        if ([eventString isEqual: @"keydown"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 123) {
+            NSDate* t0 = lastArrowExecT;
+            lastArrowExecT = NSDate.date;
+            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) return YES;
+            [spaceKeyboardShortcuts prevSpace];
+            return NO;
+        }
+        if ([eventString isEqual: @"keyup"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 123) {
+            NSDate* t0 = lastArrowExecT;
+            lastArrowExecT = NSDate.date;
+            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) return YES;
+            return NO;
+        }
+        //ctrl+right-arrow
+        if ([eventString isEqual: @"keydown"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 124) {
+            NSDate* t0 = lastArrowExecT;
+            lastArrowExecT = NSDate.date;
+            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) return YES;
+            [spaceKeyboardShortcuts nextSpace];
+            return NO;
+        }
+        if ([eventString isEqual: @"keyup"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 124) {
+            NSDate* t0 = lastArrowExecT;
+            lastArrowExecT = NSDate.date;
+            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) return YES;
+            return NO;
         }
     }
-    
     return YES;
 }
 + (void) appLaunched: (NSRunningApplication*) runningApp {
