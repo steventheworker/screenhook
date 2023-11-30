@@ -32,7 +32,7 @@ BOOL dockAutohide = NO;
 AXUIElementRef dockContextMenuClickee; //the dock separator element that was right clicked
 
 //probably move into it's own ft. file
-const float ARROWREPEAT_T = 0.66; //seconds
+const float ARROWREPEAT_T = 0.666 * 2; //seconds
 NSDate* lastArrowExecT;
 
 @implementation screenhook
