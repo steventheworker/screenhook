@@ -48,7 +48,7 @@ NSArray* spaceLabelsForMonitor(NSArray* screenSpaceIds) {
     NSMutableArray* ret = [NSMutableArray array];
     for (NSNumber* spaceId in screenSpaceIds) {
         int i = [Spaces indexWithID: spaceId.intValue] - 1;
-        [ret addObject: spaceLabels[i]];
+        [ret addObject: i > spaceLabels.count - 1 ? @"Untitled" : spaceLabels[i]];
     }
     return ret;
 }

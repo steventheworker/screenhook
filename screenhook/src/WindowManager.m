@@ -216,6 +216,7 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
     }
 }
 + (void) windowObserverCallback: (AXObserverRef) observer : (AXUIElementRef) el : (CFStringRef) notification : (void*) refcon {
+    if (!initialDiscoveryFinished) return; // on hide, (Application*) app may not exist for new frontmost app
     NSString* type = (__bridge NSString *)notification;
     int appPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
 //    NSLog(@"observe window notification - %@", type);
