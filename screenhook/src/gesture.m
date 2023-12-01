@@ -79,6 +79,9 @@ void twoFingerTap(void) {processCallbacks(@"2 finger tap");}
 void threeFingerTap(void) {processCallbacks(@"3 finger tap");}
 void fourFingerTap(void) {processCallbacks(@"4 finger tap");}
 void fiveFingerTap(void) {processCallbacks(@"5 finger tap");}
+//1 finger tap
+void cornerClickBottomLeft(void) {processCallbacks(@"corner click bottom left");}
+void cornerClickBottomRight(void) {processCallbacks(@"corner click bottom right");}
 
 @implementation GestureManager
 - (instancetype) init {
@@ -124,13 +127,15 @@ void fiveFingerTap(void) {processCallbacks(@"5 finger tap");}
     
     if (!isTap) return NSLog(@"not a tap");
     touchCount = touchCount > maxTouchCount ? touchCount : maxTouchCount;
-    switch(maxTouchCount) {
+    switch(touchCount) {
         case 2: twoFingerTap();break;
         case 3: threeFingerTap();break;
         case 4: fourFingerTap();break;
         case 5: fiveFingerTap();break;
             
         case 1:
+            
+            break;
         default:
             break;
     }
@@ -152,8 +157,8 @@ void fiveFingerTap(void) {processCallbacks(@"5 finger tap");}
     }
 }
 - (void) detectSwipeGesture { // called before recognizeGesture to make sure it has a swipeDirection
-    NSArray *touches1 = [[gesture objectAtIndex: 0 ] allObjects];
-    NSArray *touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
+    NSArray* touches1 = [[gesture objectAtIndex: 0 ] allObjects];
+    NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
     int numTouches = (int) [touches1 count];
     if (numTouches < 2) return;
 
@@ -265,9 +270,13 @@ void fiveFingerTap(void) {processCallbacks(@"5 finger tap");}
     NSEventType eventType = [nsEvent type];
     
     if (eventType == NSEventTypeGesture) {
-//        NSSet<NSTouch*>* touches = [nsEvent touchesMatchingPhase: NSTouchPhaseAny inView: nil];
+        NSSet<NSTouch*>* touches = [nsEvent touchesMatchingPhase: /* NSTouchPhaseTouching */NSTouchPhaseAny inView: nil];
 //        NSLog(@"%d - any %@ touching %@", (int)eventType, touches, [nsEvent touchesMatchingPhase: NSTouchPhaseTouching inView: nil]);
-        [self updateTouches: [nsEvent touchesMatchingPhase: /* NSTouchPhaseTouching */NSTouchPhaseAny inView: nil] : event : type];
+        if (touchCount && !touches.count) {
+            [self recognizeGesture: event : type];
+            [self endRecognition];
+        }
+        [self updateTouches: touches : event : type];
         //gestures always use NSEventTypeScrollWheel (unless: if gesture set in Settings->trackpad => NSEventTypeMagnify; else if drag style is 3 finger drag => NSEventTypeLeftMouseDragged)
     } else if (eventType == NSEventTypeScrollWheel || eventType == NSEventTypeLeftMouseDragged || eventType == NSEventTypeMagnify) {
         [self recognizeGesture: event : type];

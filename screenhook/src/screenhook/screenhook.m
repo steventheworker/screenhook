@@ -49,11 +49,9 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
 }
 + (void) startupScript {
     //opinionated things, things that need to be added to prefs
-    [GestureManager on: @"2 finger tap" : ^BOOL(GestureManager* gm) { //2 finger tap -> right click
-        CGEventRef rightMouseDownEvent = CGEventCreateMouseEvent(NULL, kCGEventRightMouseDown, [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]], kCGMouseButtonRight);
-        CGEventPost(kCGHIDEventTap, rightMouseDownEvent);
-        return YES;
-    }];
+    /* remove after verified working */ [GestureManager on: @"2 finger tap" : ^BOOL(GestureManager* gm) {CGEventPost(kCGHIDEventTap, CGEventCreateMouseEvent(NULL, kCGEventRightMouseDown, [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]], kCGMouseButtonRight));return YES;}];
+    [GestureManager on: @"corner click bottom left" : ^BOOL(GestureManager* gm) {CGEventPost(kCGHIDEventTap, CGEventCreateMouseEvent(NULL, kCGEventRightMouseDown, [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]], kCGMouseButtonRight));return YES;}];
+    [GestureManager on: @"corner click bottom right" : ^BOOL(GestureManager* gm) {CGEventPost(kCGHIDEventTap, CGEventCreateMouseEvent(NULL, kCGEventRightMouseDown, [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]], kCGMouseButtonRight));return YES;}];
     //autoscroll lock
     [GestureManager on: @"3 finger tap" : ^BOOL(GestureManager* gm) { //2 finger tap -> right click
         if ([helperLib modifierKeys].count == 3) {

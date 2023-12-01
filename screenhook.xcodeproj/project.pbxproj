@@ -164,6 +164,8 @@
 				BF5600462AE775CF005846CA /* app.m */,
 				BF59FFD22B0B84C4002D6B77 /* Application.h */,
 				BF59FFD32B0B84C4002D6B77 /* Application.m */,
+				BF2847542B0F0BA0001A254A /* gesture.h */,
+				BF2847552B0F0BA0001A254A /* gesture.m */,
 				BF5600452AE775CF005846CA /* globals.h */,
 				BF5600442AE775CF005846CA /* globals.m */,
 				BF5600472AE775CF005846CA /* helperLib.h */,
@@ -178,8 +180,6 @@
 				BF3B310B2B087289005A2693 /* Window.m */,
 				BFF1E7E22AFCB38100DCBBDB /* WindowManager.h */,
 				BFF1E7E32AFCB38100DCBBDB /* WindowManager.m */,
-				BF2847542B0F0BA0001A254A /* gesture.h */,
-				BF2847552B0F0BA0001A254A /* gesture.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
