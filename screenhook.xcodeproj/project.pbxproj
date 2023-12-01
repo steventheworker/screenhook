@@ -31,6 +31,7 @@
 		BFB9BA0C2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA0B2AFF42F500E66CB6 /* currentSpaceIDScriptCommand.m */; };
 		BFB9BA0F2AFF48A100E66CB6 /* missionControlWindows.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA0E2AFF48A100E66CB6 /* missionControlWindows.m */; };
 		BFB9BA122AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB9BA112AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m */; };
+		BFC47E1E2B19F58400DF7323 /* lazyControlArrows.m in Sources */ = {isa = PBXBuildFile; fileRef = BFC47E1D2B19F58400DF7323 /* lazyControlArrows.m */; };
 		BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF1E7DD2AFB720200DCBBDB /* screenhook.m */; };
 		BFF1E7E12AFB795500DCBBDB /* missionControlSpaceLabels.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF1E7E02AFB795500DCBBDB /* missionControlSpaceLabels.m */; };
 		BFF1E7E42AFCB38100DCBBDB /* WindowManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF1E7E32AFCB38100DCBBDB /* WindowManager.m */; };
@@ -84,6 +85,8 @@
 		BFB9BA0E2AFF48A100E66CB6 /* missionControlWindows.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = missionControlWindows.m; sourceTree = "<group>"; };
 		BFB9BA102AFF4CB900E66CB6 /* spaceKeyboardShortcuts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spaceKeyboardShortcuts.h; sourceTree = "<group>"; };
 		BFB9BA112AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = spaceKeyboardShortcuts.m; sourceTree = "<group>"; };
+		BFC47E1C2B19F58400DF7323 /* lazyControlArrows.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lazyControlArrows.h; sourceTree = "<group>"; };
+		BFC47E1D2B19F58400DF7323 /* lazyControlArrows.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = lazyControlArrows.m; sourceTree = "<group>"; };
 		BFF1E7DC2AFB720200DCBBDB /* screenhook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = screenhook.h; sourceTree = "<group>"; };
 		BFF1E7DD2AFB720200DCBBDB /* screenhook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = screenhook.m; sourceTree = "<group>"; };
 		BFF1E7DF2AFB795500DCBBDB /* missionControlSpaceLabels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = missionControlSpaceLabels.h; sourceTree = "<group>"; };
@@ -219,6 +222,8 @@
 			children = (
 				BF5600682AE7A6E7005846CA /* NSScriptCommands */,
 				BFF1E7E52AFCC8F200DCBBDB /* overlays */,
+				BFC47E1C2B19F58400DF7323 /* lazyControlArrows.h */,
+				BFC47E1D2B19F58400DF7323 /* lazyControlArrows.m */,
 				BFF1E7DF2AFB795500DCBBDB /* missionControlSpaceLabels.h */,
 				BFF1E7E02AFB795500DCBBDB /* missionControlSpaceLabels.m */,
 				BFB9BA0D2AFF48A100E66CB6 /* missionControlWindows.h */,
@@ -369,6 +374,7 @@
 				BF59FFD42B0B84C4002D6B77 /* Application.m in Sources */,
 				BF5600512AE775CF005846CA /* helperLib.m in Sources */,
 				BF59FFDA2B0DF01A002D6B77 /* SpotlightSearch.m in Sources */,
+				BFC47E1E2B19F58400DF7323 /* lazyControlArrows.m in Sources */,
 				BF2847562B0F0BA0001A254A /* gesture.m in Sources */,
 				BFF1E7DE2AFB720200DCBBDB /* screenhook.m in Sources */,
 				BFB9BA122AFF4CB900E66CB6 /* spaceKeyboardShortcuts.m in Sources */,

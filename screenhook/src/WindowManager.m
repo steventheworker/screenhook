@@ -225,14 +225,45 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
         NSLog(@"closed %@ - '%@'", win->app->name, win->title);
         [self stopObservingWindow: win];
         
-        NSRunningApplication* front = [[NSWorkspace sharedWorkspace] frontmostApplication];
+        NSRunningApplication* front = NSWorkspace.sharedWorkspace.frontmostApplication;
+        if ([helperLib isBackgroundApp: front]) {
+            for (int i = 0; i < 10; i++) NSLog(@"FRONT == BACKGROUND APP '%@'", front.localizedName);
+//            return; // don't update focusedWindow/focusedPID, hiding the background app to get the next app underneath has no effect
+            front = [helperLib appWithPID: [helperLib applescript: @"\n\
+property visibleList : {}\n\
+property secondAppInfo : {}\n\
+set ATID to AppleScript's text item delimiters\n\
+set visibleList to do shell script \"lsappinfo visibleProcessList\"\n\
+set AppleScript's text item delimiters to {\"-\"\", \"\": \"}\n\
+set visibleList to text items of visibleList\n\
+set secondFrontProcessID to item 3 of visibleList\n\
+set secondAppInfo to do shell script \"lsappinfo info -app \" & secondFrontProcessID\n\
+set AppleScript's text item delimiters to {\"\"\", \".app\"}\n\
+set secondFrontProcessName to text item 2 of secondAppInfo\n\
+set AppleScript's text item delimiters to ATID\n\
+set pidLine to paragraph 5 of secondAppInfo\n\
+            \n\
+-- Use regular expression to extract PID\n\
+set regexPattern to \"pid = (\\d+)\"\n\
+set pidMatches to do shell script \"echo \" & quoted form of pidLine & \" | grep -oE \"\" & regexPattern & \"\"\"\n\
+            \n\
+-- Extract the first match (PID)\n\
+set AppleScript's text item delimiters to {\"pid = \", \" \"}\n\
+set extractedPID to text item 2 of pidMatches\n\
+set AppleScript's text item delimiters to {}\n\
+            \n\
+return extractedPID"].intValue];
+            NSLog(@"SECOND FRONTMOST APP %@", front.localizedName);
+        }
         Application* app;for (app in apps) if (app->pid == front.processIdentifier) break;
+        if (!app) NSLog(@"STILL NO APPLICATION*");
         AXUIElementRef focusedWindow = [[helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"] pointerValue];
         CGWindowID windowID;
         _AXUIElementGetWindow(focusedWindow, &windowID);
 //        for (win in windows) if (win->winNum == windowID) break; //get new focused Window
         focusedPID = app->pid;
         focusedWindowID = windowID;
+        
     } else {
         loadVisibleWindows();
         CGWindowID windowID;

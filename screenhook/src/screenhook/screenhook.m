@@ -15,6 +15,7 @@
 #import "../WindowManager.h"
 
 //features
+#import "lazyControlArrows.h"
 #import "missionControlSpaceLabels.h"
 #import "spaceKeyboardShortcuts.h"
 #import "SpotlightSearch.h"
@@ -31,24 +32,16 @@ int dockPos = DockBottom; //for some reason, setting a string in processEvents (
 BOOL dockAutohide = NO;
 AXUIElementRef dockContextMenuClickee; //the dock separator element that was right clicked
 
-//probably move into it's own ft. file
-const float ARROWREPEAT_T = 0.666 * 2; //seconds, how long it takes for fast-switching animations to stop
-const float ARROWSEND_T = 0.333 / 4; //seconds, how long to send the arrow
-NSDate* lastArrowExecT;
-NSDate* lastArrowSentT;
-
 @implementation screenhook
-+ (void) init {
-    lastArrowExecT = [NSDate date];
-    lastArrowSentT = [NSDate date];
-    
++ (void) init {    
     cursorPos = CGPointMake(0, 0);
     dockPos = [helperLib dockPos];
     dockAutohide = [helperLib dockAutohide];
     
-    [WindowManager init: ^{
+    [WindowManager init: ^{ //initial discovery finished
         [spaceKeyboardShortcuts init];
     }];
+    [lazyControlArrows init];
     [missionControlSpaceLabels init];
     [self startTicking];
     
@@ -156,48 +149,8 @@ NSDate* lastArrowSentT;
         if ([eventString isEqual: @"keydown"] && (modifiers[@"ctrl"] || modifiers[@"cmd"]) && modifiers.count == 1)
             if ([@[@18, @19, @20, @21, @23, @22, @26, @28, @25] containsObject: @(keyCode)]) [spaceKeyboardShortcuts keyCode: keyCode];
 
-        //ctrl+left-arrow
-        if ([eventString isEqual: @"keydown"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 123) {
-            NSDate* t0 = lastArrowExecT;
-            lastArrowExecT = NSDate.date;
-            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) {
-                if ([lastArrowExecT timeIntervalSinceDate: lastArrowSentT] >= ARROWSEND_T) {
-                    [helperLib sendKey: 123];
-                    lastArrowSentT = lastArrowExecT;
-                }
-                return YES;
-            }
-            [spaceKeyboardShortcuts prevSpace];
-            return NO;
-        }
-        if ([eventString isEqual: @"keyup"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 123) {
-            NSDate* t0 = lastArrowExecT;
-            lastArrowExecT = NSDate.date;
-            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) {
-                return YES;
-            }
-            return NO;
-        }
-        //ctrl+right-arrow
-        if ([eventString isEqual: @"keydown"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 124) {
-            NSDate* t0 = lastArrowExecT;
-            lastArrowExecT = NSDate.date;
-            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) {
-                if ([lastArrowExecT timeIntervalSinceDate: lastArrowSentT] >= ARROWSEND_T) {
-                    [helperLib sendKey: 124];
-                    lastArrowSentT = lastArrowExecT;
-                }
-                return YES;
-            }
-            [spaceKeyboardShortcuts nextSpace];
-            return NO;
-        }
-        if ([eventString isEqual: @"keyup"] && (modifiers[@"ctrl"]) && modifiers.count == 1 && keyCode == 124) {
-            NSDate* t0 = lastArrowExecT;
-            lastArrowExecT = NSDate.date;
-            if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) return YES;
-            return NO;
-        }
+        //lazyControlArrows
+        [lazyControlArrows keyCode: keyCode : eventString : modifiers];
     }
     return YES;
 }
