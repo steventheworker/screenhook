@@ -153,17 +153,18 @@ NSPasteboard* dragPasteboard;
         if ([eventString isEqual: @"mouseup"]) setDragging(NO);
         /* end core mousedown/mouseup */
     }
+    BOOL ret = YES;
     /* features */
     //desktop peak
     if ([eventString isEqual: @"mousemove"]) [desktopPeak mousemove: cursorPos : isDragging];
-    if ([eventString isEqual: @"mousedown"]) return [desktopPeak mousedown: cursorEl : cursorDict : cursorPos];
-    if ([eventString isEqual: @"mouseup"]) return [desktopPeak mouseup: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mousedown"]) ret = ret && [desktopPeak mousedown: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mouseup"]) ret = ret && [desktopPeak mouseup: cursorEl : cursorDict : cursorPos];
     //change space labels
-    if ([eventString isEqual: @"mousedown"] && [WindowManager exposeType]) return [missionControlSpaceLabels mousedown: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mousedown"] && [WindowManager exposeType]) ret = ret && [missionControlSpaceLabels mousedown: cursorEl : cursorDict : cursorPos];
     if ([eventString isEqual: @"mouseup"] && [WindowManager exposeType]) [missionControlSpaceLabels mouseup]; //reshow everytime, since dragging window into other space hides labels window (and can't detect moving window to another space...?)
     //spotlight search
-    if ([eventString isEqual: @"mousedown"] && [cursorDict[@"title"] isEqual: @"Spotlight Search"]) return [SpotlightSearch mousedown: cursorPos : cursorEl : cursorDict];
-    if ([eventString isEqual: @"mouseup"]) return [SpotlightSearch mouseup: cursorPos : cursorEl : cursorDict];
+    if ([eventString isEqual: @"mousedown"] && [cursorDict[@"title"] isEqual: @"Spotlight Search"]) ret = ret && [SpotlightSearch mousedown: cursorPos : cursorEl : cursorDict];
+    if ([eventString isEqual: @"mouseup"]) ret = ret && [SpotlightSearch mouseup: cursorPos : cursorEl : cursorDict];
     
     /*
         key events
@@ -180,7 +181,7 @@ NSPasteboard* dragPasteboard;
         //lazyControlArrows
         [lazyControlArrows keyCode: keyCode : eventString : modifiers];
     }
-    return YES;
+    return ret;
 }
 + (void) appLaunched: (NSRunningApplication*) runningApp {
     NSLog(@"launched '%@' - %@", runningApp, runningApp.bundleIdentifier);
