@@ -234,25 +234,23 @@ property visibleList : {}\n\
 property secondAppInfo : {}\n\
 set ATID to AppleScript's text item delimiters\n\
 set visibleList to do shell script \"lsappinfo visibleProcessList\"\n\
-set AppleScript's text item delimiters to {\"-\"\", \"\": \"}\n\
+set AppleScript's text item delimiters to {\"-\\\"\", \": \"}\n\
 set visibleList to text items of visibleList\n\
 set secondFrontProcessID to item 3 of visibleList\n\
 set secondAppInfo to do shell script \"lsappinfo info -app \" & secondFrontProcessID\n\
-set AppleScript's text item delimiters to {\"\"\", \".app\"}\n\
+set AppleScript's text item delimiters to {\"\\\"\", \".app\"}\n\
 set secondFrontProcessName to text item 2 of secondAppInfo\n\
 set AppleScript's text item delimiters to ATID\n\
 set pidLine to paragraph 5 of secondAppInfo\n\
-            \n\
 -- Use regular expression to extract PID\n\
-set regexPattern to \"pid = (\\d+)\"\n\
-set pidMatches to do shell script \"echo \" & quoted form of pidLine & \" | grep -oE \"\" & regexPattern & \"\"\"\n\
-            \n\
+set regexPattern to \"pid = (\\\\d+)\"\n\
+set pidMatches to do shell script \"echo \" & quoted form of pidLine & \" | grep -oE \\\"\" & regexPattern & \"\\\"\"\n\
 -- Extract the first match (PID)\n\
 set AppleScript's text item delimiters to {\"pid = \", \" \"}\n\
 set extractedPID to text item 2 of pidMatches\n\
 set AppleScript's text item delimiters to {}\n\
-            \n\
-return extractedPID"].intValue];
+return extractedPID\n\
+"].intValue];
             NSLog(@"SECOND FRONTMOST APP %@", front.localizedName);
         }
         Application* app;for (app in apps) if (app->pid == front.processIdentifier) break;
