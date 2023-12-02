@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<NSSet<NSTouch*>*>* gesture; // array of NSSet<NSTouch*>* touches
     int touchCount;
     BOOL isClickSwipe;
+    BOOL isDragging;
     NSMutableDictionary<NSString*, NSMutableArray<BOOL (^)(GestureManager*)>*>* callbackMap;
     
 }
@@ -27,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) resetTriggeredGestures;
 - (void) setIsClickSwipe;
 - (CGEventTapCallBack) allHandler: (CGEventTapProxy) proxy : (CGEventType) type : (CGEventRef) event : (void*) refcon;
++ (void) setDragging: (BOOL) val;
 + (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler;
 - (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler;
 @end

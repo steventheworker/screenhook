@@ -91,6 +91,7 @@ void cornerClickBottomRight(void) {processCallbacks(@"corner click bottom right"
     return self;
 }
 - (void) endRecognition {
+    isDragging = NO;
     gesture = [NSMutableArray new];
     touchCount = 0;
     twoFingerSwipeFromLeftEdgeTriggered = NO;
@@ -157,6 +158,7 @@ void cornerClickBottomRight(void) {processCallbacks(@"corner click bottom right"
     }
 }
 - (void) detectSwipeGesture { // called before recognizeGesture to make sure it has a swipeDirection
+    if (isDragging) return;
     NSArray* touches1 = [[gesture objectAtIndex: 0 ] allObjects];
     NSArray* touches2 = [[gesture objectAtIndex: [gesture count] - 1] allObjects];
     int numTouches = (int) [touches1 count];
@@ -294,6 +296,7 @@ void cornerClickBottomRight(void) {processCallbacks(@"corner click bottom right"
     
     return (CGEventTapCallBack) event;
 }
++ (void) setDragging: (BOOL) val {_gm->isDragging = YES;}
 + (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler {return [_gm on: ev : handler];}
 - (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler {
     if (!callbackMap) callbackMap = [NSMutableDictionary dictionary];

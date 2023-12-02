@@ -34,6 +34,10 @@ BOOL dockAutohide = NO;
 AXUIElementRef dockContextMenuClickee; //the dock separator element that was right clicked
 
 BOOL isDragging = NO;
+void setDragging(BOOL val) {
+    isDragging = val;
+    [GestureManager setDragging: val];
+}
 CGEventMask dragEvents = CGEventMaskBit(kCGEventLeftMouseDragged) | CGEventMaskBit(kCGEventRightMouseDragged) | CGEventMaskBit(kCGEventOtherMouseDragged);
 NSInteger lastDragPasteboardChangeCount = 0;
 NSPasteboard* dragPasteboard;
@@ -106,7 +110,7 @@ NSPasteboard* dragPasteboard;
         if ([dragPasteboard changeCount] != lastDragPasteboardChangeCount) { //drag check - is something following the cursor? (doesn't work for windows)
             lastDragPasteboardChangeCount = [dragPasteboard changeCount];
 //            NSArray<NSPasteboardItem*>* pasteboardItems = [dragPasteboard pasteboardItems];
-            isDragging = YES;
+            setDragging(YES);
         }
     }
     /* core mousedown/mouseup */
@@ -146,7 +150,7 @@ NSPasteboard* dragPasteboard;
                 }
             }
         }
-        if ([eventString isEqual: @"mouseup"]) isDragging = NO;
+        if ([eventString isEqual: @"mouseup"]) setDragging(NO);
         /* end core mousedown/mouseup */
     }
     /* features */
