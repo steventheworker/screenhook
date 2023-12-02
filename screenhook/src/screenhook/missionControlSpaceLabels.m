@@ -15,6 +15,7 @@
 
 NSMutableArray<NSWindowController*>* overlayControllers;
 NSMutableArray* spaceLabels;
+NSMutableDictionary* monitorSpaceLabels; //monitorSpaceLabels[uuid]   --when a monitor is attached/detached, the first space of that monitor is freshly created/removed. we remember the last cached spaceLabel for it here
 int windowWidth;
 int windowHeight;
 
@@ -69,6 +70,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 + (void) init {
     overlayControllers = [NSMutableArray array];
     spaceLabels = [NSMutableArray array];
+    monitorSpaceLabels = [NSMutableDictionary dictionaryWithDictionary: [prefs getDictPref: @"monitorSpaceLabels"]];
     [self addOverlayWindows];
 }
 + (void) tick: (int) exposeType {
@@ -283,19 +285,22 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     if ([WindowManager exposeType]) [self reshow];
 }
 + (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
-    //dict<string> monitorNewSpaceLabel = eg: @{@"uuid": @"monitor2 newspace1label", …};     ...NEW PREF: monitorNewSpaceLabelDict
     if (flags & kCGDisplayAddFlag) {
         //insert added screens monitorNewSpaceLabel into spaceLabels
-        
-        
-        //re-render if mission control open
-        if ([WindowManager exposeType]) [self reshow];
+        int firstSpaceId = [Spaces screenSpacesMap][uuid].firstObject.intValue;
+        int firstLabelIndex = [Spaces indexWithID: firstSpaceId] - 1;
+        NSString* monitorLabel = monitorSpaceLabels[uuid];
+        [spaceLabels insertObject: monitorLabel.length ? monitorLabel : @"Untitled" atIndex: firstLabelIndex];
+        [prefs setArrayPref: @"spaceLabels" : spaceLabels];
+        //[prefs setDictPref: @"monitorSpaceLabels" : monitorSpaceLabels];
     } else if (flags & kCGDisplayRemoveFlag) {
-        //remove removed screens label from spaceLabels, update its monitorNewSpaceLabel[uuid]
-        
-        
-        //re-render if mission control open
-        if ([WindowManager exposeType]) [self reshow];
+        //remove removed screens label from spaceLabels, cache its monitorSpaceLabel[uuid]
+        int firstSpaceId = [Spaces screenSpacesMap][uuid].firstObject.intValue;
+        int firstLabelIndex = [Spaces indexWithID: firstSpaceId] - 1;
+        monitorSpaceLabels[uuid] = spaceLabels[firstLabelIndex];
+        [spaceLabels removeObjectAtIndex: firstLabelIndex];
+        [prefs setArrayPref: @"spaceLabels" : spaceLabels];
+        [prefs setDictPref: @"monitorSpaceLabels" : monitorSpaceLabels];
     }
 }
 @end

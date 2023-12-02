@@ -40,7 +40,8 @@ float getDockFloatPref(NSString* key) {
         @"spaceSwitchingDisabled": @YES,
         @"previewDelay": @0,
         @"updatePolicy": @"autocheck", /* manual / autocheck / autoinstall */
-        @"spaceLabels": @[]
+        @"spaceLabels": @[],
+        @"monitorSpaceLabels": @{}
     }]);
 //    [helperLib activateWindow: [self window]]; //activate on launch
     [self setUpdatePolicy];
