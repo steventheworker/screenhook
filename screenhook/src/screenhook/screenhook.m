@@ -15,6 +15,7 @@
 #import "../WindowManager.h"
 
 //features
+#import "desktopPeak.h"
 #import "lazyControlArrows.h"
 #import "missionControlSpaceLabels.h"
 #import "spaceKeyboardShortcuts.h"
@@ -32,8 +33,15 @@ int dockPos = DockBottom; //for some reason, setting a string in processEvents (
 BOOL dockAutohide = NO;
 AXUIElementRef dockContextMenuClickee; //the dock separator element that was right clicked
 
+BOOL isDragging = NO;
+CGEventMask dragEvents = CGEventMaskBit(kCGEventLeftMouseDragged) | CGEventMaskBit(kCGEventRightMouseDragged) | CGEventMaskBit(kCGEventOtherMouseDragged);
+NSInteger lastDragPasteboardChangeCount = 0;
+NSPasteboard* dragPasteboard;
+
 @implementation screenhook
 + (void) init {    
+    dragPasteboard = [NSPasteboard pasteboardWithName: NSPasteboardNameDrag];
+    lastDragPasteboardChangeCount = [dragPasteboard changeCount];
     cursorPos = CGPointMake(0, 0);
     dockPos = [helperLib dockPos];
     dockAutohide = [helperLib dockAutohide];
@@ -41,6 +49,7 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     [WindowManager init: ^{ //initial discovery finished
         [spaceKeyboardShortcuts init];
     }];
+    [desktopPeak init];
     [lazyControlArrows init];
     [missionControlSpaceLabels init];
     [self startTicking];
@@ -90,9 +99,19 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
     /*
         mouse events
      */
-    if ([eventString isEqual: @"mousedown"] || [eventString isEqual: @"mouseup"]) { //core mousedown/mouseup
-        cursorPos = CGEventGetLocation(event);
-        cursorEl = [helperLib elementAtPoint: [helperLib normalizePointForDockGap: cursorPos : dockPos]];
+    /* core - movements */
+    if ([eventString isEqual: @"mousemove"]) cursorPos = CGEventGetLocation(event); //core
+    /* core - drag */
+    if ((dragEvents & CGEventMaskBit(type)) != 0) {
+        if ([dragPasteboard changeCount] != lastDragPasteboardChangeCount) { //drag check - is something following the cursor? (doesn't work for windows)
+            lastDragPasteboardChangeCount = [dragPasteboard changeCount];
+//            NSArray<NSPasteboardItem*>* pasteboardItems = [dragPasteboard pasteboardItems];
+            isDragging = YES;
+        }
+    }
+    /* core mousedown/mouseup */
+    if ([eventString isEqual: @"mousedown"] || [eventString isEqual: @"mouseup"]) {
+        cursorEl = [helperLib elementAtPoint: [helperLib normalizePointForDockGap: cursorPos : dockPos]]; //only use elementAtPoint on click to prevent powerpoint notes bug
         cursorDict = [helperLib elementDict: cursorEl : @{
             @"pid": (id)kAXPIDAttribute,
             @"title": (id)kAXTitleAttribute,
@@ -127,22 +146,29 @@ AXUIElementRef dockContextMenuClickee; //the dock separator element that was rig
                 }
             }
         }
+        if ([eventString isEqual: @"mouseup"]) isDragging = NO;
         /* end core mousedown/mouseup */
     }
+    /* features */
+    //desktop peak
+    if ([eventString isEqual: @"mousemove"]) [desktopPeak mousemove: cursorPos : isDragging];
+    if ([eventString isEqual: @"mousedown"]) return [desktopPeak mousedown: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mouseup"]) return [desktopPeak mouseup: cursorEl : cursorDict : cursorPos];
     //change space labels
     if ([eventString isEqual: @"mousedown"] && [WindowManager exposeType]) return [missionControlSpaceLabels mousedown: cursorEl : cursorDict : cursorPos];
     if ([eventString isEqual: @"mouseup"] && [WindowManager exposeType]) [missionControlSpaceLabels mouseup]; //reshow everytime, since dragging window into other space hides labels window (and can't detect moving window to another space...?)
-    
     //spotlight search
     if ([eventString isEqual: @"mousedown"] && [cursorDict[@"title"] isEqual: @"Spotlight Search"]) return [SpotlightSearch mousedown: cursorPos : cursorEl : cursorDict];
     if ([eventString isEqual: @"mouseup"]) return [SpotlightSearch mouseup: cursorPos : cursorEl : cursorDict];
-
+    
     /*
         key events
      */
     if ([eventString isEqual: @"keydown"] || [eventString isEqual: @"keyup"]) {
+        /* core */
         int keyCode = (int)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
         
+        /* features */
         //spaceKeyboardShortcuts
         if ([eventString isEqual: @"keydown"] && (modifiers[@"ctrl"] || modifiers[@"cmd"]) && modifiers.count == 1)
             if ([@[@18, @19, @20, @21, @23, @22, @26, @28, @25] containsObject: @(keyCode)]) [spaceKeyboardShortcuts keyCode: keyCode];

@@ -78,7 +78,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
         [WindowManager spaceChanged: note];
         [screenhook spaceChanged: note];
     }];
-    // notify when app launched/terminated (so that observers can be added/removed)
+    // notify when runningapp's changes, launches/terminated is not enough (see Messages, etc. not firing either)
     previousValueOfRunningApps = [NSSet setWithArray: NSWorkspace.sharedWorkspace.runningApplications];
     [NSWorkspace.sharedWorkspace addObserver: self forKeyPath: @"runningApplications" options: /*NSKeyValueObservingOptionOld | */ NSKeyValueObservingOptionNew context: NULL];
     
