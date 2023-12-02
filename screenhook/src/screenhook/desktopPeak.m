@@ -17,8 +17,11 @@ BOOL cornerWasClicked = NO;
 
 BOOL isCorner(CGPoint cursorPos) {
     NSScreen* screen = [helperLib screenWithMouse];
+    NSScreen* primaryScreen = [helperLib primaryScreen];
+    float offsetTop = primaryScreen.frame.size.height - (screen.frame.origin.y + screen.frame.size.height);
+    if (screen == primaryScreen) {offsetTop = 0;/*offsetBottom = 0;offsetLeft = 0;*/}
     float cornerStartX = screen.frame.origin.x + screen.frame.size.width - CORNER_SIZE;
-    float cornerStartY = screen.frame.origin.y;
+    float cornerStartY = offsetTop;
     if (cursorPos.x >= cornerStartX && cursorPos.x <= cornerStartX + CORNER_SIZE &&
         cursorPos.y >= cornerStartY && cursorPos.y <= cornerStartY + CORNER_SIZE) {
         return YES;
