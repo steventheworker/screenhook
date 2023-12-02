@@ -87,11 +87,11 @@ void cornerClickBottomRight(void) {processCallbacks(@"corner click bottom right"
 - (instancetype) init {
     [self endRecognition];
     _gm = self;
+    isDragging = NO;
     //    isClickSwipe = NO;
     return self;
 }
 - (void) endRecognition {
-    isDragging = NO;
     gesture = [NSMutableArray new];
     touchCount = 0;
     twoFingerSwipeFromLeftEdgeTriggered = NO;
@@ -296,7 +296,7 @@ void cornerClickBottomRight(void) {processCallbacks(@"corner click bottom right"
     
     return (CGEventTapCallBack) event;
 }
-+ (void) setDragging: (BOOL) val {_gm->isDragging = YES;}
++ (void) setDragging: (BOOL) val {_gm->isDragging = val;}
 + (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler {return [_gm on: ev : handler];}
 - (void) on: (NSString*) ev : (BOOL (^)(GestureManager* gm)) handler {
     if (!callbackMap) callbackMap = [NSMutableDictionary dictionary];
