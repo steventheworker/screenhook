@@ -144,6 +144,7 @@ NSScreen* cachedPrimaryScreen;
     }
     return nil;
 }
++ (NSArray<NSScreen*>*) cachedScreens {return cachedScreens;} //the primaryScreen, when the last screenSpacesMap/etc. was updated
 + (NSScreen*) cachedPrimaryScreen {return cachedPrimaryScreen;} //the primaryScreen, when the last screenSpacesMap/etc. was updated
 @end
 

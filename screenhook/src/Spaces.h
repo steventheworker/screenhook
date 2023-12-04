@@ -155,6 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) updateCurrentSpace;
 + (NSString*) uuidForScreen: (NSScreen*) screen;
 + (NSScreen*) screenWithDisplayID: (CGDirectDisplayID) displayID;
++ (NSArray<NSScreen*>*) cachedScreens;
 + (NSScreen*) cachedPrimaryScreen;
 @end
 NS_ASSUME_NONNULL_END
