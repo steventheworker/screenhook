@@ -219,7 +219,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
             // Handle kAXInsertionPointLineNumberAttribute
         } else if (attribute == (id)kAXIsApplicationRunningAttribute) {
             NSNumber* isApplicationRunning;
-            AXError result = AXUIElementCopyAttributeValue(el, kAXIsApplicationRunningAttribute, (void *)&isApplicationRunning);
+            AXError result = AXUIElementCopyAttributeValue(el, kAXIsApplicationRunningAttribute, (void*)&isApplicationRunning);
             if (result == kAXErrorSuccess) dict[attributeName] = @([isApplicationRunning intValue]);
             else dict[attributeName] = @NO;
         } else if (attribute == (id)kAXLabelUIElementsAttribute) {
@@ -690,9 +690,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         @"PID": (id)kAXPIDAttribute
     };
     NSDictionary* dict = [self elementDict: dockChild : recursiveDict];
-    NSValue* parentValue = dict[@"parent"];
-    AXUIElementRef parent;
-    [parentValue getValue: &parent];
+    AXUIElementRef parent = (__bridge AXUIElementRef)(dict[@"parent"]);
     NSDictionary* parentDict = [self elementDict: parent : recursiveDict];
     if ([parentDict[@"role"] isEqual: @"AXApplication"]) return parent;
     return [self dockAppElementFromDockChild: parent];
