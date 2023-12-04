@@ -18,6 +18,7 @@ NSMutableArray* spaceLabels;
 NSMutableDictionary* monitorSpaceLabels; //monitorSpaceLabels[uuid]   --when a monitor is attached/detached, the first space of that monitor is freshly created/removed. we remember the last cached spaceLabel for it here
 int windowWidth;
 int windowHeight;
+NSScreen* primaryScreen;
 
 void showLabelWindows(void) {
     for (NSWindowController* overlayController in overlayControllers) {
@@ -71,6 +72,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     overlayControllers = [NSMutableArray array];
     spaceLabels = [NSMutableArray array];
     monitorSpaceLabels = [NSMutableDictionary dictionaryWithDictionary: [prefs getDictPref: @"monitorSpaceLabels"]];
+    primaryScreen = [helperLib primaryScreen];
     [self addOverlayWindows];
 }
 + (void) tick: (int) exposeType {
@@ -285,16 +287,30 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     if ([WindowManager exposeType]) [self reshow];
 }
 + (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
-    if (flags & kCGDisplayAddFlag) {
+    //if you plug a monitor in, macOS will send kCGDisplayAddFlag, kCGDisplayRemoveFlag, kCGDisplayAddFlag back-to-back ._.
+    NSLog(@"scr ct %d flags %d uuid %@", NSScreen.screens.count, flags, uuid);
+    if (flags & kCGDisplaySetMainFlag) primaryScreen = screen;
+    if (flags & kCGDisplayAddFlag) {NSLog(@"addscreen%fx%f", screen.frame.size.width,screen.frame.size.height);
         //insert added screens monitorNewSpaceLabel into spaceLabels
-        int firstSpaceId = [Spaces screenSpacesMap][uuid].firstObject.intValue;
-        int firstLabelIndex = [Spaces indexWithID: firstSpaceId] - 1;
-        NSString* monitorLabel = monitorSpaceLabels[uuid];
-        [spaceLabels insertObject: monitorLabel.length ? monitorLabel : @"Untitled" atIndex: firstLabelIndex];
-        [prefs setArrayPref: @"spaceLabels" : spaceLabels];
-        //[prefs setDictPref: @"monitorSpaceLabels" : monitorSpaceLabels];
-    } else if (flags & kCGDisplayRemoveFlag) {
+        setTimeout(^{
+            if (screen == primaryScreen) { //added monitor is new primary
+                
+                return NSLog(@"added monitor is new primary");
+            }
+            int firstSpaceId = [Spaces screenSpacesMap][uuid].firstObject.intValue;
+            int firstLabelIndex = [Spaces indexWithID: firstSpaceId] - 1;
+            NSString* monitorLabel = monitorSpaceLabels[uuid];
+            [spaceLabels insertObject: monitorLabel.length ? monitorLabel : @"Untitled" atIndex: firstLabelIndex];
+            [prefs setArrayPref: @"spaceLabels" : spaceLabels];
+            //[prefs setDictPref: @"monitorSpaceLabels" : monitorSpaceLabels];
+        }, 100);
+    } else if (flags & kCGDisplayRemoveFlag) {NSLog(@"removescreen %fx%f scrct %d", screen.frame.size.width,screen.frame.size.height, NSScreen.screens.count);
         //remove removed screens label from spaceLabels, cache its monitorSpaceLabel[uuid]
+        if (screen == primaryScreen) { //added monitor is new primary
+            
+            return NSLog(@"removed monitor was primary");
+        }
+        return;//removeline
         int firstSpaceId = [Spaces screenSpacesMap][uuid].firstObject.intValue;
         int firstLabelIndex = [Spaces indexWithID: firstSpaceId] - 1;
         monitorSpaceLabels[uuid] = spaceLabels[firstLabelIndex];
