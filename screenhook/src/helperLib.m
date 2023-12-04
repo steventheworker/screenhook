@@ -140,14 +140,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXChildrenAttribute) {
             NSArray* children;
             AXError result = AXUIElementCopyAttributeValue(el, kAXChildrenAttribute, (void*) &children);
-            if (result == kAXErrorSuccess) {
-                NSMutableArray* pointerArray = [NSMutableArray array];
-                for (int i = 0; i < children.count; i++) {
-                    AXUIElementRef el = (__bridge AXUIElementRef _Nonnull) children[i];
-                    [pointerArray addObject: (__bridge id _Nonnull)(el)];
-                }
-                dict[attributeName] = pointerArray;
-            } else dict[attributeName] = @[];
+            if (result == kAXErrorSuccess) dict[attributeName] = children;
+            else dict[attributeName] = @[];
         } else if (attribute == (id)kAXCloseButtonAttribute) {
             // Handle kAXCloseButtonAttribute
         } else if (attribute == (id)kAXColumnsAttribute) {
