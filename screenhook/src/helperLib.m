@@ -185,9 +185,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXFocusedApplicationAttribute) {
             AXUIElementRef app;
             AXError result = AXUIElementCopyAttributeValue(el, kAXFocusedApplicationAttribute, (CFTypeRef*) &app);
-            if (result == kAXErrorSuccess) {
-                dict[attributeName] = [NSValue valueWithPointer: CFRetain(app)];
-            } else dict[attributeName] = @0;
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)app;
+            else dict[attributeName] = @0;
         } else if (attribute == (id)kAXFocusedAttribute) {
             // Handle kAXFocusedAttribute
         } else if (attribute == (id)kAXFocusedUIElementAttribute) {
@@ -195,9 +194,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXFocusedWindowAttribute) {
             AXUIElementRef axWindow;
             AXError result = AXUIElementCopyAttributeValue(el, kAXFocusedWindowAttribute, (CFTypeRef*)&axWindow);
-            if (result == kAXErrorSuccess) {
-                dict[attributeName] = [NSValue valueWithPointer: CFRetain(axWindow)];
-            } else dict[attributeName] = @0;
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)axWindow;
+            else dict[attributeName] = @0;
         } else if (attribute == (id)kAXFrontmostAttribute) {
             // Handle kAXFrontmostAttribute
         } else if (attribute == (id)kAXGrowAreaAttribute) {
@@ -216,8 +214,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
             CFTypeRef idVal;
             AXError result = AXUIElementCopyAttributeValue(el, kAXIdentifierAttribute, &idVal);
             if (result == kAXErrorSuccess && CFGetTypeID(idVal) == CFStringGetTypeID()) {
-                NSString* identifier = (__bridge NSString*) idVal;
-                dict[attributeName] = identifier;
+                dict[attributeName] = (__bridge NSString*) idVal;
             } else dict[attributeName] = @"";
         } else if (attribute == (id)kAXIncrementorAttribute) {
             // Handle kAXIncrementorAttribute
@@ -228,9 +225,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXIsApplicationRunningAttribute) {
             NSNumber* isApplicationRunning;
             AXError result = AXUIElementCopyAttributeValue(el, kAXIsApplicationRunningAttribute, (void *)&isApplicationRunning);
-            if (result == kAXErrorSuccess) {
-                dict[attributeName] = @([isApplicationRunning intValue]);
-            } else dict[attributeName] = @(0);
+            if (result == kAXErrorSuccess) dict[attributeName] = @([isApplicationRunning intValue]);
+            else dict[attributeName] = @NO;
         } else if (attribute == (id)kAXLabelUIElementsAttribute) {
             // Handle kAXLabelUIElementsAttribute
         } else if (attribute == (id)kAXLabelValueAttribute) {
@@ -250,9 +246,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXMenuBarAttribute) {
             AXUIElementRef menuBar;
             AXError result = AXUIElementCopyAttributeValue(el, kAXMenuBarAttribute, (CFTypeRef*) &menuBar);
-            if (result == kAXErrorSuccess) {
-                dict[attributeName] = [NSValue valueWithPointer: CFRetain(menuBar)];
-            } else dict[attributeName] = @0;
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)menuBar;
+            else dict[attributeName] = @0;
         } else if (attribute == (id)kAXMenuItemCmdCharAttribute) {
             // Handle kAXMenuItemCmdCharAttribute
         } else if (attribute == (id)kAXMenuItemCmdGlyphAttribute) {
@@ -290,9 +285,9 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXOverflowButtonAttribute) {
             // Handle kAXOverflowButtonAttribute
         } else if (attribute == (id)kAXParentAttribute) {
-            AXUIElementRef* parent;
+            AXUIElementRef parent;
             AXError result = AXUIElementCopyAttributeValue(el, kAXParentAttribute, (void*) &parent);
-            if (result == kAXErrorSuccess) dict[attributeName] = [NSValue valueWithPointer: CFRetain(parent)];
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)parent;
             else dict[attributeName] = @0;
         } else if (attribute == (id)kAXPositionAttribute) {
             CFTypeRef positionRef;
@@ -407,12 +402,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXWindowsAttribute) {
             NSArray* wins;
             AXError result = AXUIElementCopyAttributeValue(el, kAXWindowsAttribute, (void*) &wins);
-            if (result == kAXErrorSuccess) {
-                NSMutableArray* pointerArray = [NSMutableArray array];
-                for (int i = 0; i < wins.count; i++)
-                    [pointerArray addObject: [NSValue valueWithPointer: CFRetain((void*) wins[i])]];
-                dict[attributeName] = pointerArray;
-            } else dict[attributeName] = @[];
+            if (result == kAXErrorSuccess) dict[attributeName] = wins;
+            else dict[attributeName] = @[];
         } else if (attribute == (id)kAXYearFieldAttribute) {
             // Handle kAXYearFieldAttribute
         } else if (attribute == (id)kAXZoomButtonAttribute) {
