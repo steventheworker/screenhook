@@ -31,7 +31,7 @@ NSDictionary* mousedownDict;
 
 int dockPos = DockBottom; //for some reason, setting a string in processEvents (when detecting click of AxMenuItem) causes dock to be blocked from accessibility... but int's work fine..........
 BOOL dockAutohide = NO;
-AXUIElementRef dockContextMenuClickee; //the dock separator element that was right clicked
+id dockContextMenuClickee; //the dock separator element that was right clicked
 
 BOOL isDragging = NO;
 void setDragging(BOOL val) {
@@ -115,7 +115,7 @@ NSPasteboard* dragPasteboard;
     }
     /* core mousedown/mouseup */
     if ([eventString isEqual: @"mousedown"] || [eventString isEqual: @"mouseup"]) {
-        cursorEl = [helperLib elementAtPoint: [helperLib normalizePointForDockGap: cursorPos : dockPos]]; //only use elementAtPoint on click to prevent powerpoint notes bug
+        cursorEl = (__bridge AXUIElementRef)([helperLib elementAtPoint: [helperLib normalizePointForDockGap: cursorPos : dockPos]]); //only use elementAtPoint on click to prevent powerpoint notes bug
         cursorDict = [helperLib elementDict: cursorEl : @{
             @"pid": (id)kAXPIDAttribute,
             @"title": (id)kAXTitleAttribute,
@@ -131,12 +131,12 @@ NSPasteboard* dragPasteboard;
             if ([cursorDict[@"subrole"] isEqual: @"AXSeparatorDockItem"] &&
                 (type == kCGEventRightMouseDown || (type == kCGEventOtherMouseUp && [mousedownDict[@"subrole"] isEqual: @"AXSeparatorDockItem"]))
             ) { //cache the element so if a context menu item is selected we'll compare & know when a dock setting changes
-                dockContextMenuClickee = cursorEl;
+                dockContextMenuClickee = (__bridge id)cursorEl;
             }
         }
         if ([cursorDict[@"role"] isEqual: @"AXMenuItem"]) { //context menu item is being selected/triggered
             if (dockContextMenuClickee && type == kCGEventLeftMouseUp) {
-                __block NSArray* children = [helperLib elementDict: dockContextMenuClickee : @{@"children": (id)kAXChildrenAttribute}][@"children"];
+                __block NSArray* children = [helperLib elementDict: (__bridge AXUIElementRef _Nonnull)(dockContextMenuClickee) : @{@"children": (id)kAXChildrenAttribute}][@"children"];
                 if (children.count) { //there is a menu!
                     children = [helperLib elementDict: (__bridge AXUIElementRef)(children[0]) : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //menu items
                     if (CFEqual((__bridge AXUIElementRef)children[0], cursorEl)) dockAutohide = !dockAutohide; //the first menu item is "Turn Hiding On/Off"
@@ -150,6 +150,7 @@ NSPasteboard* dragPasteboard;
                 }
             }
         }
+        
         if ([eventString isEqual: @"mouseup"]) setDragging(NO);
         /* end core mousedown/mouseup */
     }

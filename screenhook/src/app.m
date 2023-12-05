@@ -88,7 +88,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 //    [helperLib on: @"mousedown" : ^BOOL(CGEventTapProxy _Nonnull proxy, CGEventType type, CGEventRef  _Nonnull event, void * _Nonnull refcon) {
 //        if (self->mousemoveLess) self->cursorPos = CGEventGetLocation(event);
 //        if (self->isSparkleUpdaterOpen) return YES; // elementAtPoint crashes app when put on the release notes webview
-//        AXUIElementRef el = [helperLib elementAtPoint: self->cursorPos];
+//        AXUIElementRef el = (__bridge axuielementref)[helperLib elementAtPoint: self->cursorPos];
 ////        NSMutableDictionary* elDict = [DockExpose elDict: el];
 ////        if (self->mousemoveLess) [DockExpose mousemove: proxy : type : event : refcon : el : elDict : self->cursorPos]; //update DockAltTab.m cursorPos
 ////        if (![DockExpose mousedown: proxy : type : event : refcon : el : elDict]) return NO;
@@ -97,7 +97,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 //    [helperLib on: @"mouseup" : ^BOOL(CGEventTapProxy _Nonnull proxy, CGEventType type, CGEventRef  _Nonnull event, void * _Nonnull refcon) {
 //        if (self->mousemoveLess) self->cursorPos = CGEventGetLocation(event);
 //        if (self->isSparkleUpdaterOpen) return YES; // elementAtPoint crashes app when put on the release notes webview
-//        AXUIElementRef el = [helperLib elementAtPoint: self->cursorPos];
+//        AXUIElementRef el = (__bridge axuielementref)[helperLib elementAtPoint: self->cursorPos];
 ////        NSMutableDictionary* elDict = [DockExpose elDict: el];
 ////        if (self->mousemoveLess) [DockExpose mousemove: proxy : type : event : refcon : el : elDict : self->cursorPos]; //update DockAltTab.m cursorPos
 ////        if (![DockExpose mouseup: proxy : type : event : refcon : el : elDict]) return NO;
@@ -107,7 +107,7 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 //        if (self->mousemoveLess) return YES; //Ubuntu mode doesn't use mousemove, and getting coordinates causes issues with PowerPoint (notes section)
 //        self->cursorPos = CGEventGetLocation(event);
 //        if (self->isSparkleUpdaterOpen) return YES; // elementAtPoint crashes app when put on the release notes webview
-//        AXUIElementRef el = [helperLib elementAtPoint: self->cursorPos];
+//        AXUIElementRef el = (__bridge axuielementref)[helperLib elementAtPoint: self->cursorPos];
 ////        NSMutableDictionary* elDict = [DockExpose elDict: el];
 ////        if (![DockExpose mousemove: proxy : type : event : refcon : el : elDict : self->cursorPos]) return NO;
 //        return YES;
