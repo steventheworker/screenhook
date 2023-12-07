@@ -224,6 +224,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
 }
 + (void) setLabel: (int) spaceindex : (NSString*) newLabel {
     [spaceLabels setObject: newLabel atIndexedSubscript: spaceindex - 1];
+    [prefs setArrayPref: @"spaceLabels" : spaceLabels];
 }
 + (void) reshow {
     for (NSWindowController* overlayController in overlayControllers) if (overlayController.window.isVisible) [overlayController close]; //window won't be on top unless it's recreated
