@@ -8,12 +8,15 @@
 #import "desktopPeak.h"
 #import "../globals.h"
 #import "../helperLib.h"
+#import "../WindowManager.h"
 
 const int CORNER_SIZE = 5; //pixels
 
 BOOL mouseOnCorner = NO;
 BOOL cornerClickStarted = NO;
 BOOL cornerWasClicked = NO;
+
+NSDate* mousedownT;
 
 BOOL isCorner(CGPoint cursorPos) {
     NSScreen* screen = [helperLib screenWithMouse];
@@ -31,9 +34,18 @@ BOOL isCorner(CGPoint cursorPos) {
 
 @implementation desktopPeak
 + (void) init {
-    
+    mousedownT = NSDate.date;
 }
 + (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
+    if ([cursorDict[@"role"] isEqual: @"AXMenuBar"]) {
+        NSDate* t0 = mousedownT;
+        mousedownT = NSDate.date;
+        float dT = (NSTimeInterval)[mousedownT timeIntervalSinceDate: t0] * 1000; //seconds to milliseconds
+        if (dT < 333) { //double click menubar
+            cornerWasClicked = !WindowManager.exposeType;
+            [helperLib openDesktopExpose];
+        }
+    }
     if (mouseOnCorner) {
         cornerClickStarted = YES;
         return NO;
@@ -53,10 +65,16 @@ BOOL isCorner(CGPoint cursorPos) {
     mouseOnCorner = isCorner(cursorPos);
     if (wasOnCorner && !mouseOnCorner) { //exited corner
         if (cornerWasClicked) return; //don't exit desktop exposé
-        if (isDragging) cornerWasClicked = YES; //keep open
-        else [helperLib openDesktopExpose];
+        if (isDragging) {
+            cornerWasClicked = YES; //keep open
+            return;
+        }
+        [helperLib openDesktopExpose];
     } else if (!wasOnCorner && mouseOnCorner) { //entered corner
-        if (cornerWasClicked) {cornerWasClicked = NO;return;} //reset cornerWasClicked
+        if (cornerWasClicked) {
+            cornerWasClicked = NO;
+            if (!isDragging) return;
+        }
         [helperLib openDesktopExpose];
     }
 }
