@@ -8,6 +8,7 @@
 #import "lazyControlArrows.h"
 #import "../helperLib.h"
 #import "spaceKeyboardShortcuts.h"
+#import "../Spaces.h"
 
 const float ARROWREPEAT_T = 0.666 * 2; //seconds, how long it takes for fast-switching animations to stop
 const float ARROWSEND_T = 0.333 / 4; //seconds, how long to send the arrow
@@ -28,11 +29,19 @@ NSDate* lastArrowSentT;
     return NO;
 }
 + (BOOL) shortcutDown: (int) keyCode {
+    CGPoint mouseLoc = [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]];
+    NSScreen* mouseScreen = [helperLib screenAtCGPoint: mouseLoc];
+    NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
+    int startIndex = [Spaces indexWithID: [screenSpaceIds.firstObject intValue]];
+    
     NSDate* t0 = lastArrowExecT;
     lastArrowExecT = NSDate.date;
     if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) {
         if ([lastArrowExecT timeIntervalSinceDate: lastArrowSentT] >= ARROWSEND_T) {
-            [helperLib sendKey: keyCode];
+            int spaceIndex = Spaces.currentSpaceIndex;
+            if (spaceIndex == startIndex && keyCode == 123) [spaceKeyboardShortcuts prevSpace];
+            else if (spaceIndex == startIndex + screenSpaceIds.count - 1 && keyCode == 124) [spaceKeyboardShortcuts nextSpace];
+            else [helperLib sendKey: keyCode];
             lastArrowSentT = lastArrowExecT;
         }
         return YES;
