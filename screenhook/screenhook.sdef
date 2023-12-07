@@ -2,12 +2,15 @@
  <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
  <dictionary title="screenhook Terminology">
      <suite name="screenhook Scripting Suite" code="ScHk" description="Standard suite for application communication.">
+         <!-- misc -->
          <command name="updateFFSidebarShowing" code="ScHkUPFF" description="Let screenhook know whether the Firefox sidebar is visible.">
              <cocoa class="updateFFSidebarShowing" />
              <direct-parameter name="val" code="arg1" type="boolean" optional="no" description="Is the sidebar showing? (BOOL)">
                  <cocoa key="val" />
              </direct-parameter>
         </command>
+         
+         <!-- spaces -->
          <command name="currentSpace" code="ScHkCurS" description="The current space index.">
              <cocoa class="currentSpaceScriptCommand" />
              <result type="integer" description="(int) space index, where 0 is the first space" />
@@ -27,6 +30,17 @@
              <result description="Array of cgspaceid's.">
                  <type type="integer" list="yes" />
              </result>
+         </command>
+         
+         <!-- spaceLabels -->
+         <command name="setSpaceLabel" code="ScHkSSpL" description="Set label for space index.">
+             <cocoa class="setSpaceLabelScriptCommand" />
+             <direct-parameter name="spaceindex" code="arg1" type="integer" optional="no" description="Space index (the number after 'Desktop' (when hovering over a space in mission control)">
+                 <cocoa key="spaceindex" />
+             </direct-parameter>
+             <parameter name="label" code="arg1" type="text" optional="no" description="The new label.">
+                 <cocoa key="label"/>
+             </parameter>
          </command>
      </suite>
  </dictionary>
