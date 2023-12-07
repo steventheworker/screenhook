@@ -9,7 +9,6 @@
 #import "../helperLib.h"
 #import "spaceKeyboardShortcuts.h"
 
-//probably move into it's own ft. file
 const float ARROWREPEAT_T = 0.666 * 2; //seconds, how long it takes for fast-switching animations to stop
 const float ARROWSEND_T = 0.333 / 4; //seconds, how long to send the arrow
 NSDate* lastArrowExecT;

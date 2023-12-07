@@ -84,7 +84,7 @@ void fallbackToKeys(int from, int to) {
     int spaceIndex = win.title.intValue;
     NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
     int relativeIndex = (int)[screenSpaceIds indexOfObject: visibleSpaces[ [visibleIndexes indexOfObject: @(spaceIndex)] ]];
-    if (relativeIndex - 1 < 0) return;
+    if (relativeIndex - 1 < 0) spaceIndex += screenSpaceIds.count;
     if ([WindowManager exposeType] || ![self visitSpace: spaceIndex - 1]) //cannot go directly to space if no spacewindow created, or mission control is open
         fallbackToKeys(relativeIndex, relativeIndex - 1);
 }
@@ -103,10 +103,9 @@ void fallbackToKeys(int from, int to) {
     int spaceIndex = win.title.intValue;
     NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
     int relativeIndex = (int)[screenSpaceIds indexOfObject: visibleSpaces[ [visibleIndexes indexOfObject: @(spaceIndex)] ]];
-    if (relativeIndex + 1 > screenSpaceIds.count - 1) return;
+    if (relativeIndex + 1 > screenSpaceIds.count - 1) spaceIndex -= screenSpaceIds.count;
     if ([WindowManager exposeType] || ![self visitSpace: spaceIndex + 1]) //cannot go directly to space if no spacewindow created, or mission control is open
         fallbackToKeys(relativeIndex, relativeIndex + 1);
-
 }
 + (void) keyCode: (int) keyCode {
     [Spaces updateCurrentSpace]; //now current id/index points to correct screen/space
