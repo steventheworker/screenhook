@@ -58,7 +58,7 @@ NSSet<NSRunningApplication*>* previousValueOfRunningApps;
 static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon) {
     NSString* eventString = [helperLib eventKeyWithEventType: type];
     if (!([eventString isEqual: @"tabletProximityEventTabletID"] || [eventString isEqual: @"scrollWheelEventInstantMouser"] ||
-        [eventString isEqual: @"mousemove"] || [eventString isEqual: @"scrollwheel"]
+        [eventString isEqual: @"mousemove"] || [eventString isEqual: @"scrollwheel"] || [eventString isEqual: @"keydown"] || [eventString isEqual: @"keyup"] || [eventString isEqual: @"mods"]
     )) NSLog(@"ev: %@", eventString);
     else if ([eventString isEqual: @"default"]) NSLog(@"UNKNOWN EVENT TYPE %d", type);
     

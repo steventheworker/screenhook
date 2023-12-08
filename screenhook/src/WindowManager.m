@@ -118,6 +118,12 @@ static void axWindowObserverCallback(AXObserverRef observer, AXUIElementRef elem
 }
 
 + (void) initialDiscovery: (void(^)(void)) cb {
+    [Spaces init: (cgsMainConnectionId = CGSMainConnectionID())];
+    addNewApp([helperLib appWithBID: @"com.apple.dock"]); //we add dock manually since [helperLib isBackgroundApp: ] is true for it
+    for (NSRunningApplication* app in NSWorkspace.sharedWorkspace.runningApplications) if (![helperLib isBackgroundApp: app]) [self observeApp: addNewApp(app)];
+    cb();
+    return NSLog(@"------\nquick start\n-------");;
+
     addNewApp([helperLib appWithBID: @"com.apple.dock"]); //we add dock manually since [helperLib isBackgroundApp: ] is true for it
     //initial discovery
     [Spaces init: (cgsMainConnectionId = CGSMainConnectionID())];
