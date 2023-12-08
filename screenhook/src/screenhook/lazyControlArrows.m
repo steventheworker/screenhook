@@ -22,7 +22,7 @@ NSDate* lastArrowSentT;
 }
 + (BOOL) shortcutUp {
     NSDate* t0 = lastArrowExecT;
-    lastArrowExecT = NSDate.date;
+//    lastArrowExecT = NSDate.date;
     if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) {
         return YES;
     }
@@ -37,11 +37,11 @@ NSDate* lastArrowSentT;
     NSDate* t0 = lastArrowExecT;
     lastArrowExecT = NSDate.date;
     if ([lastArrowExecT timeIntervalSinceDate: t0] <= ARROWREPEAT_T) {
-        if ([lastArrowExecT timeIntervalSinceDate: lastArrowSentT] >= ARROWSEND_T) {
-            int spaceIndex = Spaces.currentSpaceIndex;
-            if (spaceIndex == startIndex && keyCode == 123) [spaceKeyboardShortcuts prevSpace];
-            else if (spaceIndex == startIndex + screenSpaceIds.count - 1 && keyCode == 124) [spaceKeyboardShortcuts nextSpace];
-            else [helperLib sendKey: keyCode];
+        int spaceIndex = Spaces.currentSpaceIndex;
+        if (spaceIndex == startIndex && keyCode == 123) [spaceKeyboardShortcuts prevSpace];
+        else if (spaceIndex == startIndex + screenSpaceIds.count - 1 && keyCode == 124) [spaceKeyboardShortcuts nextSpace];
+        else if ([lastArrowExecT timeIntervalSinceDate: lastArrowSentT] >= ARROWSEND_T) {
+            [helperLib sendKey: keyCode];
             lastArrowSentT = lastArrowExecT;
         }
         return YES;

@@ -180,7 +180,7 @@ NSPasteboard* dragPasteboard;
             if ([@[@18, @19, @20, @21, @23, @22, @26, @28, @25] containsObject: @(keyCode)]) [spaceKeyboardShortcuts keyCode: keyCode];
 
         //lazyControlArrows
-        [lazyControlArrows keyCode: keyCode : eventString : modifiers];
+        ret = [lazyControlArrows keyCode: keyCode : eventString : modifiers];
     }
     return ret;
 }
