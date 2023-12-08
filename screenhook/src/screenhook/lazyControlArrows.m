@@ -14,7 +14,6 @@
 const float SPACESWITCHMODE_T = 0.666 * 2; //seconds, how long it takes for fast-switching animations to stop (at which point using spacewindow's is faster (than sendKey))
 const int FASTDESKTOPSWITCH_T = 188; //(ms) to switch again
 const int SLOWDESKTOPSWITCH_T = 400; //(ms) to switch with prevSpace/nextSpace
-const float ARROWSEND_T = 0.333 / 4; //(sec) how long to send the arrow
 int calculatedSpaceIndex = 1; //the spaceindex you started at when calling the shortcuts ± the # sent prev/nextSpace/sendKey
 
 BOOL hasStarted = NO;
@@ -80,10 +79,8 @@ int perpetuationCounter = 0;
         [Spaces updateCurrentSpace];
         
         calculatedSpaceIndex = Spaces.currentSpaceIndex;
-        NSLog(@"calcd %d", calculatedSpaceIndex);
         [self runShortcut: spacewindow];
     } else {
-        NSLog(@"newcalcd %d±1 ms %f", calculatedSpaceIndex, dT * 1000);
         setTimeout(^{
             CGPoint mouseLoc = [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]];
             NSScreen* mouseScreen = [helperLib screenAtCGPoint: mouseLoc];
@@ -93,8 +90,7 @@ int perpetuationCounter = 0;
                 //(do nothing) if reached end, stop sending key, if reached beginning stop sending key
                 //so that the above if-block can runShortcut w/ spacewindow
             } else [self runShortcut: sendKey];
-            if (perpetuationTime == SLOWDESKTOPSWITCH_T) perpetuationTime = FASTDESKTOPSWITCH_T;
-        }, SLOWDESKTOPSWITCH_T == perpetuationTime && dT < SLOWDESKTOPSWITCH_T ? SLOWDESKTOPSWITCH_T - dT : 0);
+        }, 0);
     }
 }
 + (void) perpetuate {
@@ -103,6 +99,7 @@ int perpetuationCounter = 0;
     [self sendKeyOrSpacewindow];
     int oldPerpetuationCounter = perpetuationCounter;
     setTimeout(^{if (oldPerpetuationCounter == perpetuationCounter) [self perpetuate];}, perpetuationTime);
+    if (perpetuationTime == SLOWDESKTOPSWITCH_T) perpetuationTime = FASTDESKTOPSWITCH_T;
 }
 + (BOOL) keyCode: (int) keyCode : (NSString*) eventString : (NSDictionary*) modifiers {
     //ctrl+left-arrow
