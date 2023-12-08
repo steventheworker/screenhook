@@ -37,6 +37,7 @@ void throw(NSString* message, ...) {
     NSLog(@"_________");
     NSLog(@"||throw|| %@", formattedString);
     NSLog(@"---------");
+    NSLog(@"%@");
     [NSApp terminate: nil];
 //    setTimeout(^{[NSApp terminate: nil];}, 1);
 //    NSCAssert(NO, message);
