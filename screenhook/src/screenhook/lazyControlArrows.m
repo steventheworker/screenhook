@@ -17,6 +17,7 @@ const int SLOWDESKTOPSWITCH_T = 400; //(ms) to switch with prevSpace/nextSpace
 int calculatedSpaceIndex = 1; //the spaceindex you started at when calling the shortcuts ± the # sent prev/nextSpace/sendKey
 
 BOOL hasStarted = NO;
+BOOL waitDo = NO;
 enum directions {Forward, Backward};enum switchType {spacewindow, sendKey};
 int direction = Forward;
 NSDate* runShortcutT;
@@ -50,6 +51,7 @@ int perpetuationCounter = 0;
         propagateOne = YES; //pass one Ctrl+Arrow through (ie: don't preventDefault, once)
         [helperLib sendKey: direction == Forward ? 124 : 123];
         perpetuationTime = FASTDESKTOPSWITCH_T;
+        waitDo = YES;
     } else {
         direction == Forward ? [spaceKeyboardShortcuts nextSpace] : [spaceKeyboardShortcuts prevSpace];
         perpetuationTime = SLOWDESKTOPSWITCH_T;
@@ -90,7 +92,8 @@ int perpetuationCounter = 0;
                 //(do nothing) if reached end, stop sending key, if reached beginning stop sending key
                 //so that the above if-block can runShortcut w/ spacewindow
             } else [self runShortcut: sendKey];
-        }, 0);
+            waitDo = NO;
+        }, waitDo && dT < SLOWDESKTOPSWITCH_T ? SLOWDESKTOPSWITCH_T - dT : 0);
     }
 }
 + (void) perpetuate {
