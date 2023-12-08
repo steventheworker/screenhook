@@ -74,23 +74,27 @@ int perpetuationCounter = 0;
     calculatedSpaceIndex += (direction == Forward ? 1 : -1);
 }
 + (void) sendKeyOrSpacewindow {
-    NSLog(@"calcd %d", calculatedSpaceIndex);
-    if ([NSDate.date timeIntervalSinceDate: runShortcutT] >= SPACESWITCHMODE_T) {//space stabel
+    float dT = [NSDate.date timeIntervalSinceDate: runShortcutT];
+    if (dT >= SPACESWITCHMODE_T) {//space stabel
         [Spaces refreshAllIdsAndIndexes];
         [Spaces updateCurrentSpace];
         
         calculatedSpaceIndex = Spaces.currentSpaceIndex;
-        NSLog(@"newcalcd %d", calculatedSpaceIndex);
+        NSLog(@"calcd %d", calculatedSpaceIndex);
         [self runShortcut: spacewindow];
     } else {
-        CGPoint mouseLoc = [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]];
-        NSScreen* mouseScreen = [helperLib screenAtCGPoint: mouseLoc];
-        NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
-        int startIndex = [Spaces indexWithID: [screenSpaceIds.firstObject intValue]];
-        if ((calculatedSpaceIndex == startIndex && direction == Backward) || (calculatedSpaceIndex == startIndex + screenSpaceIds.count - 1 && direction == Forward)) {
-            //(do nothing) if reached end, stop sending key, if reached beginning stop sending key
-            //so that the above if-block can runShortcut w/ spacewindow
-        } else [self runShortcut: sendKey];
+        NSLog(@"newcalcd %d±1 ms %f", calculatedSpaceIndex, dT * 1000);
+        setTimeout(^{
+            CGPoint mouseLoc = [helperLib CGPointFromNSPoint: [NSEvent mouseLocation]];
+            NSScreen* mouseScreen = [helperLib screenAtCGPoint: mouseLoc];
+            NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
+            int startIndex = [Spaces indexWithID: [screenSpaceIds.firstObject intValue]];
+            if ((calculatedSpaceIndex == startIndex && direction == Backward) || (calculatedSpaceIndex == startIndex + screenSpaceIds.count - 1 && direction == Forward)) {
+                //(do nothing) if reached end, stop sending key, if reached beginning stop sending key
+                //so that the above if-block can runShortcut w/ spacewindow
+            } else [self runShortcut: sendKey];
+            if (perpetuationTime == SLOWDESKTOPSWITCH_T) perpetuationTime = FASTDESKTOPSWITCH_T;
+        }, SLOWDESKTOPSWITCH_T == perpetuationTime && dT < SLOWDESKTOPSWITCH_T ? SLOWDESKTOPSWITCH_T - dT : 0);
     }
 }
 + (void) perpetuate {
@@ -99,7 +103,6 @@ int perpetuationCounter = 0;
     [self sendKeyOrSpacewindow];
     int oldPerpetuationCounter = perpetuationCounter;
     setTimeout(^{if (oldPerpetuationCounter == perpetuationCounter) [self perpetuate];}, perpetuationTime);
-    if (perpetuationTime == SLOWDESKTOPSWITCH_T) perpetuationTime = FASTDESKTOPSWITCH_T;
 }
 + (BOOL) keyCode: (int) keyCode : (NSString*) eventString : (NSDictionary*) modifiers {
     //ctrl+left-arrow
