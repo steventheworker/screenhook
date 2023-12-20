@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
     @public
     NSRunningApplication* app;
     pid_t pid;
-    AXUIElementRef el;
+    id el;
     AXObserverRef observer;
     NSString* name;
     BOOL isPWA;

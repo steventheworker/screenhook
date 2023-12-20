@@ -25,7 +25,7 @@ const int DEFAULT_TICK_SPEED = 333;
 int intervalTickT = DEFAULT_TICK_SPEED;
 
 CGPoint cursorPos; //powerpoint slide notes bug workaround (we're only allowed to grab mouse coordinates on mousedown/mouseup (or else slide note textarea focus is wacky))
-AXUIElementRef cursorEl;
+id cursorEl;
 NSDictionary* cursorDict;
 NSDictionary* mousedownDict;
 
@@ -115,7 +115,7 @@ NSPasteboard* dragPasteboard;
     }
     /* core mousedown/mouseup */
     if ([eventString isEqual: @"mousedown"] || [eventString isEqual: @"mouseup"]) {
-        cursorEl = (__bridge AXUIElementRef)([helperLib elementAtPoint: [helperLib normalizePointForDockGap: cursorPos : dockPos]]); //only use elementAtPoint on click to prevent powerpoint notes bug
+        cursorEl = [helperLib elementAtPoint: [helperLib normalizePointForDockGap: cursorPos : dockPos]]; //only use elementAtPoint on click to prevent powerpoint notes bug
         cursorDict = [helperLib elementDict: cursorEl : @{
             @"pid": (id)kAXPIDAttribute,
             @"title": (id)kAXTitleAttribute,
@@ -131,21 +131,21 @@ NSPasteboard* dragPasteboard;
             if ([cursorDict[@"subrole"] isEqual: @"AXSeparatorDockItem"] &&
                 (type == kCGEventRightMouseDown || (type == kCGEventOtherMouseUp && [mousedownDict[@"subrole"] isEqual: @"AXSeparatorDockItem"]))
             ) { //cache the element so if a context menu item is selected we'll compare & know when a dock setting changes
-                dockContextMenuClickee = (__bridge id)cursorEl;
+                dockContextMenuClickee = cursorEl;
             }
         }
         if ([cursorDict[@"role"] isEqual: @"AXMenuItem"]) { //context menu item is being selected/triggered
             if (dockContextMenuClickee && type == kCGEventLeftMouseUp) {
-                __block NSArray* children = [helperLib elementDict: (__bridge AXUIElementRef _Nonnull)(dockContextMenuClickee) : @{@"children": (id)kAXChildrenAttribute}][@"children"];
+                __block NSArray* children = [helperLib elementDict: dockContextMenuClickee : @{@"children": (id)kAXChildrenAttribute}][@"children"];
                 if (children.count) { //there is a menu!
-                    children = [helperLib elementDict: (__bridge AXUIElementRef)(children[0]) : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //menu items
-                    if (CFEqual((__bridge AXUIElementRef)children[0], cursorEl)) dockAutohide = !dockAutohide; //the first menu item is "Turn Hiding On/Off"
+                    children = [helperLib elementDict: children[0] : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //menu items
+                    if (children[0] == cursorEl) dockAutohide = !dockAutohide; //the first menu item is "Turn Hiding On/Off"
                     else {
-                        children = [helperLib elementDict: (__bridge AXUIElementRef)(children[2]) : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //Position on screen items menu
-                        children = [helperLib elementDict: (__bridge AXUIElementRef)(children[0]) : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //Position on screen items menu children
-                        if (CFEqual((__bridge AXUIElementRef)children[0], cursorEl)) dockPos = DockLeft;
-                        if (CFEqual((__bridge AXUIElementRef)children[1], cursorEl)) dockPos = DockBottom;
-                        if (CFEqual((__bridge AXUIElementRef)children[2], cursorEl)) dockPos = DockRight;
+                        children = [helperLib elementDict: children[2] : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //Position on screen items menu
+                        children = [helperLib elementDict: children[0] : @{@"children": (id)kAXChildrenAttribute}][@"children"]; //Position on screen items menu children
+                        if (children[0] == cursorEl) dockPos = DockLeft;
+                        if (children[1] == cursorEl) dockPos = DockBottom;
+                        if (children[2] == cursorEl) dockPos = DockRight;
                     }
                 }
             }

@@ -15,7 +15,7 @@ BOOL wasSpotlightOpenOnDown = NO;
 int spotlightType = 0; //spotlight = 1, alfred = 2, ...
 
 @implementation SpotlightSearch
-+ (BOOL) mousedown: (CGPoint) pos : (AXUIElementRef) el : (NSDictionary*) elDict {
++ (BOOL) mousedown: (CGPoint) pos : (id) el : (NSDictionary*) elDict {
     if (spotlightType == 0) spotlightType = [WindowManager appWithBID: @"com.runningwithcrayons.Alfred"] ? 2 : 1;
     if ([elDict[@"pid"] intValue] != [WindowManager appWithBID: @"com.apple.dock"]->pid) return YES;
     downStarted = YES;
@@ -26,7 +26,7 @@ int spotlightType = 0; //spotlight = 1, alfred = 2, ...
     }
     return NO;
 }
-+ (BOOL) mouseup: (CGPoint) pos : (AXUIElementRef) el : (NSDictionary*) elDict {
++ (BOOL) mouseup: (CGPoint) pos : (id) el : (NSDictionary*) elDict {
     if (!downStarted) return YES;
     downStarted = NO;
     if ([elDict[@"title"] isEqual: @"Spotlight Search"] && !wasSpotlightOpenOnDown) {

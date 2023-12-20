@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Window : NSObject {
     @public
-    AXUIElementRef el;
+    id el;
     Application* app;
     CGWindowID winNum;
     AXObserverRef observer;
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isOnAllSpaces;
 }
 - (void) destroy;
-+ (instancetype) init : (Application*) app : (AXUIElementRef) el : (CGWindowID) winNum : (AXObserverRef) observer;
++ (instancetype) init : (Application*) app : (id) el : (CGWindowID) winNum : (AXObserverRef) observer;
 - (void) updatesWindowSpace;
 @end
 

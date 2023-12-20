@@ -55,7 +55,7 @@ NSArray* spaceLabelsForMonitor(NSArray* screenSpaceIds) {
     return ret;
 }
 
-void renameSpace(AXUIElementRef el, NSString* newTitle) {
+void renameSpace(id el, NSString* newTitle) {
     NSDictionary* elDict = [helperLib elementDict: el : @{
         @"value": (id)kAXValueAttribute,
         @"identifier": (id)kAXIdentifierAttribute,
@@ -155,7 +155,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
         [view addSubview: labelsView];
     }
 }
-+ (void) labelClicked: (AXUIElementRef) el {
++ (void) labelClicked: (id) el {
     NSDictionary* elDict = [helperLib elementDict: el : @{
         @"value": (id)kAXValueAttribute,
         @"role": (id)kAXRoleAttribute,
@@ -232,7 +232,7 @@ void renameSpace(AXUIElementRef el, NSString* newTitle) {
     [self addOverlayWindows];
     showLabelWindows(); //reshow
 }
-+ (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
++ (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
     if (NSRunningApplication.currentApplication.processIdentifier == [cursorDict[@"pid"] intValue] && cursorPos.y <= 100) { //space labels are at the top, w/o cursorPos check, interacting w/ screenhook windows in mission control is disabled!
         [self labelClicked: cursorEl];
         return NO; //preventDefault

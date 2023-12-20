@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface desktopPeak : NSObject
 + (void) init;
-+ (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
-+ (BOOL) mouseup: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
++ (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
++ (BOOL) mouseup: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
 + (void) mousemove: (CGPoint) cursorPos : (BOOL) isDragging;
 @end
 

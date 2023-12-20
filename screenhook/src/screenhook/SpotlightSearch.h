@@ -11,8 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SpotlightSearch : NSObject
-+ (BOOL) mousedown: (CGPoint) pos : (AXUIElementRef) el : (NSDictionary*) elDict;
-+ (BOOL) mouseup: (CGPoint) pos : (AXUIElementRef) el : (NSDictionary*) elDict;
++ (BOOL) mousedown: (CGPoint) pos : (id) el : (NSDictionary*) elDict;
++ (BOOL) mouseup: (CGPoint) pos : (id) el : (NSDictionary*) elDict;
 @end
 
 NS_ASSUME_NONNULL_END

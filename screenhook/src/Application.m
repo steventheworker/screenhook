@@ -10,7 +10,7 @@
 @implementation Application
 - (void) destroy {
     CFRelease(self->observer);
-    CFRelease(self->el);
+//    CFRelease(self->el);
     self->observer = nil;
     self->el = nil;
 }
@@ -18,8 +18,8 @@
     Application* app = [[self alloc] init];
     app->app = runningApp;
     app->pid = runningApp.processIdentifier; //there can multiple vlc runningApp's (processes), but pid is what uniquely identifies an nsrunningapp
-    app->el = AXUIElementCreateApplication(app->pid);
-    CFRetain(app->el);
+    app->el = (__bridge_transfer id)AXUIElementCreateApplication(app->pid);
+//    CFRetain((AXUIElementRef)app->el);
     app->name = runningApp.localizedName;
     app->isPWA = [runningApp.bundleIdentifier hasPrefix: @"com.apple.WebKit"];
     app->bid = runningApp.bundleIdentifier;

@@ -68,7 +68,7 @@ NSDictionary* backgroundApps = @{
 };
 
 AXUIElementRef systemWideElement;
-AXUIElementRef dockAppRef;
+id dockAppRef;
 
 /* events */
 NSMutableArray* eventTapRefs; // CFMachPortRef's (for restarting events / stopping)
@@ -112,7 +112,8 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     if (result != kAXErrorSuccess) NSLog(@"%f, %f elementAtPoint failed", pt.x, pt.y);
     return (__bridge_transfer id)element; // ARC takes ownership, otherwise need to call CFRelease somewhere down the line
 }
-+ (NSDictionary*) elementDict: (AXUIElementRef) el : (NSDictionary*) attributeDict {
++ (NSDictionary*) elementDict: (id) elID : (NSDictionary*) attributeDict {
+    AXUIElementRef el = (__bridge AXUIElementRef)(elID);
     if (!el) return @{};
     NSMutableDictionary* dict = [NSMutableDictionary dictionary];
     for (NSString* attributeName in attributeDict) {
@@ -179,7 +180,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXFocusedApplicationAttribute) {
             AXUIElementRef app;
             AXError result = AXUIElementCopyAttributeValue(el, kAXFocusedApplicationAttribute, (void*)&app);
-            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)app;
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)app;
             else dict[attributeName] = @0;
         } else if (attribute == (id)kAXFocusedAttribute) {
             // Handle kAXFocusedAttribute
@@ -188,7 +189,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXFocusedWindowAttribute) {
             AXUIElementRef axWindow;
             AXError result = AXUIElementCopyAttributeValue(el, kAXFocusedWindowAttribute, (void*)&axWindow);
-            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)axWindow;
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)axWindow;
             else dict[attributeName] = @0;
         } else if (attribute == (id)kAXFrontmostAttribute) {
             // Handle kAXFrontmostAttribute
@@ -235,13 +236,16 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXMatteHoleAttribute) {
             // Handle kAXMatteHoleAttribute
         } else if (attribute == (id)kAXMainWindowAttribute) {
-            // Handle kAXMainWindowAttribute
+            AXUIElementRef axWindow;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXMainWindowAttribute, (void*)&axWindow);
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)axWindow;
+            else dict[attributeName] = @0;
         } else if (attribute == (id)kAXMaxValueAttribute) {
             // Handle kAXMaxValueAttribute
         } else if (attribute == (id)kAXMenuBarAttribute) {
             AXUIElementRef menuBar;
             AXError result = AXUIElementCopyAttributeValue(el, kAXMenuBarAttribute, (void*)&menuBar);
-            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)menuBar;
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)menuBar;
             else dict[attributeName] = @0;
         } else if (attribute == (id)kAXMenuItemCmdCharAttribute) {
             // Handle kAXMenuItemCmdCharAttribute
@@ -282,7 +286,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXParentAttribute) {
             AXUIElementRef parent;
             AXError result = AXUIElementCopyAttributeValue(el, kAXParentAttribute, (void*)&parent);
-            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge id)parent;
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)parent;
             else dict[attributeName] = @0;
         } else if (attribute == (id)kAXPositionAttribute) {
             CFTypeRef positionRef;
@@ -446,7 +450,7 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         CFMachPortRef machPort;
         if ([listenOnlyEvents[eventKey] intValue]) machPort = [self listenOnlyMask: [self maskWithEventKey: eventKey] : (CGEventTapCallBack) eventTapCallback];
         else machPort = [self listenMask: [self maskWithEventKey: eventKey] : (CGEventTapCallBack) eventTapCallback];
-        [eventTapRefs addObject: (__bridge id) machPort];
+        [eventTapRefs addObject: (__bridge_transfer id) machPort];
         [eventTapRefs addObject: [NSValue valueWithPointer: machPort]];
     }
     [eventMap[eventKey] addObject: callback];
@@ -683,17 +687,16 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
     NSArray* dockPosStrings = @[@"left", @"bottom", @"right"];
     return (int)[dockPosStrings indexOfObject: pos ? pos : @"bottom"];
 }
-+ (AXUIElementRef) dockAppElementFromDockChild: (AXUIElementRef) dockChild {
++ (id) dockAppElementFromDockChild: (id) dockChild {
     NSDictionary* recursiveDict = @{
         @"role": (id)kAXRoleAttribute,
         @"parent": (id)kAXParentAttribute,
         @"PID": (id)kAXPIDAttribute
     };
     NSDictionary* dict = [self elementDict: dockChild : recursiveDict];
-    AXUIElementRef parent = (__bridge AXUIElementRef)(dict[@"parent"]);
-    NSDictionary* parentDict = [self elementDict: parent : recursiveDict];
-    if ([parentDict[@"role"] isEqual: @"AXApplication"]) return parent;
-    return [self dockAppElementFromDockChild: parent];
+    NSDictionary* parentDict = [self elementDict: dict[@"parent"] : recursiveDict];
+    if ([parentDict[@"role"] isEqual: @"AXApplication"]) return dict[@"parent"];
+    return [self dockAppElementFromDockChild: dict[@"parent"]];
 }
 + (CGRect) dockRect {
     if (!dockAppRef) {
@@ -706,15 +709,12 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
             float x = [self dockPos] == DockLeft ? DOCK_BOTTOM_PADDING : focusedScreen.frame.size.width - DOCK_BOTTOM_PADDING - 5; //right dock for some reason has 5 more pixels padding...
             testPoint = CGPointMake(x, focusedScreen.frame.size.height / 2);
         }
-        dockAppRef = [self dockAppElementFromDockChild: (__bridge AXUIElementRef)([helperLib elementAtPoint: testPoint])];
+        dockAppRef = [self dockAppElementFromDockChild: [helperLib elementAtPoint: testPoint]];
         [self toggleDock];
     }
     NSArray* children = [helperLib elementDict: dockAppRef : @{@"children": (id)kAXChildrenAttribute}][@"children"];
-    AXUIElementRef dockListElement = NULL;
-    for (id elID in children) {
-        AXUIElementRef el = (__bridge AXUIElementRef) elID;
-        if ([[self elementDict: el : @{@"role": (id)kAXRoleAttribute}][@"role"] isEqual: @"AXList"]) dockListElement = el;
-    }
+    id dockListElement = NULL;
+    for (id el in children) if ([[self elementDict: el : @{@"role": (id)kAXRoleAttribute}][@"role"] isEqual: @"AXList"]) dockListElement = el;
     NSDictionary* listDict = [helperLib elementDict: dockListElement : @{
         @"pos": (id)kAXPositionAttribute,
         @"size": (id)kAXSizeAttribute

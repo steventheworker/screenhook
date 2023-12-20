@@ -36,7 +36,7 @@ BOOL isCorner(CGPoint cursorPos) {
 + (void) init {
     mousedownT = NSDate.date;
 }
-+ (BOOL) mousedown: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
++ (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
     if ([cursorDict[@"role"] isEqual: @"AXMenuBar"]) {
         NSDate* t0 = mousedownT;
         mousedownT = NSDate.date;
@@ -52,7 +52,7 @@ BOOL isCorner(CGPoint cursorPos) {
     }
     return YES;
 }
-+ (BOOL) mouseup: (AXUIElementRef) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
++ (BOOL) mouseup: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
     if (cornerClickStarted) {
         cornerClickStarted = NO;
         if (mouseOnCorner) cornerWasClicked = YES;

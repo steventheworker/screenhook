@@ -15,16 +15,17 @@ int globalCreationCounter = 0;
 @implementation Window
 - (void) destroy {
     CFRelease(self->observer);
-    CFRelease(self->el);
+//    CFRelease(self->el);
     self->observer = nil;
     self->el = nil;
 }
-+ (instancetype) init : (Application*) app : (AXUIElementRef) el : (CGWindowID) winNum : (AXObserverRef) observer {
++ (instancetype) init : (Application*) app : (id) el : (CGWindowID) winNum : (AXObserverRef) observer {
     /*var lastFocusOrder = Int.zero */
     /* ^^^^ updated on focusedWindowChanged and applicationActivated*/
-    CFRetain(el);
+//    CFRetain((AXUIElementRef)el);
     CFRetain(observer);
 
+    NSLog(@"%@", el);
     //args
     Window* win = [[self alloc] init];
     win->observer = observer;

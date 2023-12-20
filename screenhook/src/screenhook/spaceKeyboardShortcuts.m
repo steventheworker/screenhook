@@ -62,7 +62,7 @@ void fallbackToKeys(int from, int to) {
             NSDictionary* dict = [helperLib elementDict: win->el : @{@"identifier": (id)kAXIdentifierAttribute, @"title": (id)kAXTitleAttribute}];
             if (![dict[@"identifier"] isEqual: @"spacewindow"] || ![[NSString stringWithFormat: @"%d", spaceIndex] isEqual: dict[@"title"]]) continue;
             [NSApp activateIgnoringOtherApps: YES];
-            AXUIElementPerformAction(win->el, kAXRaiseAction);
+            AXUIElementPerformAction((AXUIElementRef)win->el, kAXRaiseAction);
             setTimeout(^{[NSApp hide: nil];}, 666); // give focus back to prev. frontmost application
             return YES;
         }
