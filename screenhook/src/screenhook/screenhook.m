@@ -20,9 +20,12 @@
 #import "missionControlSpaceLabels.h"
 #import "spaceKeyboardShortcuts.h"
 #import "SpotlightSearch.h"
+#import "firefox/Firefox.h"
 
 const int DEFAULT_TICK_SPEED = 333;
 int intervalTickT = DEFAULT_TICK_SPEED;
+
+FirefoxManager* ff;
 
 CGPoint cursorPos; //powerpoint slide notes bug workaround (we're only allowed to grab mouse coordinates on mousedown/mouseup (or else slide note textarea focus is wacky))
 id cursorEl;
@@ -58,6 +61,7 @@ NSPasteboard* dragPasteboard;
     [missionControlSpaceLabels init];
     [self startTicking];
     
+    ff = [[FirefoxManager alloc] init];
     [self startupScript];
 }
 + (void) startupScript {
@@ -166,6 +170,10 @@ NSPasteboard* dragPasteboard;
     //spotlight search
     if ([eventString isEqual: @"mousedown"] && [cursorDict[@"title"] isEqual: @"Spotlight Search"]) ret = ret && [SpotlightSearch mousedown: cursorPos : cursorEl : cursorDict];
     if ([eventString isEqual: @"mouseup"]) ret = ret && [SpotlightSearch mouseup: cursorPos : cursorEl : cursorDict];
+    //firefox
+    if ([eventString isEqual: @"mousemove"]) [ff mousemove: cursorPos : isDragging];
+    if ([eventString isEqual: @"mousedown"]) [ff mousedown: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mouseup"]) [ff mouseup: cursorEl : cursorDict : cursorPos];
     
     /*
         key events
@@ -186,8 +194,10 @@ NSPasteboard* dragPasteboard;
 }
 + (void) appLaunched: (NSRunningApplication*) runningApp {
     NSLog(@"launched '%@' - %@", runningApp, runningApp.bundleIdentifier);
+    if ([runningApp.localizedName hasPrefix: @"Firefox"]) [ff initFF: runningApp.processIdentifier];
 }
 + (void) appTerminated: (NSRunningApplication*) runningApp {
+    if ([runningApp.localizedName hasPrefix: @"Firefox"]) [ff appTerminated: runningApp.processIdentifier];
     NSLog(@"terminated '%@' - %@", runningApp, runningApp.bundleIdentifier);
 }
 + (void) spaceChanged: (NSNotification*) note {
