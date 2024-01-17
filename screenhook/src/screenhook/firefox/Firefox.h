@@ -17,7 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
-@interface FirefoxManager : NSObject
+@interface FirefoxManager : NSObject {
+    @public
+    BOOL startedMoving;
+    CGPoint startPos;
+    NSRect startFrame;
+    id moveWindow;
+}
 @property (strong) NSMutableDictionary<NSNumber*, FFs*>* FFs;
 - (instancetype) init;
 - (void) initFF: (pid_t) pid;

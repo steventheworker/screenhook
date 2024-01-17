@@ -401,7 +401,10 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXVisibleRowsAttribute) {
             // kAXVisibleRowsAttribute
         } else if (attribute == (id)kAXWindowAttribute) {
-            // Handle kAXWindowAttribute
+            AXUIElementRef win;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXWindowAttribute, (void*)&win);
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)win;
+            else dict[attributeName] = @0;
         } else if (attribute == (id)kAXWindowsAttribute) {
             NSArray* wins;
             AXError result = AXUIElementCopyAttributeValue(el, kAXWindowsAttribute, (void*)&wins);
