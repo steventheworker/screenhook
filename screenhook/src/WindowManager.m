@@ -226,7 +226,7 @@ static void axWindowObserverCallback(AXObserverRef observer, id elementRef, CFSt
     int appPID = [[helperLib elementDict: el : @{@"pid": (id)kAXPIDAttribute}][@"pid"] intValue];
 //    NSLog(@"observe window notification - %@", type);
     if ([type isEqual: @"AXUIElementDestroyed"]) { // window closed
-        Window* win;for (win in windows) if (el == win->el) break; //find destroyed window by matching destroyed element
+        Window* win;for (win in windows) if (CFEqual((AXUIElementRef)el, (AXUIElementRef)win->el)) break; //find destroyed window by matching destroyed element
         if (win) NSLog(@"closed %@ - '%@'", win->app->name, win->title);
         if (win) [self stopObservingWindow: win];
         
