@@ -172,8 +172,8 @@ NSPasteboard* dragPasteboard;
     if ([eventString isEqual: @"mouseup"]) ret = ret && [SpotlightSearch mouseup: cursorPos : cursorEl : cursorDict];
     //firefox
     if ([eventString isEqual: @"mousemove"]) [ff mousemove: cursorPos : isDragging];
-    if ([eventString isEqual: @"mousedown"]) [ff mousedown: cursorEl : cursorDict : cursorPos];
-    if ([eventString isEqual: @"mouseup"]) [ff mouseup: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mousedown"]) ret = ret && [ff mousedown: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mouseup"]) ret = ret && [ff mouseup: cursorEl : cursorDict : cursorPos];
     
     /*
         key events

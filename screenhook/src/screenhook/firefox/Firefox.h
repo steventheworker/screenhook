@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint startPos;
     NSRect startFrame;
     id moveWindow;
+    id mousedownEl;
+    NSDate* sideberyLongPressT;
 }
 @property (strong) NSMutableDictionary<NSNumber*, FFs*>* FFs;
 - (instancetype) init;

@@ -11,6 +11,7 @@
 #import "../../globals.h"
 
 //config
+const float SIDEBERYLONGPRESS = 0.400; // seconds
 const float TICK_DELAY = ((float) 333 / 1000); // x ms / 1000 ms
 const float DBLCLICKTIMEOUT = .25; // 250ms
 const int SIDEBARMINWIDTH = 250; // hardcoded in userChrome.css
@@ -82,12 +83,28 @@ BOOL checkingForDblClick = NO;
     self.FFs[@(pid)] = [[FFs alloc] init: pid];
 }
 - (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
+    mousedownEl = cursorEl;
     FFs* ff = [self.FFs objectForKey: cursorDict[@"pid"]];
     if (!ff) return YES;
     id win = [helperLib elementDict: cursorEl : @{@"win": (id)kAXWindowAttribute}][@"win"];
     NSDictionary* winDict = [helperLib elementDict: win : @{@"pos": (id)kAXPositionAttribute, @"size": (id)kAXSizeAttribute}];
     NSRect winFrame = NSMakeRect([winDict[@"pos"][@"x"] floatValue], [winDict[@"pos"][@"y"] floatValue], [winDict[@"size"][@"width"] floatValue], [winDict[@"size"][@"height"] floatValue]);
-    //top edge
+    
+    //long-press (SIDEBERY) new tab button = new window
+    if ([cursorDict[@"role"] isEqual: @"AXImage"]) {
+        id parent = [helperLib elementDict: cursorEl : @{@"parent": (id)kAXParentAttribute}][@"parent"];
+        NSDictionary* parentDict = [helperLib elementDict: parent : @{@"role": (id)kAXRoleAttribute, @"title": (id)kAXTitleAttribute}];
+        if ([parentDict[@"role"] isEqual: @"AXGroup"] && [parentDict[@"title"] isEqual: @"Open a new tab Middle click: Open a child tab"]) {
+            sideberyLongPressT = NSDate.date;
+            return NO;
+        }
+    }
+    if ([cursorDict[@"role"] isEqual: @"AXGroup"] && [cursorDict[@"title"] isEqual: @"Open a new tab Middle click: Open a child tab"]) {
+        sideberyLongPressT = NSDate.date;
+        return NO;
+    }
+    
+    //top edge moves window (custom Firefox CSS / titlebar-less/addressbar-less workaround)
     if (cursorPos.x >= winFrame.origin.x + EDGERESIZEAREA && cursorPos.x <= winFrame.origin.x + winFrame.size.width)
         if (cursorPos.y >= winFrame.origin.y + EDGERESIZEAREA && cursorPos.y <= winFrame.origin.y + RESIZEAREAHEIGHT)
             [self startMoving: cursorPos : win : winFrame];
@@ -128,7 +145,21 @@ BOOL checkingForDblClick = NO;
     return YES;
 }
 - (BOOL) mouseup: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
+    FFs* ff = [self.FFs objectForKey: cursorDict[@"pid"]];
+    if (!ff) return YES;
+
     [self stopMoving: cursorPos];
+    
+    //long-press (SIDEBERY) new tab button = new window
+    float dt = [NSDate.date timeIntervalSinceDate: sideberyLongPressT];
+    if (dt < 0.666*2 && CFEqual((AXUIElementRef)cursorEl, (AXUIElementRef)mousedownEl)) {
+        if (dt > SIDEBERYLONGPRESS) { //new window
+            [helperLib applescriptAsync: @"tell application \"System Events\" to keystroke \"n\" using {command down}" : ^(NSString* res) {}];
+        } else { //new tab
+            [helperLib applescriptAsync: @"tell application \"System Events\" to keystroke \"t\" using {command down}" : ^(NSString* res) {}];
+        }
+        return NO;
+    }
     //    BOOL rightBtn = (etype == kCGEventRightMouseDown);
     //    if (rightBtn) {} else {
     //        NSPoint mouseLocation = [NSEvent mouseLocation];
