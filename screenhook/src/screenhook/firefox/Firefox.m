@@ -323,7 +323,7 @@ BOOL checkingForDblClick = NO;
     if (![@"Picture-in-Picture" isEqual: [helperLib elementDict: focusedWin : @{@"title": (id)kAXTitleAttribute}][@"title"]]) return;
     NSArray* visibleSpaces = Spaces.visibleSpaces;
     for (Window* win in WindowManager.windows) {
-        if (win->app->pid == app->pid && [visibleSpaces containsObject: @(win->spaceId)] && ![@"Picture-in-Picture" isEqual: win->title]) {
+        if (win->app->pid == app->pid && [visibleSpaces containsObject: @(win->spaceId)] && ![@"Picture-in-Picture" isEqual: win->title] && !win->isMinimized) {
             AXUIElementPerformAction((AXUIElementRef)win->el, kAXRaiseAction);
             break;
         }
