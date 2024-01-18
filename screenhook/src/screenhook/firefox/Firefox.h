@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "../../Application.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
 - (BOOL) mouseup: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
 - (void) mousemove: (CGPoint) cursorPos : (BOOL) isDragging;
+- (void) defocusPIP: (Application*) app;
 @end
 
 NS_ASSUME_NONNULL_END

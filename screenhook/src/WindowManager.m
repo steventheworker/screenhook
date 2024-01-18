@@ -108,6 +108,7 @@ static void axWindowObserverCallback(AXObserverRef observer, id elementRef, CFSt
         cb();
     }];
 }
++ (NSArray<Application*>*) apps {return apps;}
 + (NSArray<Window*>*) windows {return windows;}
 + (Application*) appWithBID: (NSString*) bid {for (Application* app in apps) {if ([app->bid isEqual: bid]) return app;}return nil;}
 + (int) exposeType {return exposeType;}

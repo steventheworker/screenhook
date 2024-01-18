@@ -7,6 +7,7 @@
 
 #import "Firefox.h"
 #import "../../WindowManager.h"
+#import "../../Spaces.h"
 #import "../../helperLib.h"
 #import "../../globals.h"
 
@@ -316,4 +317,16 @@ BOOL checkingForDblClick = NO;
 //    timerRef = [NSTimer scheduledTimerWithTimeInterval: 0 target:self selector: NSSelectorFromString(@"timerTick:") userInfo: nil repeats: YES];
 //    NSLog(@"timer 2x successfully started");
 //}
+
+- (void) defocusPIP: (Application*) app {
+    id focusedWin = [helperLib elementDict: app->el : @{@"focused": (id)kAXFocusedWindowAttribute}][@"focused"];
+    if (![@"Picture-in-Picture" isEqual: [helperLib elementDict: focusedWin : @{@"title": (id)kAXTitleAttribute}][@"title"]]) return;
+    NSArray* visibleSpaces = Spaces.visibleSpaces;
+    for (Window* win in WindowManager.windows) {
+        if (win->app->pid == app->pid && [visibleSpaces containsObject: @(win->spaceId)] && ![@"Picture-in-Picture" isEqual: win->title]) {
+            AXUIElementPerformAction((AXUIElementRef)win->el, kAXRaiseAction);
+            break;
+        }
+    }
+}
 @end

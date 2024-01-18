@@ -17,6 +17,7 @@ typedef enum {exposeClosed, DesktopExpose, AppExpose, MissionControl} exposeType
 
 @interface WindowManager : NSObject
 + (void) init: (void(^)(void)) cb;
++ (NSArray<Application*>*) apps;
 + (NSArray<Window*>*) windows;
 + (Application*) appWithBID: (NSString*) bid;
 + (int) exposeType;

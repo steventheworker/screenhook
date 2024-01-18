@@ -203,6 +203,14 @@ NSPasteboard* dragPasteboard;
 + (void) spaceChanged: (NSNotification*) note {
     [missionControlSpaceLabels spaceChanged: note];
     [spaceKeyboardShortcuts spaceChanged: note];
+    
+    //firefox defocus pip
+    setTimeout(^{ //screenhook may be frontmost if used spacewindow to switch
+        NSRunningApplication* front = NSWorkspace.sharedWorkspace.frontmostApplication;
+        Application* app;for (app in WindowManager.apps) if (app->pid == front.processIdentifier) break;
+        if ([app->name hasPrefix: @"Firefox"])
+            [ff defocusPIP: app];
+    }, 333);
 }
 + (void) spaceadded: (int) spaceIndex { // event from missionControlSpaceLabels
     [spaceKeyboardShortcuts spaceadded: spaceIndex]; //update spacewindow's
