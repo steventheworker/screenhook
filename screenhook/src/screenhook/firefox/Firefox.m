@@ -154,6 +154,7 @@ BOOL checkingForDblClick = NO;
     return YES;
 }
 - (BOOL) mouseup: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
+    setTimeout(^{self->leftEdgeDown = NO;}, 0);
     FFs* ff = [self.FFs objectForKey: cursorDict[@"pid"]];
     if (!ff) return YES;
 
