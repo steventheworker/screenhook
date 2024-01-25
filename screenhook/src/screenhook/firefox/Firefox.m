@@ -6,6 +6,7 @@
 //
 
 #import "Firefox.h"
+#import "../../helperLib.h"
 #import "../../WindowManager.h"
 #import "../../Spaces.h"
 #import "../../helperLib.h"
@@ -50,9 +51,10 @@ BOOL checkingForDblClick = NO;
 //int coordinatesChangedDuringDragCounter = 0;
 
 @implementation FFs
-- (instancetype) init : (pid_t) pid {
+- (instancetype) init : (NSRunningApplication*) app {
     self = [super init];
-    self->pid = pid;
+    self->pid = app.processIdentifier;
+    self->name = app.localizedName;
     self->reopenOrder = NSMutableArray.array;
     return self;
 }
@@ -67,7 +69,7 @@ BOOL checkingForDblClick = NO;
     self = [super init];
     self.FFs = NSMutableDictionary.dictionary;
     for (NSRunningApplication* app in NSWorkspace.sharedWorkspace.runningApplications)
-        if ([app.localizedName hasPrefix: @"Firefox"]) [self initFF: app.processIdentifier];
+        if ([app.localizedName hasPrefix: @"Firefox"]) [self initFF: app];
     //    [[[timer alloc] init] timer1x];
     //
     //    //get steviaOS info
@@ -80,11 +82,11 @@ BOOL checkingForDblClick = NO;
 - (void) appTerminated: (pid_t) pid {
     [(FFs*)self.FFs[@(pid)] destroy];
 }
-- (void) initFF: (pid_t) pid {
-    self.FFs[@(pid)] = [[FFs alloc] init: pid];
+- (void) initFF: (NSRunningApplication*) app {
+    self.FFs[@(app.processIdentifier)] = [[FFs alloc] init: app];
 }
 - (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
-    mousedownEl = cursorEl;
+    mousedownEl = cursorEl;mousedownPos = cursorPos;
     FFs* ff = [self.FFs objectForKey: cursorDict[@"pid"]];
     if (!ff) return YES;
     id win = [helperLib elementDict: cursorEl : @{@"win": (id)kAXWindowAttribute}][@"win"];
@@ -109,6 +111,12 @@ BOOL checkingForDblClick = NO;
     if (cursorPos.x >= winFrame.origin.x + EDGERESIZEAREA && cursorPos.x <= winFrame.origin.x + winFrame.size.width)
         if (cursorPos.y >= winFrame.origin.y + EDGERESIZEAREA && cursorPos.y <= winFrame.origin.y + RESIZEAREAHEIGHT)
             [self startMoving: cursorPos : win : winFrame];
+    
+    //click left edge toggle sidebar
+    if (cursorPos.x >= winFrame.origin.x - EDGERESIZEAREA && cursorPos.x <= winFrame.origin.x + 6)
+        if (cursorPos.y >= winFrame.origin.y && cursorPos.y <= winFrame.origin.y + winFrame.size.height)
+            leftEdgeDown = YES;
+    
     //    BOOL rightBtn = (etype == kCGEventRightMouseDown);
     //    if (rightBtn) {} else {
     //        NSRunningApplication* cur = [[NSWorkspace sharedWorkspace] frontmostApplication];
@@ -161,6 +169,14 @@ BOOL checkingForDblClick = NO;
         }
         return NO;
     }
+    
+    //click left edge toggle sidebar
+    if (leftEdgeDown && CGPointEqualToPoint(cursorPos, mousedownPos))
+//        NSLog(@"%@", [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", ff->name]);
+        [helperLib applescriptAsync: [NSString stringWithFormat:@"tell application \"System Events\" to tell process \"%@\" to tell (last menu item of menu 1 of menu item \"Sidebar\" of menu 1 of menu bar item \"View\" of menu bar 1) to perform action \"AXPress\"", ff->name]
+                                   : ^(NSString* response) {}];
+    
+
     //    BOOL rightBtn = (etype == kCGEventRightMouseDown);
     //    if (rightBtn) {} else {
     //        NSPoint mouseLocation = [NSEvent mouseLocation];
@@ -223,8 +239,8 @@ BOOL checkingForDblClick = NO;
     //    [[helperLib getApp]->timer timer1x];
 }
 - (void) updateWindowBounds: (CGPoint) cursorPos : (BOOL) mouseup {
-    float dx = cursorPos.x - startPos.x;
-    float dy = cursorPos.y - startPos.y;
+    float dx = cursorPos.x - mousedownPos.x;
+    float dy = cursorPos.y - mousedownPos.y;
     NSDictionary* winDict = [helperLib elementDict: moveWindow : @{@"pos": (id)kAXPositionAttribute, @"size": (id)kAXSizeAttribute}];
     NSRect curFrame = NSMakeRect([winDict[@"pos"][@"x"] floatValue], [winDict[@"pos"][@"y"] floatValue], [winDict[@"size"][@"width"] floatValue], [winDict[@"size"][@"height"] floatValue]);
     //    float dw = curSize.width - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Width"] floatValue];
@@ -293,7 +309,6 @@ BOOL checkingForDblClick = NO;
     //    coordinatesChangedDuringDragCounter = 0;
     NSLog(@"...starmtovnig");
     startedMoving = YES;
-    startPos = cursorPos;
     startFrame = winFrame;
     moveWindow = tarWin;
 }

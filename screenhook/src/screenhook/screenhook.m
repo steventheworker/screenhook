@@ -194,7 +194,7 @@ NSPasteboard* dragPasteboard;
 }
 + (void) appLaunched: (NSRunningApplication*) runningApp {
     NSLog(@"launched '%@' - %@", runningApp, runningApp.bundleIdentifier);
-    if ([runningApp.localizedName hasPrefix: @"Firefox"]) [ff initFF: runningApp.processIdentifier];
+    if ([runningApp.localizedName hasPrefix: @"Firefox"]) [ff initFF: runningApp];
 }
 + (void) appTerminated: (NSRunningApplication*) runningApp {
     if ([runningApp.localizedName hasPrefix: @"Firefox"]) [ff appTerminated: runningApp.processIdentifier];

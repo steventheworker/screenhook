@@ -21,15 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FirefoxManager : NSObject {
     @public
     BOOL startedMoving;
-    CGPoint startPos;
     NSRect startFrame;
     id moveWindow;
     id mousedownEl;
+    CGPoint mousedownPos;
     NSDate* sideberyLongPressT;
+    BOOL leftEdgeDown;
 }
 @property (strong) NSMutableDictionary<NSNumber*, FFs*>* FFs;
 - (instancetype) init;
-- (void) initFF: (pid_t) pid;
+- (void) initFF: (NSRunningApplication*) app;
 - (void) appTerminated: (pid_t) pid;
 - (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
 - (BOOL) mouseup: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos;
