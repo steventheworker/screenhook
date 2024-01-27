@@ -113,7 +113,7 @@ BOOL checkingForDblClick = NO;
             [self startMoving: cursorPos : win : winFrame];
     
     //click left edge toggle sidebar
-    if (cursorPos.x >= winFrame.origin.x - EDGERESIZEAREA && cursorPos.x <= winFrame.origin.x + 6)
+    if (cursorPos.x >= winFrame.origin.x - EDGERESIZEAREA && cursorPos.x <= winFrame.origin.x + 8)
         if (cursorPos.y >= winFrame.origin.y && cursorPos.y <= winFrame.origin.y + winFrame.size.height)
             leftEdgeDown = YES;
     
