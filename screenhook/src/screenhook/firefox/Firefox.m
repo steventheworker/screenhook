@@ -244,10 +244,12 @@ BOOL checkingForDblClick = NO;
     float dy = cursorPos.y - mousedownPos.y;
     NSDictionary* winDict = [helperLib elementDict: moveWindow : @{@"pos": (id)kAXPositionAttribute, @"size": (id)kAXSizeAttribute}];
     NSRect curFrame = NSMakeRect([winDict[@"pos"][@"x"] floatValue], [winDict[@"pos"][@"y"] floatValue], [winDict[@"size"][@"width"] floatValue], [winDict[@"size"][@"height"] floatValue]);
-    //    float dw = curSize.width - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Width"] floatValue];
-    //    float dh = curSize.height - [FFInitialDrag[@"winDict"][@"kCGWindowBounds"][@"Height"] floatValue];
+    float dw = curFrame.size.width - startFrame.size.width;
+    float dh = curFrame.size.height - startFrame.size.height;
+    BOOL didSizeChange = fabs(dw) + fabs(dh) > 1;
+    NSLog(@"didsizech %d mouseup %d",didSizeChange, mouseup);
+    if (didSizeChange) return; //snap/unsnap
     CGPoint newOrigin = CGPointMake(startFrame.origin.x + dx, startFrame.origin.y + dy);
-    //    BOOL didSizeChange = fabs(dW) + fabs(dH) > 1;
     //    BOOL didBoundsChangeTooMuch = fabs((curPt.x + roundf(dX)) - roundf(newPt.x)) > 1 || fabs((curPt.y + roundf(dY)) - roundf(newPt.y)) > 1;
     //    if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) {
     //        if ((curPt.y >= [helperLib getApp]->primaryScreenHeight - FFMAXBOTTOM)) {} //todo: replace primaryScreenHeight w/ screenAtPoint(carbonPoint).height
