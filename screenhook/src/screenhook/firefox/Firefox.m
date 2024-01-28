@@ -154,11 +154,11 @@ BOOL checkingForDblClick = NO;
     return YES;
 }
 - (BOOL) mouseup: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
+    [self stopMoving: cursorPos];
     setTimeout(^{self->leftEdgeDown = NO;}, 0);
     FFs* ff = [self.FFs objectForKey: cursorDict[@"pid"]];
     if (!ff) return YES;
 
-    [self stopMoving: cursorPos];
     
     //long-press (SIDEBERY) new tab button = new window
     float dt = [NSDate.date timeIntervalSinceDate: sideberyLongPressT];
@@ -248,7 +248,7 @@ BOOL checkingForDblClick = NO;
     float dh = curFrame.size.height - startFrame.size.height;
     BOOL didSizeChange = fabs(dw) + fabs(dh) > 1;
     NSLog(@"didsizech %d mouseup %d",didSizeChange, mouseup);
-    if (didSizeChange) return; //snap/unsnap
+    if (didSizeChange && mouseup) return;
     CGPoint newOrigin = CGPointMake(startFrame.origin.x + dx, startFrame.origin.y + dy);
     //    BOOL didBoundsChangeTooMuch = fabs((curPt.x + roundf(dX)) - roundf(newPt.x)) > 1 || fabs((curPt.y + roundf(dY)) - roundf(newPt.y)) > 1;
     //    if (didBoundsChangeTooMuch && !didSizeChange && coordinatesChangedDuringDragCounter > 5) {
