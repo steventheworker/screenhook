@@ -43,3 +43,7 @@ void throw(NSString* message, ...) {
 //    NSCAssert(NO, message);
 //    @throw [NSException exceptionWithName: @"CustomException" reason: message userInfo: nil];
 }
+BOOL within(int ms, NSDate* t0, NSDate* t1) {
+    NSTimeInterval dt = [t0 timeIntervalSinceDate: t1] * 1000; // Convert to milliseconds
+    return fabs(dt) <= ms; // Use fabs to handle negative time intervals
+}
