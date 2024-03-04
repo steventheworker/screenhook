@@ -208,6 +208,10 @@ NSPasteboard* dragPasteboard;
     setTimeout(^{ //screenhook may be frontmost if used spacewindow to switch
         NSRunningApplication* front = NSWorkspace.sharedWorkspace.frontmostApplication;
         Application* app;for (app in WindowManager.apps) if (app->pid == front.processIdentifier) break;
+        if (!app) {
+            throw(@"spacechanged\\n\nNOAPP!!!... localizedName: '%@'", front.localizedName); //change to NSLog
+            return;
+        }
         if ([app->name hasPrefix: @"Firefox"])
             [ff defocusPIP: app];
     }, 333);
