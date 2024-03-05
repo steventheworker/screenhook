@@ -13,12 +13,17 @@
 #import "../WindowManager.h"
 #import "screenhook.h"
 
+//config
+const int EXPOSE_CLOSE_T = 666; //ms
+const int SPACE_CHANGE_T = 3000; //ms
+
 NSMutableArray<NSWindowController*>* overlayControllers;
 NSMutableArray* spaceLabels;
 NSMutableDictionary* monitorSpaceLabels; //monitorSpaceLabels[uuid]   --when a monitor is attached/detached, the first space of that monitor is freshly created/removed. we remember the last cached spaceLabel for it here
 int windowWidth;
 int windowHeight;
 NSScreen* primaryScreen;
+NSDate* exposeClosingNotificationT;
 
 void showLabelWindows(void) {
     for (NSWindowController* overlayController in overlayControllers) {
@@ -74,8 +79,10 @@ void renameSpace(id el, NSString* newTitle) {
     monitorSpaceLabels = [NSMutableDictionary dictionaryWithDictionary: [prefs getDictPref: @"monitorSpaceLabels"]];
     primaryScreen = [helperLib primaryScreen];
     [self addOverlayWindows];
+    exposeClosingNotificationT = NSDate.distantPast;
 }
 + (void) tick: (int) exposeType {
+    if ([NSDate.date timeIntervalSinceDate: exposeClosingNotificationT] * 1000 <= EXPOSE_CLOSE_T) return hideLabelWindows();
     if (exposeType) showLabelWindows();
     else hideLabelWindows();
 }
@@ -233,10 +240,13 @@ void renameSpace(id el, NSString* newTitle) {
     showLabelWindows(); //reshow
 }
 + (BOOL) mousedown: (id) cursorEl : (NSDictionary*) cursorDict : (CGPoint) cursorPos {
+    //label clicked
     if (NSRunningApplication.currentApplication.processIdentifier == [cursorDict[@"pid"] intValue] && cursorPos.y <= 100) { //space labels are at the top, w/o cursorPos check, interacting w/ screenhook windows in mission control is disabled!
         [self labelClicked: cursorEl];
         return NO; //preventDefault
     }
+    //todo: don't run if drag is starting
+    if (WindowManager.exposeType) exposeClosingNotificationT = NSDate.date;
     return YES;
 }
 + (void) mouseup {
@@ -288,6 +298,7 @@ void renameSpace(id el, NSString* newTitle) {
     }, 100);
 }
 + (void) spaceChanged: (NSNotification*) note {
+    if ([NSDate.date timeIntervalSinceDate: exposeClosingNotificationT] * 1000 <= SPACE_CHANGE_T) return;
     if ([WindowManager exposeType]) [self reshow];
 }
 + (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
