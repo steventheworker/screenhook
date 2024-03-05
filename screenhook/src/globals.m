@@ -37,8 +37,10 @@ void throw(NSString* message, ...) {
     NSLog(@"_________");
     NSLog(@"||throw|| %@", formattedString);
     NSLog(@"---------");
-    NSLog(@"%@");
-    [NSApp terminate: nil];
+    //cause a crash (hack so we can trace the code path)
+//    NSLog(@"%@");
+    AXUIElementRef a = nil;setTimeout(^{CFRelease(a);}, 1000);
+//    [NSApp terminate: nil];
 //    setTimeout(^{[NSApp terminate: nil];}, 1);
 //    NSCAssert(NO, message);
 //    @throw [NSException exceptionWithName: @"CustomException" reason: message userInfo: nil];
