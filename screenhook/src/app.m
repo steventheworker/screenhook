@@ -133,12 +133,19 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     [screenhook appTerminated: app];
 }
 - (void) windowWillClose: (NSNotification*) notification { // notify when one of our app windows closes
+//    NSWindow* closed = notification.object;
     setTimeout(^{
         self->isSparkleUpdaterOpen = [helperLib isSparkleUpdaterOpen];NSLog(@"%d", self->isSparkleUpdaterOpen);
+        NSWindow* main = self.mainWindow;
+        if (main) return NSLog(@"__________has main window %@", main.title);
+        else {
+            [NSApp deactivate];
+//            [NSApp hide: nil];
+            self->firstBecameActiveFlag = NO;
+        }
     }, 0);
 }
-- (void) appBecameActive: (NSNotification*) notification {
-    if (!firstBecameActiveFlag) {firstBecameActiveFlag = YES;return;} // triggers when run on xcode onlaunch
+- (NSWindow*) mainWindow {
     // don't raise prefs if sparkle updater visible (may open on launch (and triggers appBecameActive unintentionally))
     // don't raise mainWindow if app already has a visible app (ignore menubar icon)
     NSWindow* main;
@@ -153,6 +160,11 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
 //            if (cur.level == NSStatusWindowLevel) continue; else return;
 //        }
     }
+    return main;
+}
+- (void) appBecameActive: (NSNotification*) notification {
+    if (!firstBecameActiveFlag) {firstBecameActiveFlag = YES;return;} // triggers when run on xcode onlaunch
+    NSWindow* main = self.mainWindow;
     if (main) return NSLog(@"has main window %@", main.title);
     // raise main window
     [self openPrefs];
