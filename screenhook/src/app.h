@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint cursorPos;
     BOOL mousemoveLess;
     BOOL isSparkleUpdaterOpen;
+    BOOL firstBecameActiveFlag;
 }
 + (instancetype) init: (NSWindow*) window : (NSMenu*) menu : (AXUIElementRef) systemWideAccessibilityElement;
 - (void) addMenuIcon: (NSMenu*) menu;

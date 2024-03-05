@@ -10,6 +10,9 @@
 #import "../helperLib.h"
 #import "../Spaces.h"
 #import "../WindowManager.h"
+#import "../../AppDelegate.h"
+
+App* app;
 
 NSWindow* createSpaceWindow(int spaceIndex, NSScreen* screen) {
     for (NSWindow* win in NSApp.windows) if ([win.identifier isEqual: @"spacewindow"] && win.title.intValue == spaceIndex) {
@@ -43,6 +46,7 @@ void fallbackToKeys(int from, int to) {
 
 @implementation spaceKeyboardShortcuts
 + (void) init {
+    setTimeout(^{app = ((AppDelegate*)NSApp.delegate)->app;}, 0);
     //add a spacewindow titled spaceIndex into all spaces!
     NSDictionary* screenSpacesMap = Spaces.screenSpacesMap;
     for (NSString* UUID in screenSpacesMap) {
@@ -62,6 +66,7 @@ void fallbackToKeys(int from, int to) {
             NSDictionary* dict = [helperLib elementDict: win->el : @{@"identifier": (id)kAXIdentifierAttribute, @"title": (id)kAXTitleAttribute}];
             if (![dict[@"identifier"] isEqual: @"spacewindow"] || ![[NSString stringWithFormat: @"%d", spaceIndex] isEqual: dict[@"title"]]) continue;
             [NSApp activateIgnoringOtherApps: YES];
+            app->firstBecameActiveFlag = NO;
             AXUIElementPerformAction((AXUIElementRef)win->el, kAXRaiseAction);
             setTimeout(^{[NSApp hide: nil];}, 666); // give focus back to prev. frontmost application
             return YES;

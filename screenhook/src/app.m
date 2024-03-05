@@ -138,11 +138,22 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
     }, 0);
 }
 - (void) appBecameActive: (NSNotification*) notification {
-    // NSLog(@"app became active"); // triggers when run on xcode onlaunch
+    if (!firstBecameActiveFlag) {firstBecameActiveFlag = YES;return;} // triggers when run on xcode onlaunch
     // don't raise prefs if sparkle updater visible (may open on launch (and triggers appBecameActive unintentionally))
-    NSArray* windows = [[NSApplication sharedApplication] windows];
     // don't raise mainWindow if app already has a visible app (ignore menubar icon)
-    for (NSWindow* cur in windows) if (cur.isVisible && cur.isMainWindow) {if (cur.level == NSStatusWindowLevel) continue; else return;}
+    NSWindow* main;
+    for (NSWindow* cur in NSApplication.sharedApplication.windows) {
+        if (!cur.isVisible || !cur.isOnActiveSpace) continue;
+        BOOL hasSpaceWindowMask = cur.styleMask == NSWindowStyleMaskBorderless;
+        BOOL isAppIconMenu = cur.level == NSStatusWindowLevel;
+        if (isAppIconMenu || hasSpaceWindowMask) continue;
+        main = cur;
+        break;
+//        if (cur.isVisible/* && cur.isMainWindow*/) {
+//            if (cur.level == NSStatusWindowLevel) continue; else return;
+//        }
+    }
+    if (main) return NSLog(@"has main window %@", main.title);
     // raise main window
     [self openPrefs];
 }
