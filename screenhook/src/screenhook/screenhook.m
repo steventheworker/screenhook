@@ -227,7 +227,7 @@ NSPasteboard* dragPasteboard;
         }
         if ([app->name hasPrefix: @"Firefox"])
             [ff defocusPIP: app];
-    }, 333);
+    }, 70);
 }
 + (void) spaceadded: (int) spaceIndex { // event from missionControlSpaceLabels
     [spaceKeyboardShortcuts spaceadded: spaceIndex]; //update spacewindow's
