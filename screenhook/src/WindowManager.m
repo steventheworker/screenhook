@@ -11,6 +11,7 @@
 #import "Spaces.h"
 
 const int ACTIVATION_MILLISECONDS = 30; //how long to wait to activate after [app unhide]
+const NSArray<id>* notificationKeepsFocusedWindow = @[@"kAXTitleChangedNotification", @"kAXWindowResizedNotification", @"kAXWindowMovedNotification"]; //notifications we observe that don't indicate a new window is focused
 
 int cgsMainConnectionId;
 CGWindowID focusedWindowID;
@@ -292,6 +293,8 @@ return extractedPID\n\
 //        for (win in windows) if (win->winNum == windowID) break; //get new focused Window
         setFocus(windowID);
     } else {
+        if ([notificationKeepsFocusedWindow containsObject: (__bridge id)notification]) return;
+        
         loadVisibleWindows();
         CGWindowID windowID;
         _AXUIElementGetWindow((__bridge AXUIElementRef)el, &windowID);
