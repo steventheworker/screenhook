@@ -75,8 +75,26 @@ void setFocus(/* pid_t _focusedPID, */CGWindowID _focusedWindowID) {
     focusedWin = tar;
     
     //window onfocus
-    if ([tar->title isEqual: @"Bartender 5 Trial Ended"]) [tar close];
     NSLog(@"onfocus %@", tar->title);
+    if ([tar->title isEqual: @"Bartender 5 Trial Ended"]) { //todo: autoclose reminder here (until screenhook windowdidfocus)
+        id (^findRemindLaterBtn)(Window* win) = (id)^(Window* win){
+            NSArray* children = [helperLib elementDict: win->el : @{@"?": (id)kAXChildrenAttribute}][@"?"];
+            if (!children.count) return (id)nil;
+            id group;for (group in children) {
+                NSString* role;
+                AXError result = AXUIElementCopyAttributeValue((__bridge AXUIElementRef)(group), kAXRoleAttribute, (void*)&role);
+                NSLog(@"role??? %@", role);
+                if ([role isEqual: @"AXGroup"]) break;
+//                if ([@"AXGroup" isEqual: [helperLib elementDict: group : (id)kAXRoleAttribute][@"?"]]) break; //todo: this doesn't work in here (i think something released too soon?)
+            }
+            NSArray* groupChildren = [helperLib elementDict: group : @{@"?": (id)kAXChildrenAttribute}][@"?"];
+            return (groupChildren.count) ? groupChildren.firstObject : nil; //"Remind me later" AXButton
+        };
+        setTimeout(^{
+            id remindLaterBtn = findRemindLaterBtn(tar);
+            if (remindLaterBtn) AXUIElementPerformAction((AXUIElementRef)remindLaterBtn, kAXPressAction);
+        }, 1000);
+    }
 }
 
 void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, Application* app) {

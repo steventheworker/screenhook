@@ -308,13 +308,17 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXProxyAttribute) {
             // Handle kAXProxyAttribute
         } else if (attribute == (id)kAXRoleAttribute) {
-            CFTypeRef subroleValue;
-            AXError result = AXUIElementCopyAttributeValue(el, kAXRoleAttribute, &subroleValue);
-            if (result == kAXErrorSuccess && CFGetTypeID(subroleValue) == CFStringGetTypeID()) {
-                NSString* subrole = (__bridge NSString*) subroleValue;
-                dict[attributeName] = subrole;
-                CFRelease(subroleValue);
-            } else dict[attributeName] = @"";
+//            CFTypeRef subroleValue;
+//            AXError result = AXUIElementCopyAttributeValue(el, kAXRoleAttribute, &subroleValue);
+//            if (result == kAXErrorSuccess && CFGetTypeID(subroleValue) == CFStringGetTypeID()) {
+//                NSString* subrole = (__bridge NSString*) subroleValue;
+//                dict[attributeName] = subrole;
+//                CFRelease(subroleValue);
+//            } else dict[attributeName] = @"";
+            NSString* role;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXRoleAttribute, (void*)&role);
+            if (result == kAXErrorSuccess) dict[attributeName] = role;
+            else dict[attributeName] = @[];
         } else if (attribute == (id)kAXRoleDescriptionAttribute) {
             // Handle kAXRoleDescriptionAttribute
         } else if (attribute == (id)kAXRowsAttribute) {
@@ -357,13 +361,17 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXSplittersAttribute) {
             // Handle kAXSplittersAttribute
         } else if (attribute == (id)kAXSubroleAttribute) {
-            CFTypeRef subroleValue;
-            AXError result = AXUIElementCopyAttributeValue(el, kAXSubroleAttribute, &subroleValue);
-            if (result == kAXErrorSuccess && CFGetTypeID(subroleValue) == CFStringGetTypeID()) {
-                NSString* subrole = (__bridge NSString*) subroleValue;
-                dict[attributeName] = subrole;
-                CFRelease(subroleValue);
-            } else dict[attributeName] = @"";
+//            CFTypeRef subroleValue;
+//            AXError result = AXUIElementCopyAttributeValue(el, kAXSubroleAttribute, &subroleValue);
+//            if (result == kAXErrorSuccess && CFGetTypeID(subroleValue) == CFStringGetTypeID()) {
+//                NSString* subrole = (__bridge NSString*) subroleValue;
+//                dict[attributeName] = subrole;
+//                CFRelease(subroleValue);
+//            } else dict[attributeName] = @"";
+            NSString* subrole;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXSubroleAttribute, (void*)&subrole);
+            if (result == kAXErrorSuccess) dict[attributeName] = subrole;
+            else dict[attributeName] = @[];
         } else if (attribute == (id)kAXTabsAttribute) {
             // Handle kAXTabsAttribute
         } else if (attribute == (id)kAXTitleAttribute) {
