@@ -80,13 +80,8 @@ void setFocus(/* pid_t _focusedPID, */CGWindowID _focusedWindowID) {
         id (^findRemindLaterBtn)(Window* win) = (id)^(Window* win){
             NSArray* children = [helperLib elementDict: win->el : @{@"?": (id)kAXChildrenAttribute}][@"?"];
             if (!children.count) return (id)nil;
-            id group;for (group in children) {
-                NSString* role;
-                AXError result = AXUIElementCopyAttributeValue((__bridge AXUIElementRef)(group), kAXRoleAttribute, (void*)&role);
-                NSLog(@"role??? %@", role);
-                if ([role isEqual: @"AXGroup"]) break;
-//                if ([@"AXGroup" isEqual: [helperLib elementDict: group : (id)kAXRoleAttribute][@"?"]]) break; //todo: this doesn't work in here (i think something released too soon?)
-            }
+            id group;for (group in children)
+                if ([@"AXGroup" isEqual: [helperLib elementDict: group : @{@"?": (id)kAXRoleAttribute}][@"?"]]) break;
             NSArray* groupChildren = [helperLib elementDict: group : @{@"?": (id)kAXChildrenAttribute}][@"?"];
             return (groupChildren.count) ? groupChildren.firstObject : nil; //"Remind me later" AXButton
         };
