@@ -85,8 +85,12 @@ CFArrayRef visibleWindows = nil; //CGWindow's
             break;
         }
     }
-
     return NO;
+}
+- (void) close {
+    id closeBtn = [helperLib elementDict: self->el : @{@"?": (id)kAXCloseButtonAttribute}][@"?"];
+    if (!closeBtn) return NSLog(@"!!!WINDOW HAS NO CLOSE BUTTON!!!");
+    AXUIElementPerformAction((AXUIElementRef)closeBtn, kAXPressAction);
 }
 
 /*

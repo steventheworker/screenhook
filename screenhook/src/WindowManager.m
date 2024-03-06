@@ -69,10 +69,14 @@ int getExposeType(void) {
 void setFocus(/* pid_t _focusedPID, */CGWindowID _focusedWindowID) {
     focusedWindowID = _focusedWindowID;
     Window* tar;for (tar in windows) if (tar->winNum == focusedWindowID) break;
-    focusedPID = tar->app->pid;
     if (!tar) return NSLog(@"___SHOULD NOT HAPPEN___!!!");
+    focusedPID = tar->app->pid;
 //    if (tar && tar->app->pid != focusedPID) tar = nil;
     focusedWin = tar;
+    
+    //window onfocus
+    if ([tar->title isEqual: @"Bartender 5 Trial Ended"]) [tar close];
+    NSLog(@"onfocus %@", tar->title);
 }
 
 void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, Application* app) {

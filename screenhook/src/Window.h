@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype) init : (Application*) app : (id) el : (CGWindowID) winNum : (AXObserverRef) observer;
 - (void) updatesWindowSpace;
 - (BOOL) floats;
+- (void) close;
 @end
 
 NS_ASSUME_NONNULL_END

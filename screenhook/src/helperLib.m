@@ -144,7 +144,10 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
             if (result == kAXErrorSuccess) dict[attributeName] = children;
             else dict[attributeName] = @[];
         } else if (attribute == (id)kAXCloseButtonAttribute) {
-            // Handle kAXCloseButtonAttribute
+            AXUIElementRef closeBtn;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXCloseButtonAttribute, (void*)&closeBtn);
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)closeBtn;
+            else dict[attributeName] = @0;
         } else if (attribute == (id)kAXColumnsAttribute) {
             // Handle kAXColumnsAttribute
         } else if (attribute == (id)kAXColumnHeaderUIElementsAttribute) {
@@ -260,7 +263,10 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXMenuItemPrimaryUIElementAttribute) {
             // Handle kAXMenuItemPrimaryUIElementAttribute
         } else if (attribute == (id)kAXMinimizeButtonAttribute) {
-            // Handle kAXMinimizeButtonAttribute
+            AXUIElementRef minBtn;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXMinimizeButtonAttribute, (void*)&minBtn);
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)minBtn;
+            else dict[attributeName] = @0;
         } else if (attribute == (id)kAXMinimizedAttribute) {
             BOOL val;
             AXError result = AXUIElementCopyAttributeValue(el, kAXMinimizedAttribute, (void*)&val);
@@ -413,7 +419,10 @@ void proc(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags, void* us
         } else if (attribute == (id)kAXYearFieldAttribute) {
             // Handle kAXYearFieldAttribute
         } else if (attribute == (id)kAXZoomButtonAttribute) {
-            // Handle kAXZoomButtonAttribute
+            AXUIElementRef zoomBtn;
+            AXError result = AXUIElementCopyAttributeValue(el, kAXZoomButtonAttribute, (void*)&zoomBtn);
+            if (result == kAXErrorSuccess) dict[attributeName] = (__bridge_transfer id)zoomBtn;
+            else dict[attributeName] = @0;
         } else {//missing attributes
             if (attribute == (id)kAXPIDAttribute) { //fake kAXAttribute, otherwise no way to get pid with elementDict
                 pid_t axPID = -1;
