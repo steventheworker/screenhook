@@ -14,7 +14,8 @@ const int ACTIVATION_MILLISECONDS = 30; //how long to wait to activate after [ap
 
 int cgsMainConnectionId;
 CGWindowID focusedWindowID;
-int focusedPID;
+pid_t focusedPID;
+Window* focusedWin;
 
 int activationT = ACTIVATION_MILLISECONDS; //on spaceswitch: wait longer
 exposeTypes exposeType = exposeClosed; //exposeTypes enum
@@ -65,6 +66,15 @@ int getExposeType(void) {
     return exposeType;
 }
 
+void setFocus(/* pid_t _focusedPID, */CGWindowID _focusedWindowID) {
+    focusedWindowID = _focusedWindowID;
+    Window* tar;for (tar in windows) if (tar->winNum == focusedWindowID) break;
+    focusedPID = tar->app->pid;
+    if (!tar) return NSLog(@"___SHOULD NOT HAPPEN___!!!");
+//    if (tar && tar->app->pid != focusedPID) tar = nil;
+    focusedWin = tar;
+}
+
 void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, Application* app) {
     BOOL foundNew = NO;
     //add window observers
@@ -83,7 +93,7 @@ void onLaunchTrackFrontmostWindow(CFArrayRef beforeWindows, Application* app) {
         id focusedWindow = [helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"];
         CGWindowID windowID;
         _AXUIElementGetWindow((__bridge AXUIElementRef)focusedWindow, &windowID);
-        focusedWindowID = windowID;
+        setFocus(windowID);
 //        CFRelease(focusedWindow);
     }
 }
@@ -263,24 +273,20 @@ return extractedPID\n\
         CGWindowID windowID;
         _AXUIElementGetWindow((__bridge AXUIElementRef)focusedWindow, &windowID);
 //        for (win in windows) if (win->winNum == windowID) break; //get new focused Window
-        focusedPID = app->pid;
-        focusedWindowID = windowID;
-        
+        setFocus(windowID);
     } else {
         loadVisibleWindows();
         CGWindowID windowID;
         _AXUIElementGetWindow((__bridge AXUIElementRef)el, &windowID);
         if (windowID) {
-            focusedWindowID = windowID;
-            focusedPID = appPID;
+            setFocus(windowID);
         } else {
             NSLog(@"WINDOW NOT GIVING ITS ID..... pid %d note %@", appPID, notification);
 //            id appel = (__bridge_transfer id)AXUIElementCreateApplication(appPID);
 //            id focusedWindow = [helperLib elementDict: appel : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"];
 //            CGWindowID windowID;
 //            _AXUIElementGetWindow((__bridge AXUIElementRef)focusedWindow, &windowID);
-//            focusedWindowID = windowID;
-//            focusedPID = appPID;
+//            setFocus(windowID);
         }
         NSLog(@"window observe winid %d - %@", windowID, notification);
     }
@@ -295,16 +301,12 @@ return extractedPID\n\
         id focusedWindow = [helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"];
         CGWindowID windowID;
         _AXUIElementGetWindow((__bridge AXUIElementRef)focusedWindow, &windowID);
-        focusedWindowID = windowID;
-        focusedPID = app->pid;
+        setFocus(windowID);
     } else {
         loadVisibleWindows();
         CGWindowID windowID;
         _AXUIElementGetWindow((__bridge AXUIElementRef)el, &windowID);
-        if (windowID) {
-            focusedWindowID = windowID;
-            focusedPID = app->pid;
-        }
+        if (windowID) setFocus(windowID);
         if ([type isEqual: @"AXWindowCreated"]) [self observeWindow: el : app : windowID];
     }
 }
@@ -395,8 +397,7 @@ return extractedPID\n\
         id focusedWindow = [helperLib elementDict: app->el : @{@"focusedWindow": (id)kAXFocusedWindowAttribute}][@"focusedWindow"];
         CGWindowID windowID;
         _AXUIElementGetWindow((__bridge AXUIElementRef)focusedWindow, &windowID);
-        focusedPID = app->pid;
-        focusedWindowID = windowID;
+        setFocus(windowID);
         CFArrayRef beforeWindows = CFArrayCreateCopy(kCFAllocatorDefault, visibleWindows);
         setTimeout(^{onLaunchTrackFrontmostWindow(beforeWindows, app);}, 2000); //some launch really slow
         
