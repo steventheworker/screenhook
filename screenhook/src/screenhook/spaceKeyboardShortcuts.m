@@ -40,7 +40,7 @@ void fallbackToKeys(int from, int to) {
         NSString* scptStr = [NSString stringWithFormat: @"tell application \"System Events\" to key code %d using {control down}", dx < 0 ? 123 : 124];
         setTimeout(^{
             [helperLib applescript: scptStr];
-        }, ([WindowManager exposeType] ? 750 : 100) * i + 333);
+        }, (exposeType ? 750 : 100) * i + 333);
     }
 }
 
@@ -90,7 +90,7 @@ void fallbackToKeys(int from, int to) {
     NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
     int relativeIndex = (int)[screenSpaceIds indexOfObject: visibleSpaces[ [visibleIndexes indexOfObject: @(spaceIndex)] ]];
     if (relativeIndex - 1 < 0) spaceIndex += screenSpaceIds.count;
-    if ([WindowManager exposeType] || ![self visitSpace: spaceIndex - 1]) //cannot go directly to space if no spacewindow created, or mission control is open
+    if (exposeType || ![self visitSpace: spaceIndex - 1]) //cannot go directly to space if no spacewindow created, or mission control is open
         fallbackToKeys(relativeIndex, relativeIndex - 1);
 }
 + (void) nextSpace { //next space on monitor under mouse
@@ -109,7 +109,7 @@ void fallbackToKeys(int from, int to) {
     NSArray* screenSpaceIds = [Spaces screenSpacesMap][[Spaces uuidForScreen: mouseScreen]];
     int relativeIndex = (int)[screenSpaceIds indexOfObject: visibleSpaces[ [visibleIndexes indexOfObject: @(spaceIndex)] ]];
     if (relativeIndex + 1 > screenSpaceIds.count - 1) spaceIndex -= screenSpaceIds.count;
-    if ([WindowManager exposeType] || ![self visitSpace: spaceIndex + 1]) //cannot go directly to space if no spacewindow created, or mission control is open
+    if (exposeType || ![self visitSpace: spaceIndex + 1]) //cannot go directly to space if no spacewindow created, or mission control is open
         fallbackToKeys(relativeIndex, relativeIndex + 1);
 }
 + (void) keyCode: (int) keyCode {
@@ -156,7 +156,7 @@ void fallbackToKeys(int from, int to) {
     
     //if space does not yet have invisible window to activate, see if window on space exists you have axref for and activate that
         //else fallback to trigger keyboard shortcuts (control+leftarrow/rightarrow)
-    if ([WindowManager exposeType] || ![self visitSpace: realTargetSpaceIndex]) //cannot go directly to space if no spacewindow created, or mission control is open
+    if (exposeType || ![self visitSpace: realTargetSpaceIndex]) //cannot go directly to space if no spacewindow created, or mission control is open
         fallbackToKeys(relativeSpaceIndex - 1, targetSpaceIndex); //currentSpaceIndex starts at 1 instead of 0
 }
 + (void) spaceChanged: (NSNotification*) note {

@@ -14,13 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern AXError _AXUIElementGetWindow(AXUIElementRef element, CGWindowID *identifier); // add private api fn (axwindow -> cgiwindownumber)
 typedef enum {exposeClosed, DesktopExpose, AppExpose, MissionControl} exposeTypes;
+extern exposeTypes exposeType;
+extern CGWindowID focusedWindowID;
 
 @interface WindowManager : NSObject
 + (void) init: (void(^)(void)) cb;
 + (NSArray<Application*>*) apps;
 + (NSArray<Window*>*) windows;
 + (Application*) appWithBID: (NSString*) bid;
-+ (int) exposeType;
 + (int) exposeTick;
 
 + (void) initialDiscovery: (void(^)(void)) cb;

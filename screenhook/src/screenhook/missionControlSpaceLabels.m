@@ -246,7 +246,7 @@ void renameSpace(id el, NSString* newTitle) {
         return NO; //preventDefault
     }
     //todo: don't run if drag is starting
-    if (WindowManager.exposeType) exposeClosingNotificationT = NSDate.date;
+    if (exposeType) exposeClosingNotificationT = NSDate.date;
     return YES;
 }
 + (void) mouseup {
@@ -299,7 +299,7 @@ void renameSpace(id el, NSString* newTitle) {
 }
 + (void) spaceChanged: (NSNotification*) note {
     if ([NSDate.date timeIntervalSinceDate: exposeClosingNotificationT] * 1000 <= SPACE_CHANGE_T) return;
-    if ([WindowManager exposeType]) [self reshow];
+    if (exposeType) [self reshow];
 }
 + (void) processScreens: (NSScreen*) screen : (CGDisplayChangeSummaryFlags) flags : (NSString*) uuid {
     //if you plug a monitor in, macOS will send kCGDisplayAddFlag, kCGDisplayRemoveFlag, kCGDisplayAddFlag back-to-back ._.

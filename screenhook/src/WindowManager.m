@@ -17,7 +17,7 @@ CGWindowID focusedWindowID;
 int focusedPID;
 
 int activationT = ACTIVATION_MILLISECONDS; //on spaceswitch: wait longer
-int exposeType = 0; //exposeTypes enum
+exposeTypes exposeType = exposeClosed; //exposeTypes enum
 CFArrayRef visibleWindows = nil; //CGWindow's
 CFArrayRef lastVisibleWindows = nil;
 BOOL initialDiscoveryFinished = NO;
@@ -111,7 +111,6 @@ static void axWindowObserverCallback(AXObserverRef observer, id elementRef, CFSt
 + (NSArray<Application*>*) apps {return apps;}
 + (NSArray<Window*>*) windows {return windows;}
 + (Application*) appWithBID: (NSString*) bid {for (Application* app in apps) {if ([app->bid isEqual: bid]) return app;}return nil;}
-+ (int) exposeType {return exposeType;}
 + (int) exposeTick {
 //    NSLog(@"exposeTick %d", getExposeType());
     return getExposeType();

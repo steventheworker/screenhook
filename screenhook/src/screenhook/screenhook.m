@@ -94,9 +94,22 @@ NSPasteboard* dragPasteboard;
     [GestureManager on: @"3 finger swipe up" : ^BOOL(GestureManager* gm) {[helperLib openMissionControl];return YES;}];
 }
 + (void) tick {
-    int exposeType = [WindowManager exposeTick]; //check exposé type, loads new shared windows (Cgwindow's)
+    BOOL prevExpose = exposeType;
+    [WindowManager exposeTick]; //check exposé type, loads new shared windows (Cgwindow's)
+    BOOL exposeOpened = NO, exposeClosed = NO;
+    if (prevExpose != !!exposeType) {if (exposeType) exposeOpened = YES; else exposeClosed = YES;}
+
     if (!exposeType) intervalTickT = DEFAULT_TICK_SPEED; else intervalTickT = DEFAULT_TICK_SPEED / 3;
     [missionControlSpaceLabels tick: exposeType];
+    if (exposeOpened) {
+        BOOL wasFloatingWindowFrontmost = NO; //todo: ???
+        for (Window* win in WindowManager.windows)
+            if (win->winNum == focusedWindowID) {
+                if (win.floats) wasFloatingWindowFrontmost = YES;
+                break;
+            }
+        ((AppDelegate*)NSApp.delegate)->app->firstBecameActiveFlag = NO;
+    }
 }
 + (void) startTicking {
     [self tick];
@@ -165,8 +178,8 @@ NSPasteboard* dragPasteboard;
     if ([eventString isEqual: @"mousedown"]) ret = ret && [desktopPeak mousedown: cursorEl : cursorDict : cursorPos];
     if ([eventString isEqual: @"mouseup"]) ret = ret && [desktopPeak mouseup: cursorEl : cursorDict : cursorPos];
     //change space labels
-    if ([eventString isEqual: @"mousedown"] && [WindowManager exposeType]) ret = ret && [missionControlSpaceLabels mousedown: cursorEl : cursorDict : cursorPos];
-    if ([eventString isEqual: @"mouseup"] && [WindowManager exposeType]) [missionControlSpaceLabels mouseup]; //reshow everytime, since dragging window into other space hides labels window (and can't detect moving window to another space...?)
+    if ([eventString isEqual: @"mousedown"] && exposeType) ret = ret && [missionControlSpaceLabels mousedown: cursorEl : cursorDict : cursorPos];
+    if ([eventString isEqual: @"mouseup"] && exposeType) [missionControlSpaceLabels mouseup]; //reshow everytime, since dragging window into other space hides labels window (and can't detect moving window to another space...?)
     //spotlight search
     if ([eventString isEqual: @"mousedown"] && [cursorDict[@"title"] isEqual: @"Spotlight Search"]) ret = ret && [SpotlightSearch mousedown: cursorPos : cursorEl : cursorDict];
     if ([eventString isEqual: @"mouseup"]) ret = ret && [SpotlightSearch mouseup: cursorPos : cursorEl : cursorDict];

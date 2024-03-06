@@ -42,7 +42,7 @@ BOOL isCorner(CGPoint cursorPos) {
         mousedownT = NSDate.date;
         float dT = (NSTimeInterval)[mousedownT timeIntervalSinceDate: t0] * 1000; //seconds to milliseconds
         if (dT < 333) { //double click menubar
-            cornerWasClicked = !WindowManager.exposeType;
+            cornerWasClicked = !exposeType;
             [helperLib openDesktopExpose];
         }
     }

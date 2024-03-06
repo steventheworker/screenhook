@@ -72,6 +72,9 @@ int globalCreationCounter = 0;
         self->isOnAllSpaces = true;
     }
 }
+- (BOOL) floats {
+    return NO;
+}
 
 /*
 - func isEqualRobust(_ otherWindowAxUiElement: AXUIElement, _ otherWindowWid: CGWindowID?) -> Bool {
