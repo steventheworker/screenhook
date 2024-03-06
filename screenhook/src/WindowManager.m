@@ -18,7 +18,6 @@ int focusedPID;
 
 int activationT = ACTIVATION_MILLISECONDS; //on spaceswitch: wait longer
 exposeTypes exposeType = exposeClosed; //exposeTypes enum
-CFArrayRef visibleWindows = nil; //CGWindow's
 CFArrayRef lastVisibleWindows = nil;
 BOOL initialDiscoveryFinished = NO;
 NSArray* AppObserverNotifications;

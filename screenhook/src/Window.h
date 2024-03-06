@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "Application.h"
 
+extern CFArrayRef _Nonnull visibleWindows;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Window : NSObject {
@@ -32,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) destroy;
 + (instancetype) init : (Application*) app : (id) el : (CGWindowID) winNum : (AXObserverRef) observer;
 - (void) updatesWindowSpace;
+- (BOOL) floats;
 @end
 
 NS_ASSUME_NONNULL_END

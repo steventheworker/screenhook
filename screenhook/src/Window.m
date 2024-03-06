@@ -12,6 +12,8 @@
 extern AXError CGSCopyWindowProperty(int cid, CGWindowID wid, CFStringRef prop, void* input); // private api fallback
 
 int globalCreationCounter = 0;
+CFArrayRef visibleWindows = nil; //CGWindow's
+
 @implementation Window
 - (void) destroy {
     CFRelease(self->observer);
@@ -73,6 +75,17 @@ int globalCreationCounter = 0;
     }
 }
 - (BOOL) floats {
+    long int winCount = CFArrayGetCount(visibleWindows);
+    for (int i = 0; i < winCount; i++) {
+        NSDictionary* winDict = CFArrayGetValueAtIndex(visibleWindows, i);
+        CGWindowID winNum = [winDict[(id)kCGWindowNumber] intValue];
+        if (winNum == self->winNum) {
+            int layer = [winDict[(id)kCGWindowLayer] intValue];
+            return layer == kCGFloatingWindowLevel;
+            break;
+        }
+    }
+
     return NO;
 }
 
